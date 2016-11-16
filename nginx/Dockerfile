@@ -1,4 +1,4 @@
-FROM gosple_ubuntu
+FROM gosple-ubuntu
 MAINTAINER Max Schaefer <max@excloo.com>
 RUN curl https://nginx.org/keys/nginx_signing.key | apt-key add - && \
 	echo "deb http://nginx.org/packages/debian/ jessie nginx" > /etc/apt/sources.list.d/nginx.list && \
