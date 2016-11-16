@@ -9,5 +9,8 @@ RUN curl https://www.dotdeb.org/dotdeb.gpg | apt-key add - && \
 	rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 RUN rm -rf /etc/php/7.0/fpm/pool.d && \
 	mkdir -p /etc/php/7.0/fpm/pool.d
+
+RUN git clone https://github.com/Gospely/hello_php.git /root/workspace
+
 ADD etc /etc
 ADD supervisord.conf /etc/supervisor/conf.d/php-fpm.conf
