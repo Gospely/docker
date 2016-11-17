@@ -21,8 +21,14 @@ RUN mkdir /config /data
 # 添加core用户
 RUN useradd -u 500 core
 
+
 ADD config /config
 
 RUN wget -O /config/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64
 RUN chmod +x /config/dumb-init /config/main
-CMD /config/main
+CMD /config/main \
+		&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash \
+    && export NVM_DIR="$HOME/.nvm" \
+    && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" \
+    && service ssh start && cd ~/.gospely/.socket && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" \
+    && nvm install v6 && nvm use v6 &&  npm install
