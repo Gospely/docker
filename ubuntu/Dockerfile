@@ -9,12 +9,6 @@ RUN apt-get update && \
 	echo -n > /var/lib/apt/extended_states && \
 	rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 
-	RUN wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash \
-	    && export NVM_DIR="$HOME/.nvm" \
-	    && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" \
-	    && nvm install v6
-
-
 # ssh密码登录
 RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 # 设置初始密码
@@ -50,4 +44,7 @@ CMD /config/main
 
 EXPOSE 22
 
-ENTRYPOINT service ssh start && cd ~/.gospely/.socket && nvm insall v6 && nvm use v6 &&  npm install && npm start && /bin/bash
+ENTRYPOINT service ssh start && cd ~/.gospely/.socket && RUN wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash \
+		&& export NVM_DIR="$HOME/.nvm" \
+		&& [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" \
+		&& nvm install v6  && nvm use v6 &&  npm install && npm start && /bin/bash
