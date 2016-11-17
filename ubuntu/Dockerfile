@@ -17,6 +17,8 @@ RUN apt-get update && \
 
 # ssh密码登录
 RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+# 设置初始密码
+RUN echo 'root:123456' | chpasswd
 
 # 创建工作目录
 RUN mkdir /root/workspace
@@ -48,7 +50,4 @@ CMD /config/main
 
 EXPOSE 22
 
-ENTRYPOINT wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash \
-    && export NVM_DIR="$HOME/.nvm" \
-    && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" \
-    && service ssh start && cd ~/.gospely/.socket && nvm use v6 &&  npm install && npm start && /bin/bash
+ENTRYPOINT service ssh start && cd ~/.gospely/.socket && nvm insall v6 && nvm use v6 &&  npm install && npm start && /bin/bash
