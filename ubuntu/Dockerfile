@@ -23,7 +23,7 @@ RUN mkdir /root/.gospely/.git_shell
 
 # git clone git脚本
 
-git clone https://github.com/Gospely/git.git /root/.gospely/.git_shell
+RUN git clone https://github.com/Gospely/git.git /root/.gospely/.git_shell
 
 # 创建配置 数据目录
 RUN mkdir /config /data
@@ -36,6 +36,7 @@ ADD config /config
 
 RUN wget -O /config/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64
 RUN chmod +x /config/dumb-init /config/main
+
 CMD /config/main \
 		&& wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash \
     && export NVM_DIR="$HOME/.nvm" \
