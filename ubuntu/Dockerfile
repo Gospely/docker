@@ -15,6 +15,16 @@ RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/s
 # 创建工作目录
 RUN mkdir /root/workspace
 
+# 创建脚本目录
+RUN mkdir /root/.gospely
+
+# 创建git脚本目录
+RUN mkdir /root/.gospely/.git_shell
+
+# git clone git脚本
+
+git clone https://github.com/Gospely/git.git /root/.gospely/.git_shell
+
 # 创建配置 数据目录
 RUN mkdir /config /data
 
