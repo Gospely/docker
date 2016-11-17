@@ -35,4 +35,4 @@ RUN git clone https://github.com/Gospely/hello_node.git /root/workspace
 
 EXPOSE 22
 
-ENTRYPOINT cd /root/workspace && rm -rf .git && node index.js && /bin/bash
+ENTRYPOINT service ssh start && cd /root/workspace && rm -rf .git && node index.js && /bin/bash
