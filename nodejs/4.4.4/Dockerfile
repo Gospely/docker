@@ -27,6 +27,12 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
   && tar -xvf "node-v$NODE_VERSION-linux-x64.tar.gz" -C /usr/local --strip-components=1 \
   && rm "node-v$NODE_VERSION-linux-x64.tar.gz" SHASUMS256.txt.asc SHASUMS256.txt \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
+  #install nvm
+
+  RUN wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash \
+      && export NVM_DIR="$HOME/.nvm" \
+      && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" \
+      && nvm install v6
 
 
 
@@ -35,7 +41,4 @@ RUN git clone https://github.com/Gospely/hello_node.git /root/workspace
 
 EXPOSE 22
 
-ENTRYPOINT service ssh start && cd ~/.gospely/.socket && wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash \
-		&& export NVM_DIR="$HOME/.nvm" \
-		&& [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" \
-		&& nvm install v6  && nvm use v6 &&  npm install && npm start && cd /root/workspace && rm -rf .git && node index.js && /bin/bash
+ENTRYPOINT service ssh start && nvm use v6 &&  npm install && npm start && cd /root/workspace && rm -rf .git && node index.js && /bin/bash
