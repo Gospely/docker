@@ -1,4 +1,4 @@
-ROM gospel-ubuntu
+FROM gospel-ubuntu
 
 MAINTAINER ivy 'xieyang@dodora.cn'
 
