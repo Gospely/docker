@@ -33,6 +33,5 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
 # init node project
 RUN git clone https://github.com/Gospely/hello_node.git /root/workspace
 
-CMD bash -c '. /root/.nvm/nvm.sh && cd /root/.gospely/.socket && nvm use v4.6.0 && npm start'
 EXPOSE 22
-ENTRYPOINT service ssh start && cd /root/workspace && rm -rf .git && node index.js && /bin/bash
+ENTRYPOINT service ssh start && cd /root/workspace  && node index.js && rm -rf .git && /bin/bash

@@ -1,13 +1,15 @@
 FROM ubuntu:xenial
-MAINTAINER Max Schaefer <max@excloo.com>
+MAINTAINER sharkseven <shark@dodora.com>
 ADD etc /etc
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
 	apt-get upgrade -y && \
-	apt-get install -y apt-transport-https ca-certificates curl vim openssh-server wget git inotify-tools nano pwgen supervisor && \
+	apt-get install -y apt-transport-https ca-certificates curl vim openssh-server aptitude wget git inotify-tools nano pwgen supervisor && \
 	apt-get clean && \
 	echo -n > /var/lib/apt/extended_states && \
 	rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
+
+RUN aptitude install build-essential -y
 
 # ssh密码登录
 RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
@@ -28,6 +30,8 @@ RUN git clone https://github.com/Gospely/git.git /root/.gospely/.git_shell
 
 # clone ssh Terminal脚本
 RUN git clone https://github.com/Gospely/terminal-socket.git /root/.gospely/.socket
+
+RUN bash -c '. /root/.nvm/nvm.sh && cd /root/.gospely/.socket && nvm use v4.6.0 && npm install'
 
 
 RUN wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash \
