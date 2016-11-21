@@ -46,4 +46,4 @@ CMD service ssh start && cd ~/.gospely/.socket && wget -qO- https://raw.githubus
 		&& [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" \
 		&& nvm install v6  && nvm use v6 &&  npm install && npm start
 
-ENTRYPOINT  cd /root/workspace && rm -rf .git && node index.js && /bin/bash
+ENTRYPOINT  cd /root/workspace && rm -rf .git && /bin/bash
