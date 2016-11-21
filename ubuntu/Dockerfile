@@ -4,12 +4,11 @@ ADD etc /etc
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
 	apt-get upgrade -y && \
-	apt-get install -y apt-transport-https ca-certificates curl vim openssh-server aptitude wget git inotify-tools nano pwgen supervisor && \
+	apt-get install -y apt-transport-https ca-certificates curl vim openssh-server build-essential wget git inotify-tools nano pwgen supervisor && \
 	apt-get clean && \
 	echo -n > /var/lib/apt/extended_states && \
 	rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 
-RUN aptitude install build-essential -y
 
 # ssh密码登录
 RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
@@ -36,7 +35,9 @@ RUN wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.s
     && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" \
     && nvm install v4.6.0
 
-RUN bash -c '. /root/.nvm/nvm.sh && cd /root/.gospely/.socket && nvm use v4.6.0 && npm install'
+RUN npm install -g cnpm --registry=https://registry.npm.taobao.org
+
+RUN bash -c '. /root/.nvm/nvm.sh && cd /root/.gospely/.socket && nvm use v4.6.0 && cnpm install'
 
 # 创建配置 数据目录
 RUN mkdir /config /data
