@@ -48,7 +48,8 @@ ADD config /config
 RUN wget -O /config/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64
 RUN chmod +x /config/dumb-init /config/main
 
-CMD /config/main
+CMD /config/main && bash -c '. /root/.nvm/nvm.sh && cd /root/.gospely/.socket && nvm use v4.6.0 && npm start'
+
 
 
 EXPOSE 22
