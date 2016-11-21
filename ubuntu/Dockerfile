@@ -27,7 +27,6 @@ RUN mkdir /root/.gospely/.git_shell
 RUN git clone https://github.com/Gospely/git.git /root/.gospely/.git_shell
 
 # clone ssh Terminal脚本
-RUN git clone https://github.com/Gospely/terminal-socket.git /root/.gospely/.socket
 
 
 RUN wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash \
