@@ -29,10 +29,8 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
   #install nvm
 
-  RUN wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash \
-      && export NVM_DIR="$HOME/.nvm" \
-      && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" \
-      && nvm install v6
+  RUN npm install nvm -g
+  RUN nvm install v6
 
 
 
