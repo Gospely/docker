@@ -52,6 +52,3 @@ RUN chmod +x /config/dumb-init /config/main
 
 EXPOSE 22
 CMD /config/main
-
-
-ENTRYPOINT service ssh start &&  bash -c '. /root/.nvm/nvm.sh && cd /root/.gospely/.socket && nvm use v4.6.0 && npm start' &&  /bin/bash
