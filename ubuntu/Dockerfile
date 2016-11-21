@@ -34,7 +34,7 @@ RUN wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.s
     && export NVM_DIR="$HOME/.nvm" \
     && [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" \
     && nvm install v4.6.0
-RUN cd /root/.gospely/.socket && nvm use v4.6.0 && npm install
+RUN bash -c '. /root/.nvm/nvm.sh && cd /root/.gospely/.socket && nvm use v4.6.0 && npm install'
 
 # 创建配置 数据目录
 RUN mkdir /config /data
@@ -48,10 +48,7 @@ ADD config /config
 RUN wget -O /config/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64
 RUN chmod +x /config/dumb-init /config/main
 
-CMD /config/main && bash -c '. /root/.nvm/nvm.sh && cd /root/.gospely/.socket && nvm use v4.6.0 && npm start'
-
-
-
 EXPOSE 22
+CMD /config/main
 
 ENTRYPOINT service ssh start && /bin/bash

@@ -33,7 +33,7 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
 # init node project
 RUN git clone https://github.com/Gospely/hello_node.git /root/workspace
 
-
+CMD bash -c '. /root/.nvm/nvm.sh && cd /root/.gospely/.socket && nvm use v4.6.0 && npm start'
 EXPOSE 22
 ENTRYPOINT service ssh start && cd ~/.gospely/.socket && wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.sh | bash \
 		&& export NVM_DIR="$HOME/.nvm" \
