@@ -15,8 +15,6 @@ RUN rm -rf /etc/php/7.0/fpm/pool.d && \
 ADD etc /etc
 ADD supervisord.conf /etc/supervisor/conf.d/php-fpm.conf
 
-RUN git clone https://github.com/Gospely/hello_php.git /root/workspace
-
 EXPOSE 22
 EXPOSE 80
 
