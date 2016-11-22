@@ -7,4 +7,4 @@ EXPOSE 22
 EXPOSE 80
 
 
-ENTRYPOINT service ssh start  && /bin/bash
+ENTRYPOINT service ssh start && /config/main && /bin/bash
