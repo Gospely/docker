@@ -1,4 +1,4 @@
-FROM gospel-ubuntu
+FROM gospel-nginx-php
 
 
 MAINTAINER sharkseven 'shark@dodora.cn'
