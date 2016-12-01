@@ -17,7 +17,7 @@ RUN set -ex \
   done
 
 ENV NPM_CONFIG_LOGLEVEL info
-ENV NODE_VERSION 6.9.1
+ENV NODE_VERSION 6.7.0
 
 RUN curl -SLO "http://ipv4.mirrors.ustc.edu.cn/node/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz" \
   && curl -SLO "http://ipv4.mirrors.ustc.edu.cn/node/v$NODE_VERSION/SHASUMS256.txt.asc" \
