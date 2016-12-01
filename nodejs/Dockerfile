@@ -18,16 +18,15 @@ RUN set -ex \
   done
 
 ENV NPM_CONFIG_LOGLEVEL info
-ENV NODE_VERSION v6.9.1
+ENV NODE_VERSION 6.9.1
 
-RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz" \
-  && curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
+RUN curl -SLO "http://ipv4.mirrors.ustc.edu.cn/node/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz" \
+  && curl -SLO "http://ipv4.mirrors.ustc.edu.cn/node/v$NODE_VERSION/SHASUMS256.txt.asc" \
   && gpg --batch --decrypt --output SHASUMS256.txt SHASUMS256.txt.asc \
   && grep " node-v$NODE_VERSION-linux-x64.tar.gz\$" SHASUMS256.txt | sha256sum -c - \
   && tar -xvf "node-v$NODE_VERSION-linux-x64.tar.gz" -C /usr/local --strip-components=1 \
   && rm "node-v$NODE_VERSION-linux-x64.tar.gz" SHASUMS256.txt.asc SHASUMS256.txt \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
-  #install nvm
 
 EXPOSE 22
 

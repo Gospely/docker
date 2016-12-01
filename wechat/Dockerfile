@@ -1,6 +1,5 @@
 FROM gospel-ubuntu
-
-MAINTAINER ivy 'xieyang@dodora.cn'
+MAINTAINER sharkseve 'shark@dodora.cn'
 
 # gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
@@ -18,7 +17,7 @@ RUN set -ex \
   done
 
 ENV NPM_CONFIG_LOGLEVEL info
-ENV NODE_VERSION 4.4.4
+ENV NODE_VERSION 6.9.1
 
 RUN curl -SLO "http://ipv4.mirrors.ustc.edu.cn/node/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz" \
   && curl -SLO "http://ipv4.mirrors.ustc.edu.cn/node/v$NODE_VERSION/SHASUMS256.txt.asc" \
@@ -27,8 +26,9 @@ RUN curl -SLO "http://ipv4.mirrors.ustc.edu.cn/node/v$NODE_VERSION/node-v$NODE_V
   && tar -xvf "node-v$NODE_VERSION-linux-x64.tar.gz" -C /usr/local --strip-components=1 \
   && rm "node-v$NODE_VERSION-linux-x64.tar.gz" SHASUMS256.txt.asc SHASUMS256.txt \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
-
+RUN npm i wept -g
+RUN git clone https://github.com/Gospely/weapp-seed.git /root/workspace
 EXPOSE 22
+EXPOSE 3000
 
-
-ENTRYPOINT service ssh start && cd /root/workspace  && node index.js && rm -rf .git && /bin/bash
+ENTRYPOINT service ssh start && cd /root/workspace  && wept && rm -rf .git && /bin/bash
