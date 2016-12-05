@@ -1,4 +1,4 @@
-FROM gospel-ubuntu
+FROM registry.cn-hangzhou.aliyuncs.com/sharkseven/gospel-ubuntu
 MAINTAINER sharkseve 'shark@dodora.cn'
 
 # gpg keys listed at https://github.com/nodejs/node
