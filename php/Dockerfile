@@ -15,8 +15,10 @@ RUN rm -rf /etc/php/7.0/fpm/pool.d && \
 ADD etc /etc
 ADD supervisord.conf /etc/supervisor/conf.d/php-fpm.conf
 
+git clone https://github.com/Gospely/hello_php.git /root/temp
+
 EXPOSE 22
 EXPOSE 80
 
 
-ENTRYPOINT service ssh start && /config/main && /bin/bash
+ENTRYPOINT service ssh start && mv /root/temp/* /root/workspace && rm -rf /root/temp && /config/main && /bin/bash
