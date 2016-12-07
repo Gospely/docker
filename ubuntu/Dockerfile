@@ -50,6 +50,7 @@ ADD config /config
 RUN wget -O /config/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64
 RUN chmod +x /config/dumb-init /config/main
 COPY start.sh /usr/local/bin/
+RUN chomd 777 usr/local/bin/start.sh
 RUN ln -s usr/local/bin/start.sh
 
 EXPOSE 22
