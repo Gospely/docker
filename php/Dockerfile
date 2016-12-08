@@ -21,4 +21,4 @@ EXPOSE 22
 EXPOSE 80
 
 
-ENTRYPOINT service ssh start && mv /root/temp/* /root/workspace && rm -rf /root/temp && /config/main && /bin/bash
+ENTRYPOINT service ssh start && test -d /root/temp && mv /root/temp/* /root/workspace && rm -rf /root/temp || echo "文件夹不存在" && /config/main && /bin/bash
