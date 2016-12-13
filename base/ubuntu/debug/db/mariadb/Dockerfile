@@ -1,5 +1,5 @@
-FROM registry.cn-hangzhou.aliyuncs.com/sharkseven/gospel-ubuntu
-MAINTAINER Max Schaefer <max@excloo.com>
+FROM registry.cn-hangzhou.aliyuncs.com/sharkseven/gospel-debug-ubuntu
+MAINTAINER sharkseven 'shark@dodora.cn'
 
 ENV MARIADB_USER=docker
 ENV MARIADB_PASS=docker
