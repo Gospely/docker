@@ -32,4 +32,7 @@ RUN chmod +x /config/dumb-init /config/main
 
 
 EXPOSE 22
-ENTRYPOINT /config/main
+EXPOSE 3306
+CMD ["mysqld"]
+
+ENTRYPOINT /config/main && docker-entrypoint.sh
