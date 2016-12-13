@@ -1,38 +1,24 @@
-FROM mariadb
-MAINTAINER sharkseven <shark@dodora.com>
-ADD etc /etc
-ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update && \
-	apt-get upgrade -y && \
-	apt-get install -y apt-transport-https ca-certificates curl vim openssh-server build-essential wget git inotify-tools nano pwgen supervisor && \
+FROM registry.cn-hangzhou.aliyuncs.com/sharkseven/gospel-ubuntu
+MAINTAINER sharkseven 'shark@dodora.cn'
+
+ENV MARIADB_USER=docker
+ENV MARIADB_PASS=docker
+
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CBCB082A1BB943DB && \
+	echo "deb http://ftp.osuosl.org/pub/mariadb/repo/10.1/debian/ jessie main" > /etc/apt/sources.list.d/mariadb.list && \
+	apt-get update && \
+	apt-get install -y mariadb-server && \
 	apt-get clean && \
 	echo -n > /var/lib/apt/extended_states && \
 	rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
-
-
-# ssh密码登录
-RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-# 设置初始密码
-RUN echo 'root:123456' | chpasswd
-
-# 创建工作目录
-RUN mkdir /root/workspace
-
-# 创建配置 数据目录
-RUN mkdir /config /data
-
-# 添加core用户
-RUN useradd -u 500 core
-
-
+RUN sed -i -e "s/^bind-address/#bind-address/" /etc/mysql/my.cnf && \
+	sed -i -e "s/^datadir.*=.*/datadir = \/data/" /etc/mysql/my.cnf && \
+	sed -i -e "s/^user.*=.*/user = core/" /etc/mysql/my.cnf && \
+	sed -i -e "s/\/var\/log\/mysql/\/data\/log/" /etc/mysql/my.cnf && \
+	chown -R core:adm /var/log/mysql.err && \
+	chown -R core:adm /var/log/mysql.log && \
+	chown -R core:adm /var/log/mysql && \
+	chown -R core:root /run/mysqld
 ADD config /config
-
-RUN wget -O /config/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64
-RUN chmod +x /config/dumb-init /config/main
-
-
-EXPOSE 22
+ADD supervisord.conf /etc/supervisor/conf.d/mariadb.conf
 EXPOSE 3306
-CMD ["mysqld"]
-
-ENTRYPOINT /config/main && docker-entrypoint.sh
