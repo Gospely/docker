@@ -1,0 +1,7 @@
+#!/config/dumb-init /bin/bash
+bash /config/prep
+for init in /config/init/*; do
+	bash "$init"
+done
+bash /config/prep
+exec supervisord -n
