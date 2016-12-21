@@ -38,6 +38,9 @@ RUN wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.s
 
 RUN bash -c '. /root/.nvm/nvm.sh && cd /root/.gospely/.socket && nvm use v4.6.0 && npm install -g cnpm --registry=https://registry.npm.taobao.org && cnpm install'
 
+# SSH key 生成
+RUN ssh-keygen -t rsa -P "" -f ~/.ssh/id_rsa
+
 # 创建配置 数据目录
 RUN mkdir /config /data
 
