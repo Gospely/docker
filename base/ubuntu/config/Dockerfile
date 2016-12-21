@@ -1,5 +1,6 @@
 FROM registry.cn-hangzhou.aliyuncs.com/sharkseven/gospel-debug-ubuntu
 MAINTAINER sharkseven 'shark@dodora.cn'
+
 ENV POSTGRESQL_USER docker \
 	POSTGRESQL_PASS docker
 RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
