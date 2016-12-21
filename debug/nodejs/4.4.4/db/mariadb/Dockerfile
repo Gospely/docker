@@ -32,4 +32,4 @@ RUN curl -SLO "http://ipv4.mirrors.ustc.edu.cn/node/v$NODE_VERSION/node-v$NODE_V
 EXPOSE 22
 
 
-ENTRYPOINT service ssh start && /bin/bash
+ENTRYPOINT service ssh start && /config/main && /bin/bash
