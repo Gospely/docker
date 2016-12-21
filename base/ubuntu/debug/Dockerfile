@@ -52,4 +52,4 @@ RUN chmod +x /config/dumb-init /config/main
 
 
 EXPOSE 22
-ENTRYPOINT /config/main
+CMD /config/main
