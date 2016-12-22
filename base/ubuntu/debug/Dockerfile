@@ -14,7 +14,7 @@ RUN apt-get update && \
 RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 # 设置初始密码
 RUN echo 'root:123456' | chpasswd
-EVN USERID=user
+ENV USERID=user
 # 创建工作目录
 RUN mkdir /root/workspace
 
