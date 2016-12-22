@@ -1,8 +1,8 @@
 FROM registry.cn-hangzhou.aliyuncs.com/sharkseven/gospel-debug-ubuntu
 MAINTAINER sharkseven 'shark@dodora.cn'
 
-ENV MARIADB_USER=docker
-ENV MARIADB_PASS=docker
+ENV DBUSER=docker
+ENV DBPASS=docker
 
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CBCB082A1BB943DB && \
 	echo "deb http://ftp.osuosl.org/pub/mariadb/repo/10.1/debian/ jessie main" > /etc/apt/sources.list.d/mariadb.list && \

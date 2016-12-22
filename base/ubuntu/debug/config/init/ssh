@@ -1,0 +1,1 @@
+ssh-keygen -t rsa -P "${USERID}" -f ~/.ssh/id_rsa
