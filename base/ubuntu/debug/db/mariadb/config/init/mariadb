@@ -6,8 +6,8 @@ if [ ! "$(ls -A /data/aria_log_control)" ]; then
 	while [ ! -e /run/mysqld/mysqld.sock ]; do
 		inotifywait -e create -q /run/mysqld/
 	done
-	mysql -u root -e "FLUSH PRIVILEGES; CREATE USER '${MARIADB_USER}'@'%' IDENTIFIED BY '${MARIADB_PASS}'; GRANT ALL PRIVILEGES ON *.* TO '${MARIADB_USER}'@'%' WITH GRANT OPTION;"
-	mysql -u root -e "CREATE DATABASE IF NOT EXISTS ${MARIADB_USER};"
+	mysql -u root -e "FLUSH PRIVILEGES; CREATE USER '${DBUSER}'@'%' IDENTIFIED BY '${DBPASS}'; GRANT ALL PRIVILEGES ON *.* TO '${DBUSER}'@'%' WITH GRANT OPTION;"
+	mysql -u root -e "CREATE DATABASE IF NOT EXISTS ${DBUSER};"
 	mysqladmin -u root shutdown
 fi
 
