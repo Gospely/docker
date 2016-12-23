@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/sharkseven/gospel-mariadb
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/mariadb
 
 MAINTAINER ivy 'xieyang@dodora.cn'
 

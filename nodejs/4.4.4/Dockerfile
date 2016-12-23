@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/sharkseven/gospel-ubuntu
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/ubuntu
 
 MAINTAINER ivy 'xieyang@dodora.cn'
 
