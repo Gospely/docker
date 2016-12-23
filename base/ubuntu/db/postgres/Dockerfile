@@ -1,36 +1,17 @@
-FROM postgres:9.5
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/ubuntu
 MAINTAINER sharkseven 'shark@dodora.cn'
-
-ADD etc /etc
-ENV DEBIAN_FRONTEND noninteractive
-RUN apt-get update && \
-	apt-get upgrade -y && \
-	apt-get install -y apt-transport-https ca-certificates curl vim openssh-server build-essential wget git inotify-tools nano pwgen supervisor && \
+ENV POSTGRESQL_USER docker \
+	POSTGRESQL_PASS docker
+RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
+	echo "deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main" > /etc/apt/sources.list.d/postgresql.list && \
+	apt-get update && \
+	apt-get install -y postgresql-9.4 && \
 	apt-get clean && \
 	echo -n > /var/lib/apt/extended_states && \
 	rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
-
-
-# ssh密码登录
-RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-# 设置初始密码
-RUN echo 'root:123456' | chpasswd
-
-# 创建工作目录
-RUN mkdir /root/workspace
-
-# 创建配置 数据目录
-RUN mkdir /config /data
-
-# 添加core用户
-RUN useradd -u 500 core
-
-
+RUN echo "host all all 0.0.0.0/0 md5" >> /etc/postgresql/9.4/main/pg_hba.conf && \
+	sed -i -e "s/^#listen_addresses.*=.*/listen_addresses = '*'/" /etc/postgresql/9.4/main/postgresql.conf && \
+	sed -i -e "s/^data_directory.*=.*$/data_directory = '\/data'/" /etc/postgresql/9.4/main/postgresql.conf
 ADD config /config
-
-RUN wget -O /config/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64
-RUN chmod +x /config/dumb-init /config/main
-
-
-EXPOSE 22
-ENTRYPOINT /config/main
+ADD supervisord.conf /etc/supervisor/conf.d/postgresql.conf
+EXPOSE 5432
