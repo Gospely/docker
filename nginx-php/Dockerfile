@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/sharkseven/gospel-nginx
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/nginx
 MAINTAINER sharkseven 'shark@dodora.cn'
 RUN curl https://www.dotdeb.org/dotdeb.gpg | apt-key add - && \
 	echo "deb http://packages.dotdeb.org/ jessie all" > /etc/apt/sources.list.d/dotdeb.list && \
