@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/sharkseven/gospel-debug-ubuntu
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-ubuntu
 MAINTAINER sharkseven 'shark@dodora.cn'
 ENV POSTGRESQL_USER docker \
 	POSTGRESQL_PASS docker

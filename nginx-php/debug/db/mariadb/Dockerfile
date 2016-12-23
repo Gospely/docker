@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/sharkseven/gospel-debug-nginx-mariadb
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx-mariadb
 MAINTAINER sharkseven 'shark@dodora.cn'
 RUN curl https://www.dotdeb.org/dotdeb.gpg | apt-key add - && \
 	echo "deb http://packages.dotdeb.org/ jessie all" > /etc/apt/sources.list.d/dotdeb.list && \
