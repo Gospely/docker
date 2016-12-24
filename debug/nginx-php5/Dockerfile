@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-ubuntu
+FROM ubuntu:xenial
 
 # specify maintainer
 MAINTAINER sharkseven <shark@dodora.cn>
