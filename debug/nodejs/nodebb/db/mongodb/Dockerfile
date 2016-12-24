@@ -9,4 +9,4 @@ RUN git clone https://github.com/NodeBB/NodeBB.git /root/temp
 
 EXPOSE 4567
 
-ENTRYPOINT service ssh start cd /root/workspace && ./nodebb start && bin/bash
+ENTRYPOINT service ssh start cd /root/workspace && ./nodebb start || bin/bash
