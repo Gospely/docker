@@ -4,7 +4,7 @@ FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-ubuntu
 MAINTAINER sharkseven <shark@dodora.cn>
 
 ADD init /init
-
+RUN sudo add-apt-repository ppa:ondrej/php
 RUN apt-get update -y && \
 	apt-get install -y \
 	nginx \
