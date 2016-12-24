@@ -1,10 +1,11 @@
 FROM ubuntu:xenial
 MAINTAINER sharkseven <shark@dodora.com>
+
 ADD etc /etc
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
 	apt-get upgrade -y && \
-	apt-get install -y apt-transport-https ca-certificates curl vim openssh-server build-essential wget git inotify-tools nano pwgen supervisor && \
+	apt-get install -y apt-transport-https ca-certificates curl sudo vim openssh-server build-essential wget git inotify-tools nano pwgen supervisor && \
 	apt-get clean && \
 	echo -n > /var/lib/apt/extended_states && \
 	rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
