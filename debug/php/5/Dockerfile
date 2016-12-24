@@ -2,18 +2,17 @@ FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx
 
 MAINTAINER sharkseven 'shark@dodora.cn'
 
-RUN apt-get update && \
-	apt-get install -y php5 php5-fpm php5-cli php5-dev php5-common php5-curl php5-mysql&& \
-	apt-get clean && \
-	echo -n > /var/lib/apt/extended_stat5es && \
-	rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
-RUN rm -rf /etc/php/5.0/fpm/pool.d && \
-	mkdir -p /etc/php/5.0/fpm/pool.d
-
 ADD etc /etc
-ADD supervisord.conf /etc/supervisor/conf.d/php-fpm.conf
 
-RUN git clone https://github.com/Gospely/hello_php.git /root/temp
+RUN echo "deb http://ppa.launchpad.net/nginx/$nginx/ubuntu $dist main" > /etc/apt/sources.list.d/nginx-$nginx-$dist.list
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C300EE8C
+RUN apt-get update
+RUN apt-get install -y php5-fpm
+RUN apt-get autoremove -y
+RUN apt-get clean
+
+ADD php5-fpm/php.ini /etc/php5/fpm/
+ADD supervisord.conf /etc/supervisor/conf.d/php-fpm.conf
 
 EXPOSE 22
 EXPOSE 80
