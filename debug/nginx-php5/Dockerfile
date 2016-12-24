@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu:14.04
 
 # specify maintainer
 MAINTAINER sharkseven <shark@dodora.cn>
