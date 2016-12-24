@@ -5,7 +5,7 @@ MAINTAINER sharkseven 'shark@dodora.cn'
 RUN curl https://www.dotdeb.org/dotdeb.gpg | apt-key add - && \
 	echo "deb http://packages.dotdeb.org/ jessie all" > /etc/apt/sources.list.d/dotdeb.list && \
 	apt-get update && \
-	apt-get install -y php5-cli php5-curl php5-fpm php-mbstring php-mcrypt php-mysql php-pgsql php-sqlite3 && \
+	apt-get install -y php5 php5-fpm php5-cli php5-dev php5-common php5-curl php5-mysql&& \
 	apt-get clean && \
 	echo -n > /var/lib/apt/extended_stat5es && \
 	rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
