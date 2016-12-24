@@ -11,4 +11,4 @@ RUN git clone https://github.com/NodeBB/NodeBB.git /root/temp
 
 EXPOSE 4567
 
-ENTRYPOINT cd /root/temp && npm install --production || cd /root/workspace  && npm start || /bin/bash
+ENTRYPOINT  test -d /root/temp && (mv /root/temp /root/workspace && rm -rf /root/temp && cd /root/workspace && && npm install --production && npm start && bin/bash) || (cd /root/workspace && && npm install --production && npm start && bin/bash)
