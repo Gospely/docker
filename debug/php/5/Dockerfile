@@ -3,7 +3,7 @@ FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx
 MAINTAINER sharkseven 'shark@dodora.cn'
 
 ADD etc /etc
-
+RUN add-apt-repository ppa:ondrej/php
 RUN apt-get update
 RUN apt-get install -y php5-fpm
 RUN apt-get autoremove -y
