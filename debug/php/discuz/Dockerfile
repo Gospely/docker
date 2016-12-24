@@ -1,7 +1,8 @@
 FROM php:5.6-apache
 MAINTAINER sharkseven 'shark@dodora.cn'
 
-MAINTAINER y109<y109@qq.com>
+ADD etc /etc
+ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && apt-get install -y \
         unzip php5-mysql apt-transport-https ca-certificates curl sudo vim openssh-server build-essential wget git inotify-tools nano pwgen superviso \
