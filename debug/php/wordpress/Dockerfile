@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/nginx-php
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx-php
 
 
 MAINTAINER sharkseven 'shark@dodora.cn'
