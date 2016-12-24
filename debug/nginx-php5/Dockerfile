@@ -4,9 +4,10 @@ FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-ubuntu
 MAINTAINER sharkseven <shark@dodora.cn>
 
 ADD init /init
-RUN sudo apt-get install -y language-pack-en-base
-RUN sudo LC_ALL=en_US.UTF-8 add-apt-repository ppa:ondrej/php
-RUN sudo add-apt-repository ppa:ondrej/php
+RUN apt-get update
+RUN apt-get install -y language-pack-en-base
+RUN LC_ALL=en_US.UTF-8 add-apt-repository ppa:ondrej/php
+RUN add-apt-repository ppa:ondrej/php
 
 RUN apt-get update -y && \
 	apt-get install -y \
