@@ -4,8 +4,6 @@ MAINTAINER sharkseven 'shark@dodora.cn'
 
 ADD etc /etc
 
-RUN echo "deb http://ppa.launchpad.net/nginx/$nginx/ubuntu $dist main" > /etc/apt/sources.list.d/nginx-$nginx-$dist.list
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C300EE8C
 RUN apt-get update
 RUN apt-get install -y php5-fpm
 RUN apt-get autoremove -y
