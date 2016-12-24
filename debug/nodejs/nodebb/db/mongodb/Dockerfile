@@ -6,7 +6,7 @@ RUN apt-get install  imagemagick -y
 
 RUN git clone https://github.com/NodeBB/NodeBB.git /root/temp
 
-RUN bash -c 'cd /root/temp && npm install'
+RUN bash -c 'cd /root/temp && npm install --production'
 
 EXPOSE 4567
 
