@@ -1,0 +1,28 @@
+<!--<?php print <<<EOT
+-->
+<!--searchbottom begin-->
+<!--
+EOT;
+if ($type == 'thread') {
+	$temStyleList = "width:560px";
+    $temStyleSearch = "search_ip search_ip2";
+} else {
+	$temStyleList = "";
+	$temStyleSearch = "search_ip";
+}
+print <<<EOT
+-->
+<form action="searcher.php" method="post" id="searchformbottom" >
+<input type="hidden" value="$verifyhash" name="verify">
+<input value="2" class="s_input" type="hidden" name="step">
+<input value="$type" class="s_input" type="hidden" name="type">
+<div class="search_bg mb20">
+	<div class="search_ip">
+	<input value="$keyword" class="s_input" type="text" style="width:450px;" name="keyword">
+	<span><button type="submit">搜 索</button></span>
+	</div>
+</div>
+</form>
+<!--
+EOT;
+?>-->

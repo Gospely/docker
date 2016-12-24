@@ -1,0 +1,180 @@
+<!--<?php
+print<<<EOT
+-->
+<div class="menuApp">
+	<div class="appNav_top"></div>
+	<div class="appNav">
+		<ul class="one">
+			<li id="app_home"><a href="u.php"><img src="u/images/icon/home.png" />首页</a></li>
+			<li id="app_friend"><a href="u.php?a=friend"><img src="u/images/icon/friend.png" />朋友</a></li>
+			<li id="app_collection"><a href="apps.php?q=collection"><img src="u/images/icon/collection.png" />收藏</a></li>
+		</ul>
+		<ul class="one">
+			<li id="app_weibo"><a href="apps.php?q=weibo&do=topics"><img src="u/images/icon/record.png" />新鲜事</a></li>
+<!--
+EOT;
+if($db_dopen){print <<<EOT
+-->
+			<li id="app_diary"><a href="apps.php?q=diary"><img src="u/images/icon/log.png" />日志</a></li>
+<!--
+EOT;
+}if($db_phopen){print <<<EOT
+-->
+			<li id="app_photos"><a href="apps.php?q=photos"><img src="u/images/icon/albums.png" />相册</a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+			<li id="app_article"><a href="apps.php?q=article"><img src="u/images/icon/posts.png" />帖子</a></li>
+			<li id="app_activity"><a href="apps.php?q=activity"><img src="u/images/icon/activity.png" />活动</a></li>
+<!--
+EOT;
+if($db_groups_open){print <<<EOT
+-->
+			<li id="app_groups"><a href="apps.php?q=groups"><img src="u/images/icon/groups.png" />群组</a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+		
+<!--
+EOT;
+if(!trim($o_hot_groups,',') || strpos($o_hot_groups,','.$winddb[groupid].',') !== false || ($winddb[groupid] == -1 && strpos($o_hot_groups,','.$winddb[memberid].',') !== false)){
+	$popedom = true;
+}else{
+	$popedom = false;
+}
+if($o_hot_open && $popedom){print <<<EOT
+-->
+			<li id="app_hot"><a href="apps.php?q=hot"><img src="u/images/icon/hot.png" />热榜</a></li>
+<!--
+EOT;
+	}
+	if($db_job_isopen){
+		$jobnum = ($winddb['jobnum']>0) ? "(".$winddb['jobnum'].")" : "";
+print <<<EOT
+-->
+			<li id="app_jobcenter"><a href="jobcenter.php"><img src="u/images/icon/jobcenter.png" />任务</a></li>
+<!--
+EOT;
+	}
+	if($db_toolifopen){
+print <<<EOT
+-->
+			<li id="app_toolcenter"><a href="profile.php?action=toolcenter"><img src="u/images/icon/toolcenter.png" />道具</a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--
+EOT;
+if($db_md_ifopen){
+print <<<EOT
+-->
+			<li id="app_medal"><a href="apps.php?q=medal"><img src="u/images/icon/medal.png" />勋章</a></li>
+<!--
+EOT;
+}
+if($db_kmd_ifkmd){print <<<EOT
+-->
+			<li id="app_kmd">
+			<a href="apps.php?q=kmd"><img src="u/images/icon/kmd.png" />孔明灯</a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+		</ul>
+<!--
+EOT;
+if($db_md_ifopen){
+print <<<EOT
+-->
+<div class="fl"  id="pw_all_tip_medal" style="display:none;z-index:9;">
+	<div style="position:absolute;z-index:99;margin-left:70px;margin-top:2px;">
+		<table><tr><td><div class="pw_all_angle_left"></div>
+		<div class="pw_all_tip"><a href="javascript:void(0)" class="adel">关闭</a>
+		<dl class="cc">
+		<dt>新版社区勋章，玩法更多，申<br />请更简单！</dt>
+		<dd><a class="bb_close" href="javascript:void(0)">知道了</a></dd>
+		</dl>
+		</div></td></tr></table>
+	</div>
+</div>
+<!--
+EOT;
+}
+if($db_ifkmd){print <<<EOT
+-->
+<div class="fl" id="pw_all_tip_kmd" style="display:none;z-index:9;">
+	<div style="position:absolute;z-index:99;margin-left:70px;margin-top:2px;">
+		<table><tr><td>
+		<div class="pw_all_angle_left"></div>
+		<div class="pw_all_tip">
+			<a href="javascript:void(0)" class="adel">关闭</a>
+			<dl class="cc">
+				<dt>使用孔明灯，可以将你发布的<br />帖子置顶显示哦！</dt>
+				<dd><a class="mr10" href="apps.php?q=kmd&a=buy1">立即购买</a><a class="bb_close" href="javascript:void(0)">知道了</a></dd>
+			</dl>
+		</div>
+		</td></tr></table>
+	</div>
+</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--
+EOT;
+$app_array = getUserApplist();
+if($db_appifopen && S::isArray($app_array)){
+print <<<EOT
+-->
+		<ul class="two">
+<!--
+EOT;
+foreach ($app_array as $key => $value) {print <<<EOT
+-->
+				<li id="app_{$value[appid]}"><a href="apps.php?id=$value[appid]" >{$value[appname]}</a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+		</ul>
+<!--
+EOT;
+}print <<<EOT
+-->
+	<div class="tac">
+<!--
+EOT;
+if ($db_appifopen) {print <<<EOT
+-->
+		<a href="u.php?a=myapp">添加</a>&nbsp;|&nbsp;<!--
+EOT;
+}print <<<EOT
+--><a href="u.php?a=myapp&action=my">管理</a>
+	</div>
+	</div>
+	<div class="appNav_bottom"></div>
+</div>
+<!--
+EOT;
+S::gp('$q','$a');
+$q = $q?$q:$a;{print <<<EOT
+-->
+<!--
+EOT;
+}print <<<EOT
+-->
+
+<script type="text/javascript">
+window.onReady(function(){
+	//调用气泡
+		var pw_bubble=new Bubble([{"name":"pw_all_tip_kmd","id":"app_kmd"},{"name":"pw_all_tip_medal","id":"app_medal"}]);
+		pw_bubble.init();
+})
+setCurrent('app_$q','app_home','current');
+</script>
+<!--
+EOT;
+?>

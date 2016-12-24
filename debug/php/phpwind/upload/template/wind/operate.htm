@@ -1,0 +1,419 @@
+<!--<?php print <<<EOT
+-->
+<div id="breadCrumb">
+<img src="$imgpath/$stylepath/thread/home.gif" class="breadHome" /><em class="breadEm"></em><a href="$db_bfn" title="$db_bbsname">$db_bbsname</a><em>&gt;</em>站点操作
+</div>
+<style type="text/css">
+.tr3 td,.tr3 th,.tr2 td,.tr2 th{padding-left:10px;}
+/*87新评分弹窗*/
+.read_score_pop{padding:10px 0;}
+.read_score_pop td,.read_score_pop th{padding:5px 0 5px 10px; font-size:12px;}
+.read_score_pop th{width:45px;line-height:24px; text-align:right; font-weight:100;}
+.rating_pop{padding:2px 0;}
+.rating_pop a{width:35px;display:inline-block;text-align:center;border:1px solid #c7d8e1;color:#425b79;background:#f3fafc;background: -webkit-gradient(linear, 0 0, 0 100%, from(#f8fdfe), to(#edf6f9));background: -moz-linear-gradient(top, #f8fdfe, #edf6f9);filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#f8fdfe', endColorstr='#edf6f9');}
+.rating_pop a:hover{border-color:#4f8eb0;text-decoration:none;}
+.rating_pop a.less{border-color:#ecd8cf;color:#8d5230;background:#fffaf2;background: -webkit-gradient(linear, 0 0, 0 100%, from(#fffaf2), to(#fff0e6));background: -moz-linear-gradient(top, #fffaf2, #fff0e6);filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffaf2', endColorstr='#fff0e6');}
+.rating_pop a.less:hover{ border-color:#c58b69;}
+.rating_pop a.old{background:#f7f7f7;color:#999;border:1px solid #ccc; cursor:default; filter:none;padding:0;margin:0;height:auto;}
+.rating_pop_surplus{color:#666;}
+</style>
+<div id="pw_content" class="mb10">
+<!--
+EOT;
+if($action=='showping'){print <<<EOT
+-->
+<form name="ping" action="operate.php?action=$action" method="post">
+<input type="hidden" name="verify" value="$verifyhash" />
+<input type="hidden" name="step" value=1 />
+<input type="hidden" name="tid" value="$tid" />
+<!--
+EOT;
+$count = 0;
+foreach($postData as $key=>$value){
+$count++;
+print <<<EOT
+-->
+<input type="hidden" name="selid[]" value="$key" />
+<!--
+EOT;
+}print <<<EOT
+-->
+<div class="t">
+<div class="h f14 b">帖子评分&nbsp;<span class="fn f12">(<span style="color:#ff5500;">{$count}</span>篇)</span></div>
+<table width="100%" cellspacing="0" cellpadding="0" style="table-layout:fixed;">
+<!--
+EOT;
+foreach($creditselect as $key => $v){
+if(isset($noneJsonList[$key])){
+print <<<EOT
+-->  
+	<tr id="ok1" class="tr3">
+		<td width="80">$v</td>
+		<td width="210">
+<!--
+EOT;
+if($noneJsonList[$key]['max']){
+print <<<EOT
+-->
+<div class="rating_pop">
+<!--
+EOT;
+foreach($noneJsonList[$key]['max'] as $rate){
+if($rate <= $raterange[$key]['mrpd']){print <<<EOT
+-->  
+					 <a href="javascript:;" onmousedown="getRate(this,'addpoint$key','$key','remain$key');">{$rate}</a>
+<!--
+EOT;
+}else{print <<<EOT
+-->  
+               <a href="javascript:;" hidefocus="ture"  class="old">{$rate}</a>
+<!--
+EOT;
+}}print <<<EOT
+--> 
+</div>
+<!--
+EOT;
+}
+if(S::isArray($noneJsonList[$key]['min'])){
+print <<<EOT
+-->
+<div class="rating_pop">
+<!--
+EOT;
+foreach($noneJsonList[$key]['min'] as $rate){
+if(abs($rate) <= $raterange[$key][mrpd]){print <<<EOT
+-->  
+          <a href="javascript:;" onmousedown="getRate(this,'addpoint$key','$key','remain$key');" class="less">{$rate}</a>
+	
+<!--
+EOT;
+}else{print <<<EOT
+-->  
+               <a href="javascript:;" hidefocus="true" class="old">{$rate}</a>
+<!--
+EOT;
+}}print <<<EOT
+--> 
+</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+</td>
+<td>
+<input class="input mr5" type="text" id="addpoint$key" name="addpoint[]" size="3" /> <input type="hidden" name="cid[]" value="$key" />
+剩余<span class="s2" id = "remain$key">{$raterange[$key][mrpd]}</span>
+</td>
+</tr>
+<!--
+EOT;
+	}
+}print <<<EOT
+-->
+	<!--tr class="tr3">
+		<td>消息通知:</td>
+		<td>
+			<label class="mr20"><input type="radio" name="ifmsg" value="1" $check_Y />开启</label>
+			<label class="mr20"><input type="radio" name="ifmsg" value="0" $check_N />关闭</label>
+		</td>
+	</tr-->
+	<tr id="ok3" class="tr3 vt">
+		<td>评分理由:</td>
+		<td colspan="2">
+			<p class="mb10"><input type="text" class="input mr10" style="width:312px;" name="atc_content" id="atc_content"  onchange="cutStrContent();"  onkeyup="cutStrContent();" onkeydown="cutStrContent();" /><span id="atc_content_warn" class="gray">限100字节</span></p>
+			<select name="" size="6" multiple onchange="this.form.atc_content.value=this.value" style="width:320px;">
+			$reason_sel
+			</select>
+		</td>
+	</tr>
+<!-- 
+EOT;
+if($showReply){print <<<EOT
+-->
+	<tr class="tr3" id="tdPing">
+		<td></td>
+		<td colspan="2"><label for="ifpost"><input type="checkbox" name="ifpost" id="ifpost" value="1" />同时作为回复发表</label></td>
+	</tr>
+<!-- 
+EOT;
+if(($db_gdcheck & 4) && (!$db_postgd || $winddb['postnum'] < $db_postgd)){
+$checkCode = L::loadClass('checkcode', 'site');
+$checkCodeString = $checkCode->getCheckCodeTemplate();
+print <<<EOT
+-->
+	<tr class="tr3" id="tr_gdcheck" style="display:none">
+		<td>验证码:</td>
+		<td colspan="2">
+			<input class="input fl mr5" type="text" onfocus="showgd();" name="gdcode" size="5" />
+			<span id="ckcode" style="display:none;"></span>
+$checkCodeString
+	</td>
+</tr>
+<!--
+EOT;
+}
+list($postq,$showq) = explode("\t", $db_qcheck);
+if(($db_ckquestion & 4) && (!$postq || $winddb['postnum'] < $postq) && $db_question){
+$qkey = array_rand($db_question);
+if($db_imagequestion){
+	$question = '<img id="ckquestion" src="ckquestion.php?q='.$qkey.'&t='.$timestamp.'" align="top">';
+}else{
+	$question = $qkey<0 ? getMachineQuestion_1() :  $db_question[$qkey];
+}
+$q_a = $question.($showq && $qkey>0?" （答案：".$db_answer[$qkey] . '）' : '');
+print <<<EOT
+-->
+	<tr class="tr3" id="tr_ckquestion" style="display:none">
+		<td>验证问题:</td>
+		<td colspan="2">$q_a
+			<input class="input" type="text" name="qanswer" size="5"/>
+			<input type="hidden" name="qkey" value="$qkey" />
+		</td>
+	</tr>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+<script>
+	var tr_gdcheck = getObj('tr_gdcheck');
+	var tr_ckquestion = getObj('tr_ckquestion');
+	var ifpost = getObj('ifpost');
+	ifpost.onclick = function(){
+		if(ifpost.checked){
+			if(tr_gdcheck)tr_gdcheck.style.display = '';
+			if(tr_ckquestion)tr_ckquestion.style.display = '';
+		}else{
+			if(tr_gdcheck)tr_gdcheck.style.display = 'none';
+			if(tr_ckquestion)tr_ckquestion.style.display = 'none';
+		}
+	}
+</script>
+<!--
+EOT;
+}//end show reply
+print <<<EOT
+-->
+	<tr>
+		<td></td>
+		<td style="padding:10px;"><span class="btn"><span><button type="submit">提 交</button></span></span><span class="bt"><span><button type="button" onclick="javascript:history.go(-1)">返 回</button></span></span></td>
+	</tr>
+</table>
+<script>
+	function cutStrContent(){
+		var content = document.getElementById('atc_content');
+		if(strlen(content.value) > 100 ) content.value = substr(content.value,100);
+		var ad =  document.getElementById('atc_content_warn');
+		if(strlen(content.value) ==100){
+			ad.innerHTML = "剩余0字节";
+		}
+	}
+</script>
+</div>
+
+<div id="menu_rate" style="display:none;">
+<!--[if IE 6]>
+<iframe frameborder="0" style="position:absolute;width:60px;height:270px;background:#fff;filter:Alpha(opacity=0);" scrolling="no"></iframe>
+<![endif]-->
+    <div class="pw_menu" style="_position:absolute;_z-index:1;">
+        <ul class="menuList" style="width:54px;">
+<!--
+EOT;
+if ($noneJsonList) {
+foreach ($noneJsonList['money'] as $rate) {
+print <<<EOT
+-->
+            <li><a href="javascript:;" onmousedown="getRate(this);" class="s6">{$rate}</a></li>
+<!--
+EOT;
+}
+} else {print <<<EOT
+-->
+            <li>暂无积分选择</li>
+<!--
+EOT;
+}print <<<EOT
+-->
+        </ul>
+    </div>
+</div>
+
+
+<input type="hidden" name="page" value="$page" />
+<input type="hidden" name="tid" value="$tid" /></form>
+<script>
+function operatesel (id) {
+	if (id == '1') {
+		objCheck('ok1').style.display = '';
+		objCheck('ok3').style.display = '';
+		objCheck('tdPing').style.display = '';
+		objCheck('cancel').style.display = 'none';
+	} else {
+		objCheck('ok1').style.display = 'none';
+		objCheck('ok3').style.display = 'none';
+		objCheck('tdPing').style.display = 'none';
+		objCheck('cancel').style.display = '';
+	}
+}
+function showoption(o) {
+	if(!o){
+		return false;	
+	}
+	var sel = o.getElementsByTagName('select')[0];
+}
+
+function addoption() {
+	var s = getObj('c_model').firstChild.cloneNode(true);
+	var td = s.getElementsByTagName('td');
+	var sel = s.getElementsByTagName('select')[0];
+	td[4].innerHTML = '<a href="javascript:" class="s4" onclick="deloption(this)">[删除]</a>';
+	getObj('c_body').appendChild(s);
+}
+
+function deloption(o) {
+	getObj('c_body').removeChild(o.parentNode.parentNode);
+}
+var charset = '$db_charset';
+setTimeout(function() {
+	//showoption(getObj('c_model'));
+	initCheckTextNum('atc_content','atc_content_warn', 100);
+}, 100);
+
+
+function getRate(obj,id,o,remain){
+	var jscredit = JSONParse('$jscredit');
+	var val = parseInt(obj.innerHTML);
+	document.getElementById(remain).innerHTML = parseInt(jscredit[o]['leavepoint'])-Math.abs(val);
+	getObj(id).value=val;
+	read.close();
+}
+
+function readByRateOpen(e){
+	read.open('menu_rate',e.id,3);
+}
+</script>
+<!--
+EOT;
+} elseif($action=='recommend'){print <<<EOT
+-->
+<form method="post"  name="recommendFORM" action="operate.php?action=recommend">
+<input type="hidden" name="verify" value="$verifyhash" />
+<input type="hidden" name="tid" value="$tid" />
+<input type="hidden" name="type" value="$type" />
+<div class="t">
+<table width="100%" align="center" cellspacing="0" cellpadding="0">
+	<tr><td class="h" colspan="2">帖子推荐</td></tr>
+	<tr class="tr3">
+		<td width="80">推荐方式:</td>
+		<td><label class="mr20"><input type="radio" name="step" value="1" onclick="getObj('sendemail').style.display='none';getObj('friend').style.display='';" checked />消息推荐</label>
+		<label class="mr20"><input type="radio" name="step" value="2" onclick="getObj('sendemail').style.display='';getObj('tofriend').style.display='none';getObj('friend').style.display='none';" />邮件推荐</label></td>
+	</tr>
+	<tr class="tr3">
+		<td>对方姓名:</td>
+		<td><input type="text" class="input" name="sendtoname" size="25" value="" />
+<!--
+EOT;
+if($friends){print <<<EOT
+-->
+			<span id="friend" class="bta" onClick="getObj('tofriend').style.display='';">好友列表</span>
+<!--
+EOT;
+}print <<<EOT
+-->
+		</td>
+	</tr>
+	<tr id="tofriend" style="display:none">
+		<td align="center">好友选择:</td>
+		<td>
+			<div style="overflow-y:scroll;width:307px;height:7em;"><ul class="menu-half">
+<!--
+EOT;
+if($friends){
+foreach($friends as $key=>$val){print <<<EOT
+-->
+				<li><input type="checkbox" name="touid[]" value="$key" />$val[username]</li>
+<!--
+EOT;
+}print<<<EOT
+-->
+			</ul></div>
+			<span class="bta" style="cursor:pointer;" onClick="CheckAll(document.recommendFORM,'touid')">全 选</span>
+<!--
+EOT;
+}print <<<EOT
+-->
+		</td>
+	</tr>
+	<tbody id="sendemail" style="display:none">
+	<tr class="tr3"><td>对方电子邮箱:</td>
+		<td><input type="text" class="input" name="sendtoemail" size="25" value="" /></td>
+	</tr>
+	</tbody>
+	<tr class="tr3">
+		<td>标题：</td>
+		<td><input type="text" class="input" name="subject" size="44" value="$atc_name" /></td>
+	</tr>
+<!--
+EOT;
+if($db_gdcheck & 16){
+$checkCode = L::loadClass('checkcode', 'site');
+$checkCodeString = $checkCode->getCheckCodeTemplate();
+print <<<EOT
+-->
+	<tr class="tr3">
+		<td>验证码：</td>
+		<td>
+			<div id="menu_gd" style="display:none;"></div>$checkCodeString
+			<input class="input" type="text" name="gdcode" size="8" onfocus="showgd('menu_gd');" /><span style="cursor:pointer; margin-left:3px" onclick="this.previousSibling.focus();">点此显示验证码</span>
+		</td>
+	</tr>
+<!--
+EOT;
+}print <<<EOT
+-->
+	<tr class="tr3"><td>内容：</td>
+		<td><textarea rows="6" style="width:96%" name="atc_content" onkeydown="ajax.quickpost(event,this.form)">您好！我在$db_bbsname($db_bbsurl/?u=$winduid)\n看到了这篇帖子，认为很有价值，特推荐给您。\n\n作者:$atcinfo[author]\n地址:{$db_bbsurl}/read.php?tid=$tid&u=$winduid\n\n希望您能喜欢。</textarea></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td style="padding:5px 6px;"><span class="btn2"><span><button type="submit">提 交</button></span></span><span class="bt2"><span><button type="button" onclick="javascript:history.go(-1)">返 回</button></span></span></td>
+	</tr>
+</table></div>
+</form>
+<script type="text/javascript" src="js/core/friendlist.js"></script>
+<!--
+EOT;
+}elseif($action=='report'){print <<<EOT
+-->
+<form action="operate.php?action=$action" method="post">
+<input type="hidden" name="verify" value="$verifyhash" />
+<div class="t">
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr><td class="h" colspan="2">报告功能</td></tr>
+<tr class="tr3"><td width="21%">报告类型:</td>
+<td><input type="radio" name="type" value="1" checked onclick="this.form.reason.value='该帖很优秀,建议加为精华帖!'" />优秀帖子 <input type="radio" name="type" value="0" onclick="this.form.reason.value='该帖包含不良信息,请及时处理!'" />不良帖子</td></tr>
+<tr class="tr3"><td>通知版主:</td>
+<td><input type="radio" name="ifmsg" value="1" checked />开启
+<input type="radio" name="ifmsg" value="0" />关闭</td></tr>
+<tr class="tr3"><td>原因:</td>
+<td><textarea id="reason" name="reason" rows="6" style="width:96%">该帖很优秀,建议加为精华帖!</textarea>
+</td></tr>
+<tr>
+		<td></td>
+		<td style="padding:5px 6px;"><span class="btn2"><span><button type="submit">提 交</button></span></span><span class="bt2"><span><button type="button" onclick="javascript:history.go(-1)">返 回</button></span></span></td>
+	</tr>
+</table></div>
+<input type="hidden" name="step" value="2" />
+<input type="hidden" name="tid" value="$tid" />
+<input type="hidden" name="pid" value="$pid" />
+<input type="hidden" name="page" value="$page" />
+</form>
+<!--
+EOT;
+}print <<<EOT
+-->
+</div>
+<!--
+EOT;
+?>-->

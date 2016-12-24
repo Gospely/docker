@@ -1,0 +1,43 @@
+<!--<?php
+$systitle = $lang['title_'.$_WIND] . ($stepmsg ? " Step $stepmsg" : '');
+$syslogo = $_WIND;
+$packageCharset = strtoupper($lang[db_charset]);
+print <<<EOT
+-->
+<!doctype html>
+<html>
+<head>
+<meta charset="{$lang['db_charset']}" />
+<title>$systitle</title>
+<link rel="stylesheet" href="lang/images/install.css" />
+<!--[if IE]>
+<script src="lang/images/html5.js" type="text/javascript"></script>
+<![endif]-->
+</head>
+<body>
+	<div class="wrap">
+		<header class="header">
+			<div class="head">
+<!--
+EOT;
+$wind_version = strtolower($wind_version );
+if ($_WIND == 'install'){print <<<EOT
+-->
+				<h1 class="logo_install">安装</h1>
+				<div class="version">phpwind v{$wind_version}  $packageCharset ($versionDate)</div>
+<!--
+EOT;
+}else {print <<<EOT
+-->
+				<h1 class="logo_update">升级</h1>
+				<div class="version">phpwind v{$from_version}  至 $wind_version</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+				
+			</div>
+		</header>
+<!--
+EOT;
+?>-->

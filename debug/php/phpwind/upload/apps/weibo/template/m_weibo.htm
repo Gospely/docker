@@ -1,0 +1,638 @@
+<!--<?php
+require_once(uTemplate::printEot('header'));
+require_once(uTemplate::printEot('user_appleft'));
+print <<<EOT
+-->
+<script type="text/javascript" src="js/pw_weibo.js"></script>
+<script>
+var transmitAction = '{$do}';
+</script>
+<div class="homeBg cc">
+	<div class="homeCont fl">
+	<table width="100%"><tr><td valign="top" height="500">
+		<div class="p15" style="padding-bottom:0;">
+			<h4 class="site"><img src="u/images/module/write.png" align="absmiddle" class="mr10" /><span>新鲜事</span></h4>
+			<div class="navC">
+				<ul>
+					<li {$nav[lookround]}><a href="{$basename}do=lookround">随便看看</a></li>
+         			<li {$nav[topics]}><a href="{$basename}do=topics">热门话题</a></li>
+					<li {$nav[attention]}><a href="{$basename}do=attention">我关注的新鲜事</a></li>
+					<li {$nav[my]}><a href="{$basename}do=my">我的新鲜事</a></li>
+					<li {$nav[refer]}><a href="{$basename}do=receive">提到我的</a></li>
+				</ul>
+			</div>
+		</div>
+<!--
+EOT;
+require_once uTemplate::printEot('weibo_model');
+print <<<EOT
+-->
+<!-- 
+EOT;
+if($do == 'topics'){
+if($topic){
+//有关键字
+$count > 0 && $htmlCount = "(共{$count}条)";
+$topicDecode = pwHtmlspecialchars_decode($topic);
+$topicName = urlencode($topic);
+$strTopicname = substrs($topic,20);
+print <<<EOT
+-->
+		<div class="cc" style="padding:20px 0 10px 20px">
+			<span class="mr20 fl b" style="padding-top:3px;">关于<a href="apps.php?q=weibo&do=topics&topic={$topicName}" alt="{$topic}" title="{$topic}">"{$strTopicname}"</a>的新鲜事$htmlCount</span>
+<!-- 
+EOT;
+if ($attentionedTopic){
+print <<<EOT
+-->
+			<span class="fl mr10 w" style="padding-top:3px;">已关注成功（<a href="javascript:;" onClick="delAttention('$topic');" id="delAttention">取消关注</a>）</span>
+<!-- 
+EOT;
+} else {print <<<EOT
+-->
+			<a href="javascript:;" onClick="addAttention('$topicDecode');" class="sk_followTopic w" id="addAttention">关注该话题</a>				
+<!-- 
+EOT;
+}print <<<EOT
+-->
+			 <a href="javascript:void(0);" onclick="postTopic('$topicDecode');return false;" class="sk_participate w">参与该话题</a>
+		</div>
+		<div class="bdA" style="margin:5px 20px 0;"></div>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!-- 
+EOT;
+}else{
+print <<<EOT
+-->
+		<div class="weiboBg cc" style="padding-left:5px;">
+<!--
+EOT;
+$weiboModelTemplate->photoPop();
+$db_o_weibopost != '0' && $weiboModelTemplate->post($do,$faceurl);
+print <<<EOT
+-->
+		</div>
+<!-- 
+EOT;
+if($do == 'lookround'){
+print <<<EOT
+-->
+	<div style="padding:0 20px;">
+			<h5 class="h5 cc">
+				<ul class="tab">
+					<li {$nav['all']} class="current" onclick="filterWeibo(this,'all');"><a href="javascript:;" hidefocus="true">全部</a></li>
+					<li {$nav[string]} onclick="filterWeibo(this,'strings');"><a href="javascript:;" hidefocus="true">文字</a></li>
+					<li {$nav[img]} onclick="filterWeibo(this,'imgs');"><a href="javascript:;" hidefocus="true">图片</a></li>
+					<li {$nav[none]}><a href="javascript:;" class="link_down s4"  hidefocus="true" id="morechoose"><span>更多筛选</span></a></li>
+				</ul>
+<!--
+EOT;
+$db_menuinit .= ",'td_setMenu' : 'menu_setMenu'";
+print <<<EOT
+-->
+				<div class="aset fr" id="td_setMenu"><img src="u/images/tedit.png" width="16" height="16" alt="设置" /></div>
+				<div class="fr" id="menu_setMenu" style="display:none;">
+					<div class="feedDown" style="margin-left:-79px;margin-top:-7px;">
+						<em class="fr" style=""><img src="u/images/tedit.png" alt="设置" width="16" height="16" /></em>
+						<div class="c"></div>
+						<a href="profile.php?action=privacy">隐私设置</a>
+						<a href="profile.php?action=privacy&t=weibo">新鲜事设置</a>
+					</div>
+				</div>
+				<a href="apps.php?q=weibo&do=attention&page=1" onclick="return weiboList.filterWeibo(this.href);" class="fr mr10 refresh" style="margin-top:4px;"><img title="刷新一下可能有新鲜事" src="u/images/refresh.png" width="16" height="16" /></a>
+			</h5>
+			<div class="feedAdmin p10" id="feedAdmin" style="display:none">
+				<table width="100%">
+                <form id="filterWeiboForm" name="filterWeiboForm" method="post" action="apps.php?q=weibo&ajax=1"><input type="hidden" name="do" value="filterweibo"/><input type="hidden" name="page" value="1" id="page"/>
+					<tr>
+						<td width="50">关系：</td>
+						<td>
+							<label class="mr20"><input name="filter[relation][self]" type="checkbox" value="1" checked/>&nbsp;自己</label>
+							<label class="mr20"><input name="filter[relation][friend]" type="checkbox" value="1" / checked>&nbsp;好友</label>
+							<label class="mr20"><input name="filter[relation][attention]" type="checkbox" value="1" / checked>&nbsp;关注的人</label>
+
+						</td>
+					</tr>
+					<tr>
+						<td>来源：</td>
+						<td>
+							<label class="mr20"><input name="filter[source][article]" type="checkbox" value="1"  checked/>&nbsp;帖子</label>
+<!--
+EOT;
+if($GLOBALS['db_dopen']){print <<<EOT
+-->	
+							<label class="mr20"><input name="filter[source][diary]" type="checkbox" value="1"checked />&nbsp;日志</label>
+<!-- 
+EOT;
+}if($GLOBALS['db_phopen']){print <<<EOT
+-->
+							<label class="mr20"><input name="filter[source][photos]" type="checkbox" value="1" checked />&nbsp;相册</label>
+<!-- 
+EOT;
+}if($GLOBALS['db_groups_open']){print <<<EOT
+-->
+                            <label class="mr20"><input name="filter[source][group]" type="checkbox" value="1" checked />&nbsp;群组</label>
+<!-- 
+EOT;
+}
+/* platform weibo app */
+if($isSiteBindWeibo){
+	foreach ($userBindList as $bindType => $userBind) {
+		if (!$userBind['config']['allowSync']['weibo']) {continue;}
+print <<<EOT
+-->
+                            <label class="mr20"><input name="filter[source][$bindType]" type="checkbox" value="1" checked />&nbsp;{$userBind['config']['title']}</label>
+                     
+<!-- 
+EOT;
+	}
+}print <<<EOT
+-->
+						</td>
+					</tr>
+					<tr>
+						<td>类型：</td>
+						<td>
+							<label class="mr10"><input id="strings" name="filter[contenttype][string]" type="checkbox" value="1" checked />&nbsp;纯文字</label>
+							<label class="mr20"><input id="imgs" name="filter[contenttype][img]" type="checkbox" value="1" checked />&nbsp;含图片</label>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td>
+							<span class="btn4"><span><button type="button" onclick="getWeiboList('filterweibo', 1, 'weiboFeed');">筛选</button></span></span><span class="bt2"><span><button type="button" onclick="displayElement('feedAdmin',false);">关闭</button></span></span>
+						</td>
+					</tr>
+                </form>
+				</table>
+			</div>
+<script>
+function filterWeibo(obj,type){//切换新鲜事类别
+	var lis = obj.parentNode.childNodes;
+	for(var i = 0,j=lis.length;i<j;i++){
+		lis[i].className = '';
+	}
+	obj.className = 'current';
+	window.setTimeout(function(){
+	getWeiboList('filterweibo', 1, 'weiboFeed', 1, type);	
+	},300);
+	getObj('feedAdmin').style.display = 'none';
+	getObj("morechoose").innerHTML="<span>更多筛选</span>";
+	getObj("morechoose").className="link_down s4";
+}
+window.onReady(function(){
+	var morechoose=getObj("morechoose") || getObj("morechoose") || getObj("morechoose");
+	var feedAdmin=getObj("feedAdmin")
+	toggleDisplay(morechoose,feedAdmin,function(){
+		if(morechoose.arrow&&morechoose.arrow=="up"){
+			morechoose.className="link_up s4";
+			morechoose.innerHTML="<span>收起选项</span>";
+		}else{
+			morechoose.className="link_down s4";
+			morechoose.innerHTML="<span>更多筛选</span>";
+		}
+	})	
+})
+</script>
+		</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!-- 
+EOT;
+}print <<<EOT
+-->
+		<div style="padding:0 20px 0;">
+<!--
+EOT;
+if (in_array($do,array('refer','receive'))) {
+	if (!$_COOKIE['atguidehide']) {
+		Cookie('atguidehide','',0,false);
+print <<<EOT
+--> 
+			<div class="spaceTip cc" style="margin:10px 0 0;" id="atguide">
+				<a href="javascript:void(0);" class="adel" onclick="closeGuide();">关闭</a>
+				<a href="javascript:void(0);" class="mr10 fr" onclick="closeGuide(1);">知道了</a>
+				<span class="mr10">输入"@+用户名+空格+想说的话"，就能提到对方了哦~</span>
+			</div>
+<script>
+function closeGuide(ck) {
+	if (ck == 1) {
+		var date = new Date();
+		date.setTime(date.getTime()+86400000000);
+		document.cookie = "atguidehide=1;expires=" + date.toGMTString() + " ;path=/";
+	}
+	getObj('atguide').style.display = 'none';
+}
+</script>
+<!--
+EOT;
+	}
+$refertoNum = $winddb['newreferto']>0 ? '<span class="s2">[' . $winddb['newreferto'] . ']</span>' : '';
+$commentNum = $winddb['newcomment']>0 ? '<span class="s2">[' . $winddb['newcomment'] . ']</span>' : '';
+print <<<EOT
+-->
+			<div class="p10 bdB"><a href="{$basename}do=refer" id="type_refer">@我的{$refertoNum}</a>&nbsp;|&nbsp;<a href="{$basename}do=receive" id="type_receive">收到的评论{$commentNum}</a></div>
+			<script>setCurrent('type_{$do}','type_refer','b s5');</script>
+<!--
+EOT;
+}print <<<EOT
+-->
+			<div class="conFeed" id="weiboFeed">			
+<!--
+EOT;
+if (in_array($do, array('lookround', 'attention', 'my', 'refer','topics'))) {
+	if ($weiboList) {
+		if($do == 'topics' && !$topic){
+			foreach ($weiboList as $topicid => $topicGroup){
+			$topicName = urlencode($topicGroup[topic][topicname]);
+			$strTopicname = substrs($topicGroup[topic][topicname],20);
+				print <<<EOT
+-->
+			<!--一组-->
+<script type="text/javascript">
+window.onReady(function(){
+	var createtopic = '$createtopic';
+})
+</script>
+			<div class="cc" style="padding:22px 0 10px 0">
+				<span class="mr20 fl b" style="padding-top:1px;">关于<a href="apps.php?q=weibo&do=topics&topic={$topicName}" alt="{$topicGroup[topic][topicname]}" title="{$topicGroup[topic][topicname]}">"{$strTopicname}"</a>的新鲜事</span>
+<!-- 
+EOT;
+if($topicGroup['topic']['attentioned']){print <<<EOT
+-->
+			<span class="fl mr10 w" style="padding-top:3px;">已关注成功（<a href="javascript:;" onClick="delAttention('{$topicGroup[topic][topicname]}');" id="delAttention">取消关注</a>）</span>
+<!-- 
+EOT;
+}else{print <<<EOT
+-->
+			<a href="javascript:;" onClick="addAttention('{$topicGroup[topic][topicname]}');"  class="sk_followTopic w" id="addAttention">关注该话题</a>
+<!-- 
+EOT;
+}print <<<EOT
+-->
+			<a href="javascript:void(0);" onclick="postTopic('{$topicGroup[topic][topicname]}');return false;" class="sk_participate w">参与该话题</a>
+			<a href="apps.php?q=weibo&do=topics&topic={$topicGroup[topic][topicname]}" class="fr mr20">更多</a>
+		</div>
+		<div class="bdA" style="margin:5px 0 0;"></div>
+		<div class="mb20">
+<!-- 
+EOT;
+if($topicGroup['weibo']){
+foreach($topicGroup['weibo'] as $key => $value){
+				$method = $weiboService->getViewType($value['type']);
+				$weiboModelTemplate->$method($value);
+}
+}
+print <<<EOT
+-->
+		</div>
+<!--
+EOT;
+		}
+	}else{
+		foreach ($weiboList as $key => $value) {
+			$method = $weiboService->getViewType($value['type']);
+			$weiboModelTemplate->$method($value);
+		}
+	}
+	if ($count >= $perpage) {print <<<EOT
+-->
+				<div class="cc p10">$pages</div>
+<!--
+EOT;
+	}
+} else {
+	if ($do == 'my') {print <<<EOT
+-->
+				<div class="p15 f14 tac">你这家伙真懒，一条新鲜事都没写哦。</div>
+<!--
+EOT;
+	} elseif ($do == 'attention') {print <<<EOT
+-->
+				<div class="p15 f14 tac">最近没有新动静，试试<a href="u.php?a=friend&type=find">关注更多人</a>，或者去<a href="apps.php?q=weibo&do=lookround">最新新鲜事</a>逛逛吧~~</div>
+<!--
+EOT;
+	} elseif ($do == 'refer') {print <<<EOT
+-->
+				<div class="p15 f14 tac">呀～还没有人@你哦～再等等吧～</div>
+<!--
+EOT;
+	} else {print <<<EOT
+-->
+				<div class="p15 f14 tac">暂没有热门话题哦，不如你来创建一个话题吧!点击 <a href="apps.php?q=weibo&do=my&createtopic=1">创建话题</a></div>
+<!--
+EOT;
+	}
+}
+} elseif (in_array($do,array('receive'))) {
+if ($commentList) {
+	require_once uTemplate::printEot('weibo_model');
+	foreach ($commentList as $value) {
+		$id = $value['mid'].'_'.$value['cid'];
+		$weibo = $value['weibo'];
+		$ifmyweibo = $weibo['uid'] == $winduid ? true : false;
+		if ($ifmyweibo) {
+			$value['content'] = $value['extra'] ? $value['content'] : ' : '.$value['content'];
+		} else {
+			$value['content'] = $value['content'];
+		}
+		$ifmycomment = $value['uid'] == $winduid ? false : true;
+		$method = $weiboService->getViewType($weibo['type']);
+print <<<EOT
+-->				
+				<dl class="dl cc">
+					<dt class="dt"><a href="{$db_userurl}{$value['uid']}" class=" _cardshow" target="_blank" data-card-url="pw_ajax.php?action=smallcard&type=showcard&uid={$value[uid]}" data-card-key="{$value['username']}"><img class="img" src="{$value['icon']}" alt="{$value['username']}" width="44" height="44" /></a></dt>
+					<dd class="dd">
+<!--
+EOT;
+		if ($ifmyweibo) {print <<<EOT
+-->
+						<a href="javascript:void(0)"  onclick="deletecommentRefersh({$value['mid']},{$value['cid']},$page)" class="adel">删除</a>
+<!--
+EOT;
+		}print <<<EOT
+-->
+						<div class="title"><a href="{$db_userurl}{$value['uid']}" class=" _cardshow" target="_blank" data-card-url="pw_ajax.php?action=smallcard&type=showcard&uid={$value[uid]}" data-card-key="{$value['username']}">{$value['username']}</a>{$value['content']}</div>
+						<div class="gray cc">
+<!--
+EOT;
+		if ($ifmycomment) {print <<<EOT
+-->			
+							<a onclick="getcomments('replay',{$value[mid]},{$value[uid]},{$value[cid]});return false;" href="javascript:void(0)" class="fr">回复</a>
+<!--
+EOT;
+		}print <<<EOT
+-->	
+
+<!--
+EOT;
+		if ($ifmyweibo) {print <<<EOT
+-->								
+							<span class="mr5" title="{$value['postdate_s']}" id="from_{$id}">{$value['lastdate']}</span><a href="javascript:;" onmouseover="read.open('tips_{$id}','from_{$id}',0,21)" onmouseout = "closep()"  class="s7" style="text-decoration:none;" >评论我的新鲜事</a>
+							<div class="fl">
+								<div id="tips_{$id}" class="s5" style="position:absolute;display:none;">
+									<div class="replyTips">
+<!--
+EOT;
+$weiboModelTemplate->$method($weibo);
+print <<<EOT
+-->	
+									</div>
+								</div>
+							</div>
+<!--
+EOT;
+		} else {
+print <<<EOT
+-->	
+							<span class="mr5" title="{$value['postdate_s']}" id="from_{$id}">{$value['lastdate']}</span>回复我的评论--<a onmouseover="read.open('tips_{$id}','from_{$id}',0,21)"  onmouseout = "closep()" class="s7" style="text-decoration:none;">查看原新鲜事</a>
+							<div class="fl">
+								<div id="tips_{$id}" class="s5" style="position:absolute;display:none;">
+									<div class="replyTips">
+<!--
+EOT;
+$weiboModelTemplate->$method($weibo);
+print <<<EOT
+-->		
+									</div>
+								</div>
+							</div>
+<!--
+EOT;
+}print <<<EOT
+-->								
+						</div>
+						<div id="comment_{$id}" class="replyMe"></div>
+					</dd>
+				</dl>
+<!--
+EOT;
+	}
+	if ($count >= $perpage) {print <<<EOT
+-->
+				<div class="cc p10">$pages</div>
+<!--
+EOT;
+	}
+} else {print <<<EOT
+-->
+				<div class="p15 f14 tac">呀～还没有人评论你哦～再等等吧～</div>
+<!--
+EOT;
+}
+}elseif($do == 'topics'){
+//话题
+
+}
+print <<<EOT
+-->
+			</div>
+		</div>
+	</td></tr></table>
+	</div>
+	<div class="homeSide fr">
+		<div style="height:15px;"></div>
+		<div class="p15">
+<!--
+EOT;
+if($attentionedTopics){
+print <<<EOT
+-->
+			<h5 class="h5 mb5">
+<!--
+EOT;
+print <<<EOT
+-->
+			<strong>关注的话题</strong></h5>
+			<ul class="lh_22 mb20" id="attentionedList">
+<!--
+EOT;
+if($nextpage){
+	print <<<EOT
+-->
+			<li class="huati_next"><a href="apps.php?q=weibo&do=page&type=attentionedtopics&ajax=1&page=$nextpage" onclick="return ajaxPage(this.href,'attentionedList');"  class="fr s6">下一页</a></li>
+<!--
+EOT;
+}
+foreach ($attentionedTopics as $key => $v) {
+$strTopicname = substrs($v[topicname],20);
+if($v[topicname] == ''){
+	unset($key); 
+    continue;
+}
+$urlTopicname = urlencode($v[topicname]);
+print <<<EOT
+-->
+
+				<li><a href="apps.php?q=weibo&do=topics&topic={$urlTopicname}" alt="{$v[topicname]}" title="{$v[topicname]}">$strTopicname</a></li>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+				
+			</ul>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+			<div class="mb20 cc">
+				<div class="search">
+        <form method="GET" action="apps.php">
+        <input type="hidden" name="q" value="weibo" />
+        <input type="hidden" name="do" value="topics" />
+      <input name="topic" id="search_topic" type="text" value="查找新鲜事" class="gray sip" style="width:120px;margin-left:5px;" />
+				<button type="submit" onclick="return check_search_apps()">搜索</button>
+        </form>
+				</div>
+			</div>
+<!--
+EOT;
+if($weiboHotTopics){print <<<EOT
+-->
+			<h3 class="f14 mb5">热门话题榜</h3>
+			<ul class="hotList mb20">
+<!--
+EOT;
+$num = 0;
+foreach ($weiboHotTopics as $v) {
+	$topicnameUncode = urlencode($v[topicname]);
+	$strTopicname = substrs($v[topicname],20);
+++$num;
+print <<<EOT
+-->
+<li>
+<!-- 
+EOT;
+if($v['change'] == 1){print <<<EOT
+-->
+<cite>升</cite>
+<!-- 
+EOT;
+}elseif($v['change'] == 2){print <<<EOT
+-->
+<cite class="hotDown">降</cite>
+<!-- 
+EOT;
+}print <<<EOT
+-->
+<a href="{$basename}do=topics&topic={$topicnameUncode}" alt="{$v[topicname]}" title="{$v[topicname]}">{$strTopicname}</a><!--span class="gray">($v[counts])</span-->
+</li>
+<!--
+EOT;
+}print <<<EOT
+-->
+			</ul>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+<!--
+EOT;
+if ($recommendUsers) {print <<<EOT
+-->
+			<h5 class="h5 mb5"><a href="u.php?a=friend&type=find" class="fr s6">更多</a><strong>可能感兴趣的人</strong></h5>
+			<div class="dlB mb20">
+<!--
+EOT;
+foreach ($recommendUsers as $key => $value) {print <<<EOT
+-->
+				<dl class="dl cc">
+					<dt class="dt"><a href="{$db_userurl}$value[uid]" class="img_50 _cardshow" target="_blank" data-card-url="pw_ajax.php?action=smallcard&type=showcard&uid={$value[uid]}" data-card-key="{$value['username']}"><i><img src="$value[face]" width="48" height="48" /></i></a></dt>
+					<dd class="dd3">
+						<p class="mb5"><a href="{$db_userurl}$value[uid]" class=" _cardshow" target="_blank" data-card-url="pw_ajax.php?action=smallcard&type=showcard&uid={$value[uid]}" data-card-key="{$value['username']}">{$value['username']}</a></p>
+						<p class="lh_18"><a href="javascript:;" onclick="return Attention.add(this,'{$value['uid']}',1)" class="add_follow">加关注</a></p>
+					</dd>
+				</dl>
+<!--
+EOT;
+}print <<<EOT
+-->
+			</div>
+<!--
+EOT;
+} if ($weiboAuthorSort) {print <<<EOT
+-->
+			<h5 class="h5 mb5"><strong>一周人气排行</strong></h5>
+			<div class="dlB mb20">
+<!--
+EOT;
+foreach ($weiboAuthorSort as $key => $value) {print <<<EOT
+-->
+				<dl class="dl cc">
+					<dt class="dt"><a href="{$db_userurl}$value[uid]" class="img_50 _cardshow" target="_blank" data-card-url="pw_ajax.php?action=smallcard&type=showcard&uid={$value[uid]}" data-card-key="{$value['username']}"><i><img src="$value[icon]" width="48" height="48" /></i></a></dt>
+					<dd class="dd3">
+						<p class="mb5"><a href="{$db_userurl}$value[uid]">$value[username]</a></p>
+						<span class="gray">被转次数：</span><strong>$value[counts]</strong>
+					</dd>
+				</dl>
+<!--
+EOT;
+}print <<<EOT
+-->
+			</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+		</div>
+	</div>
+</div>
+<script>
+if(getObj('search_topic')){
+	getObj('search_topic').onfocus = function() {
+		if(getObj('search_topic').value == '查找新鲜事') getObj('search_topic').value="";
+		nowClass = getObj('search_topic').className;
+		getObj('search_topic').className = nowClass.replace("gray","");
+	}
+	getObj('search_topic').onClick = function() {
+		if(getObj('search_topic').value == str) getObj('search_topic').value="";
+		nowClass = getObj('search_topic').className;
+		getObj('search_topic').className = nowClass.replace("gray","");
+	}
+	getObj('search_topic').onblur = function() {
+		if(getObj('search_topic').value == ""){
+			getObj('search_topic').value='查找新鲜事';
+			nowClass = getObj('search_topic').className;
+			getObj('search_topic').className = nowClass+" gray";
+		}
+	}
+}
+function check_search_apps(){
+	if(getObj('search_topic').value == '查找新鲜事')  getObj('search_topic').value="";
+}
+var createtopic = '{$createtopic}';
+if (createtopic) {
+	if (content.value == dvalue) content.value = '';content.style.color = '';
+	setSelection();
+}
+
+</script>
+<!--
+EOT;
+if($o_weibopost == '0' || $do == 'topics')include printEot('writesmile');
+if($do == 'topics'){
+	print <<<EOT
+-->
+<script>
+function postTopic(topicName){
+	var url = "apps.php?q=weibo&do=posttopic&ajax=1";
+	sendmsg(url, 'topic='+topicName, ''); 
+}
+</script>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+<!--
+EOT;
+require_once(uTemplate::printEot('footer'));
+?>-->

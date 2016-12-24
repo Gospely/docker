@@ -1,0 +1,2157 @@
+<!--<?php
+!$webPageTitle && $webPageTitle = $db_bbsname;
+print <<<EOT
+--><!doctype html>
+<html>
+<head>
+<meta charset="$db_charset" />
+<title>$webPageTitle - Powered by phpwind</title>
+<meta name="generator" content="phpwind $wind_version" />
+<meta name="description" content="$metaDescription" />
+<meta name="keywords" content="$metaKeywords" />
+<base id="headbase" href="$db_bbsurl/" />
+<link rel="stylesheet" href="$imgpath/pw_core.css?{$GLOBALS['wind_repair']}" />
+<!--
+EOT;
+@include Pcv($css_path);
+SCR == 'read' && require PrintEot('read_css');
+print <<<EOT
+-->
+<script type="text/javascript" src="js/core/core.js"></script>
+<script type="text/javascript" src="js/pw_ajax.js"></script>
+<script>
+var imgpath = '$imgpath';
+var verifyhash = '$verifyhash';
+function getVerify(o) {
+	if (is_ie) {
+		var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+	} else {
+		var xmlDoc = document.implementation.createDocument("", "", null);
+	}
+	xmlDoc.async = false;
+	xmlDoc.load('$db_bbsurl/pw_ajax.php?action=getverify&fid=$fid&tid=$tid');
+	var v = xmlDoc.documentElement.firstChild.nodeValue.split('\t');
+	o.verify.value = v[0];
+	o._hexie.value = v[1];
+	return true;
+}
+window.onReady(function(){
+	getVerify(document.FORM);
+});
+</script>
+<!--[if IE 9 ]>
+<meta name="msapplication-task" content="name=网站首页; action-uri=$db_bbsurl; icon-uri=favicon.ico" />
+<meta name="msapplication-task" content="name=个人中心; action-uri=u.php; icon-uri=images/ico/home.ico" />
+<meta name="msapplication-task" content="name=我的帖子; action-uri=apps.php?q=article; icon-uri=images/ico/post.ico" />
+<meta name="msapplication-task" content="name=消息中心; action-uri=message.php; icon-uri=images/ico/mail.ico" />
+<meta name="msapplication-task" content="name=我的设置; action-uri=profile.php; icon-uri=images/ico/edit.ico" />
+<![endif]-->
+<link rel='archives' title='$db_bbsname' href='$db_bbsurl/simple' />
+<!--
+EOT;
+if ($fid) {print <<<EOT
+-->
+<link rel="alternate" type="application/rss+xml" title="RSS" href="$db_bbsurl/rss.php?fid=$fid" />
+<!--
+EOT;
+}print <<<EOT
+-->
+</head>
+<body onkeydown="try{keyCodes(event);}catch(e){}">
+$msgsound
+<!--
+EOT;
+if($db_menu){print <<<EOT
+-->
+<div id="menu_forumlist" style="display:none;">
+	<div class="sbar-box-a" style="width:700px;">
+		<div class="sbar-title" style="cursor:pointer" onClick="try{pw_bottom.hiddenTab();read.close();}catch(e){read.close();}">
+				<span class="adel">隐藏</span>
+				<span id="title_forumlist" class="b">快速跳转</span>
+		</div>
+		<div class="sbar-box-b">
+			<div class="forum-list-popout">
+<!--
+EOT;
+if ($GLOBALS['pwForumList']) {
+	$pwForumList = $GLOBALS['pwForumList'];
+} else {
+	$pwForumList = array();
+	include(D_P.'data/bbscache/forumlist_cache.php');
+	if ($pwForumAllList && $GLOBALS['groupid'] == 3) {
+		$pwForumList = array_merge($pwForumList,$pwForumAllList);
+	}
+}
+foreach($pwForumList as $key=>$value){
+	if (isset($value['child']) && is_array($value['child']) && count($value['child'])) {
+print <<<EOT
+-->
+			<dl class="cc">
+				<dt>
+<!--
+EOT;
+if($GLOBALS['m']){print<<<EOT
+-->
+				<a href="index.php?cateid=$key" target="_blank">$value[name]</a>
+<!--
+EOT;
+}else{print<<<EOT
+-->
+				<a href="index.php?cateid=$key">$value[name]</a>
+<!--
+EOT;
+}print<<<EOT
+-->
+				</dt>
+				<dd class="cc">
+<!--
+EOT;
+foreach($value['child'] as $k=>$v){
+if($GLOBALS['m']){print <<<EOT
+-->
+					<a href="thread.php?fid=$k" target="_blank" onClick="return pwForumList(true,gIsPost,$k,'',true);"><span>$v</span></a>
+<!--
+EOT;
+}else{print<<<EOT
+-->
+					<a href="thread.php?fid=$k" onClick="return pwForumList(true,gIsPost,$k);"><span>$v</span></a>
+<!--
+EOT;
+}}print <<<EOT
+-->
+				</dd>
+			</dl>
+<!--
+EOT;
+}}print <<<EOT
+-->
+			</div>
+		</div>
+	</div>
+</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+<div id="top">
+	<div class="top">
+    	<span class="fr">
+<!--
+EOT;
+foreach($_Navbar['head_right'] as $key => $value){
+	$html = buildNavLinkHtml($value['data']);
+print <<<EOT
+-->
+            <span class="mr10">$html</span>
+<!--
+EOT;
+	if (is_array($value['subs'])) {
+		$db_menuinit .= ",'nav_key_up_$key' : 'nav_key_sub_$key'"; //register
+print <<<EOT
+-->
+			<div style="display: none;" class="pw_menu" id="nav_key_sub_{$key}">
+			<ul class="menuList">
+<!--
+EOT;
+		foreach ($value['subs'] as $value) {
+			$html = buildNavLinkHtml($value);
+print <<<EOT
+-->
+				<li>$html</li>
+<!--
+EOT;
+		}
+print <<<EOT
+-->
+			</ul>
+			</div>
+<!--
+EOT;
+	}
+
+}
+
+print <<<EOT
+-->
+        </span>
+    	<ul>
+<!--
+EOT;
+if($db_columns && $db_mode == 'bbs'){
+if(GetCookie('columns')==1 || strpos($pwServer['HTTP_REFERER'],$db_bbsurl)===false || strpos($pwServer['HTTP_REFERER'],$db_adminfile)!==false){
+print <<<EOT
+-->
+            <li><a href="columns.php?action=columns">左右分栏</a></li>
+<!--
+EOT;
+}else{print <<<EOT
+-->
+            <li><a href="columns.php">平板模式</a></li>
+<!--
+EOT;
+}}
+
+foreach($_Navbar['head_left'] as $key => $value){
+	$html = buildNavLinkHtml($value['data']);
+print <<<EOT
+-->
+            <li>$html</li>
+<!--
+EOT;
+	if (is_array($value['subs'])) {
+		$db_menuinit .= ",'nav_key_up_$key' : 'nav_key_sub_$key'"; //register
+print <<<EOT
+-->
+			<div style="display: none;" class="pw_menu" id="nav_key_sub_{$key}">
+			<ul class="menuList">
+<!--
+EOT;
+		foreach ($value['subs'] as $value) {
+			$html = buildNavLinkHtml($value);
+print <<<EOT
+-->
+				<li>$html</li>
+<!--
+EOT;
+		}
+print <<<EOT
+-->
+			</ul>
+			</div>
+<!--
+EOT;
+	}
+
+}
+
+print <<<EOT
+-->
+        </ul>
+    </div>
+</div>
+<div id="header">
+	<div id="head">
+		<table cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td><a href="$db_bbsurl"><img src="$imgpath/$stylepath/logo.png" class="fl" alt="logo" /></a></td>
+				<td id="banner" align="right">
+
+				</td>
+			</tr>
+		</table>
+	</div>
+	<div class="nav-wrap">
+		<div id="navA">
+			<div class="navAL fl">&nbsp;</div>
+      <div class="navAR fr">&nbsp;</div>
+			<div class="navA">
+				<ul class="cc">
+<!--
+EOT;
+$ifHaveSubs = false;
+foreach ($_Navbar['main'] as $key => $value) {
+	if ($key == 'html') continue;
+	$value['subs'] && $ifHaveSubs = true;
+	$currentClass = $value['data']['iscurrent'] ? 'class="current"' : '';
+	$html = buildNavLinkHtml($value['data']);
+
+	$crossEvent = (!$value['data']['iscurrent'] && 'cross' == $value['data']['floattype'] && $value['subs']) ? " onmouseover=\"ctrlSubMenu('nav_key_up_$key', 'nav_key_sub_$key');\" " : '';
+
+	$verticalEvent = (!$value['data']['iscurrent'] && 'vertical' == $value['data']['floattype'] && $value['subs']) ? " onmouseover=\"tmpHideAllCross('nav_key_sub_$key'); read.open('nav_key_sub_$key', 'nav_key_up_$key', null, 0, window['nav_key_up_$key']); \" " : '';
+
+	$currentEvent = $value['data']['iscurrent'] ? " onmouseover=\"tmpHideAllCross('nav_key_sub_$key'); \" " : '';
+print <<<EOT
+-->
+					<li $currentClass $crossEvent $verticalEvent $currentEvent>$html</li>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+
+				</ul>
+			</div>
+     </div>
+<!--
+EOT;
+if($ifHaveSubs){print <<<EOT
+-->		
+	<div id="navB" class="pr">
+<!--
+EOT;
+$showEmptyNav = true;
+foreach ($_Navbar['main'] as $key => $value) {
+	if ($key == 'html') continue;
+	$subs = $value['subs'];
+	$nav = $value['data'];
+	if ($subs) {
+		if ($nav['iscurrent']) {
+			$showEmptyNav = false;
+			$menuListClass = 'align' == $nav['selflisttype'] ? 'menuListB' : 'menuListC';
+print <<<EOT
+-->
+		<div class="navB">
+			<div class="navBbg">
+				<ul class="$menuListClass cc">
+<!--
+EOT;
+			foreach ($subs as $value) {
+				$html = buildNavLinkHtml($value);
+print <<<EOT
+-->
+					<li>$html</li>
+<!--
+EOT;
+			}
+print <<<EOT
+-->
+				</ul>
+			</div>
+		</div>
+<!--
+EOT;
+		} elseif ('cross' == $nav['floattype']) {
+			//$db_menuinit .= ",'nav_key_up_$key' : 'nav_key_sub_$key'"; //register
+			$menuListClass = 'space' == $nav['listtype'] ? 'menuListC' : 'menuListB';
+print <<<EOT
+-->
+		<div id="nav_key_sub_$key" class="navB" style="position:absolute; width:100%; top:0px; z-index:11; display:none;" >
+			<div class="navBbg">
+				<ul class="$menuListClass cc">
+<!--
+EOT;
+			foreach ($subs as $value) {
+				$html = buildNavLinkHtml($value);
+print <<<EOT
+-->
+					<li>$html</li>
+<!--
+EOT;
+			}
+print <<<EOT
+-->
+				</ul>
+			</div>
+		</div>
+<!--
+EOT;
+		} elseif ('vertical' == $nav['floattype']) {
+			//$db_menuinit .= ",'nav_key_up_$key' : 'nav_key_sub_$key'"; //register
+			$appendClass = 'twocol' == $nav['listtype'] ? 'menuHalf cc' : '';
+			$width = 'twocol' == $nav['listtype'] ? '18' : '9';
+print <<<EOT
+-->
+		<div id="nav_key_sub_$key" style="display:none;">
+			<div class="pw_menu" style="overflow:hidden;">
+				<ul class="menuList $appendClass" style="width:{$width}em;">
+<!--
+EOT;
+			foreach ($subs as $value) {
+				$html = buildNavLinkHtml($value);
+print <<<EOT
+-->
+					<li>$html</li>
+<!--
+EOT;
+			}
+print <<<EOT
+-->
+				</ul>
+			</div>
+		</div>
+<!--
+EOT;
+		}
+
+	}
+}
+print <<<EOT
+-->
+
+	</div>
+<script>
+var timeoutSpecifyId = {};
+
+function tmpClose(elementId) {
+    timeoutSpecifyId[elementId] = setTimeout(function() {
+        getObj(elementId).style.display = 'none';
+    }, 100);
+}
+function tmpHideAllCross(currentSubMenuId) {
+	if(!getObj('navB')) return;
+    var elements = getElementsByClassName('navB', getObj('navB'));
+    if(elements.length){
+        for (i=0; i<elements.length; i++) {
+            if (elements[i].id != '' && elements[i].id != currentSubMenuId) elements[i].style.display = 'none';
+        }
+    }
+}
+
+function ctrlSubMenu(parentId, subMenuId) {
+    clearTimeout(timeoutSpecifyId[subMenuId]);
+
+    tmpHideAllCross(subMenuId);
+    getObj(subMenuId).style.display = '';
+
+    getObj(parentId).onmouseout = function() {
+        tmpClose(subMenuId);
+        getObj(parentId).onmouseout = '';
+    };
+    getObj(subMenuId).onmouseout = function() {
+        tmpClose(subMenuId);
+    };
+    getObj(subMenuId).onmouseover = function() {
+        clearTimeout(timeoutSpecifyId[subMenuId]);
+        getObj(subMenuId).style.display = '';
+    };
+}
+</script>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+  </div>
+    <div id="searchA">
+    	<div class="searchA_right fr">&nbsp;</div>
+        <div class="searchA cc">
+        	<form action="searcher.php" method="post" onSubmit="return searchInput();">
+	        	<input type="hidden" value="$verifyhash" name="verify">
+	            <input value="2" type="hidden" name="step">
+	            <input value="thread" type="hidden" id="search_type" name="type">
+	            <div class="ip"><input id="search_input" type="text" value="搜索其实很简单！" class="gray" name="keyword" onFocus="searchFocus(this)" onBlur="searchBlur(this)" /></div>
+	            <div class="s_select" onMouseOut="this.firstChild.style.display='none';" onMouseOver="this.firstChild.style.display='block';"><ul onClick="getSearchType(event)"><!--
+EOT;
+if ($db_search_type) {
+	foreach ($db_search_type as $key=>$value) {
+		$currentType = $key == 'thread' ? ' style="display:none"' : '';
+print <<<EOT
+--><li type="$key"$currentType>{$value}</li><!--
+EOT;
+	}
+} else {
+print <<<EOT
+-->
+				<li type="thread" style="display:none">帖子</li>
+				<li type="diary">日志</li>
+				<li type="user">用户</li>
+				<li type="forum">版块</li>
+				<li type="group">群组</li>
+<!--
+EOT;
+}print <<<EOT
+--></ul><h6>帖子</h6></div>
+	            <button type="submit" class="fl cp">搜索</button>
+            </form>
+           <div class="s_tags">
+<!--
+EOT;
+$hotwords = ($db_hotwords) ? explode(",",$db_hotwords) : array();
+if($hotwords){print <<<EOT
+-->
+            <span class="s2">热搜：</span>
+<!--
+EOT;
+foreach($hotwords as $hotword){
+print <<<EOT
+-->
+                	<a href="searcher.php?keyword={$hotword}&type=thread">$hotword</a>
+<!--
+EOT;
+}}
+print <<<EOT
+-->
+            </div>
+        </div>
+</div>
+<!--
+EOT;
+list($htmlAdvert,$arrayAdvert) = pwAdvert('Site.Header',$fid);
+if($htmlAdvert){print <<<EOT
+-->
+<div class="tac mb5">$htmlAdvert</div>
+<!--
+EOT;
+}list($htmlAdvert,$arrayAdvert) = pwAdvert('Site.NavBanner1',$fid);
+if($htmlAdvert){print <<<EOT
+-->
+<div class="tac mb5">$htmlAdvert</div>
+<!--
+EOT;
+}
+list($htmlAdvert,$arrayAdvert) = pwAdvert('Site.NavBanner2',$fid);
+if($htmlAdvert){print <<<EOT
+-->
+<div class="tac mb5">$htmlAdvert</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+</div>
+<div class="main-wrap">
+	<div id="main">
+<!--ads begin-->
+<!--
+EOT;
+list($htmlAdvert,$arrayAdvert) = pwAdvert('Mode.Forum.TextRead',$fid);
+if($htmlAdvert){print <<<EOT
+-->
+<div class="textMes">
+	<table width="100%" cellspacing="0" cellpadding="0">
+<!--
+EOT;
+$tmpCount=0;
+$idp = 100/$db_txtadnum;
+foreach($arrayAdvert as $value){
+if($tmpCount==0){print <<<EOT
+-->
+		<tr class="tr3">
+<!--
+EOT;
+}$tmpCount++;print <<<EOT
+-->
+			<td class="f_one black tac" width="$idp%">$value</td>
+<!--
+EOT;
+if($tmpCount==$db_txtadnum){
+$tmpCount=0;print <<<EOT
+-->
+		</tr>
+<!--
+EOT;
+}}if($tmpCount && $id<$db_txtadnum){
+for($i=$tmpCount;$i<$db_txtadnum;$i++){print <<<EOT
+-->
+		<td class="f_one" width="$idp%">&nbsp;</td>
+<!--
+EOT;
+}print <<<EOT
+-->
+		</tr>
+<!--
+EOT;
+}print <<<EOT
+-->
+	</table>
+</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+	<div id="breadCrumb" class="cc">
+		<ul class="fr">
+			<li><a href="searcher.php?sch_time=newatc" class="mr10">新帖</a></li><li><a href="searcher.php?digest=1">精华</a></li>
+	</ul>
+	$msg_guide <a href="read.php?fid=$fid&tid=$tid&toread=1">(转到动态网页)</a>
+</div>
+<!--
+EOT;
+if($db_union[5]){
+$db_union[5]=str_replace(array('{f_fid}','{sch_time}'),array($fid,$_G['schtime']),$db_union[5]);
+}print <<<EOT
+-->
+<div class="cc mb10">
+<!--
+EOT;
+if ($pwforum->foruminfo['allowtype']) {print <<<EOT
+-->
+	<a href="{$postUrl}" class="post fr" id="td_post" title="发帖">发帖</a>
+<!--
+EOT;
+}print <<<EOT
+-->
+<a href="post.php?action=reply&fid=$fid&tid=$tid" class="replay fr mr10">回复</a>
+	<div style="padding-top:3px;"><span class="pages"><a href="thread.php?fid=$fid" class="w">&laquo;&nbsp;返回列表</a></span><span class="fl">$pages$db_union[5]</span></div>
+</div>
+<!--
+EOT;
+if ($pwforum->foruminfo['allowtype'] && $pwforum->foruminfo['allowtype'] != 1) {print <<<EOT
+-->
+<div id="menu_post" class="pw_menu tac" style="display:none;">
+	<ul class="menuList" style="width:70px;" id="post_typeChoose">
+<!--
+EOT;
+if($pwforum->foruminfo['allowtype'] != 1 && $pwforum->foruminfo['allowtype'] & 1){print <<<EOT
+-->
+		<li><a href="post.php?fid=$fid" hidefocus="true">新帖</a></li>
+<!--
+EOT;
+}if($pwforum->foruminfo['allowtype'] & 2){print <<<EOT
+-->
+		<li><a href="post.php?fid=$fid&special=1" hidefocus="true">投票</a></li>
+<!--
+EOT;
+}if($pwforum->foruminfo['allowtype'] & 4){print <<<EOT
+-->
+		<li><a href="post.php?fid=$fid&special=2" hidefocus="true">活动</a></li>
+<!--
+EOT;
+}if($pwforum->foruminfo['allowtype'] & 8){print<<<EOT
+-->
+		<li><a href="post.php?fid=$fid&special=3" hidefocus="true">悬赏</a></li>
+<!--
+EOT;
+}if($pwforum->foruminfo['allowtype'] & 16){print <<<EOT
+-->
+		<li><a href="post.php?fid=$fid&special=4" hidefocus="true">商品</a></li>
+<!--
+EOT;
+}if($pwforum->foruminfo['allowtype'] & 32){print <<<EOT
+-->
+		<li><a href="post.php?fid=$fid&special=5" hidefocus="true">辩论</a></li>
+<!--
+EOT;
+}
+if($_G['allowmodelid']){
+foreach($modelids as $value){
+if(isset($postTopic->topicmodeldb[$value]) && $postTopic->topicmodeldb[$value][ifable] && $postTopic->topiccatedb[$postTopic->topicmodeldb[$value][cateid]][ifable]){
+print <<<EOT
+-->
+		<li><a href="post.php?fid=$fid&modelid=$value" hidefocus="true">{$postTopic->topicmodeldb[$value][name]}</a></li>
+<!--
+EOT;
+}}}
+foreach($pcids as $value){
+if(isset($postCate->postcatedb[$value]) && $postCate->postcatedb[$value][ifable] && strpos(','.$_G['allowpcid'].',',','.$value.',') !== false){
+print <<<EOT
+-->
+		<li><a href="post.php?fid=$fid&pcid=$value" hidefocus="true">{$postCate->postcatedb[$value][name]}</a></li>
+<!--
+EOT;
+}}
+if($_G['allowactivity'] && $firstactmid){
+print <<<EOT
+-->
+		<li><a href="post.php?fid=$fid&actmid=$firstactmid" hidefocus="true">活动</a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+	</ul>
+</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--
+EOT;
+$special && require_once PrintEot($special);print<<<EOT
+-->
+<!--有问题的地方-->
+<script type="text/javascript">
+var readFace = {
+	t1 : null,
+	t2 : null,
+	show : function(id) {this.t1 = setTimeout(function() {getObj(id).style.display = '';}, 200);},
+	clear : function() {clearTimeout(this.t1);},
+	close : function(id) {getObj(id).style.display = 'none';}
+}
+</script>
+	<div id="pw_content" class="mb10">
+<!--
+EOT;
+if ($db_union[5]) {
+	$db_union[5]=str_replace(array('{f_fid}','{sch_time}'),array($fid,$_G['schtime']),$db_union[5]);
+}
+print <<<EOT
+-->
+<form name="delatc" method="post">
+	<input type="hidden" name="fid" value="$fid" />
+	<input type="hidden" name="tid" id="tid" value="$tid" />
+	<input type="hidden" name="hideUid" id="hideUid" value="$uid" />
+	<div class="readTop">
+		<table width="100%" style="table-layout:fixed;">
+			<tr>
+				<td class="floot_left">
+					<div class="readNum">
+						<ul class="cc">
+							<li><em>{$hits}</em>阅读</li>
+							<li><em>{$replies}</em>回复</li>
+						</ul>
+					</div>
+				</td>
+				<td><h1 id="subject_tpc" class="read_h1">{$read_category}{$db_union[2]}{$subject}</h1></td>
+			</tr>
+		</table>
+	</div>
+<!--
+EOT;
+foreach($readdb as $key=>$read){
+print <<<EOT
+-->
+	<table width="100%" class="flootbg"><tr><td>
+<!--
+EOT;
+if($read){
+list($htmlAdvert,$arrayAdvert) = pwAdvert('Mode.Forum.Layer.TidAmong',$fid,$key);
+if($htmlAdvert){print <<<EOT
+-->
+	<div class="read_t" id="ads_d_$read[pid]">{$htmlAdvert}</div>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+	</td></tr></table>
+	$read[jupend]
+	<div class="read_t">
+		<table width="100%" class="floot">
+			<tr class="vt">
+				<td rowspan="2" class="floot_left">
+					<div class="floot_leftdiv">
+						<div class="readName b">
+<!--
+EOT;
+	if ($db_showonline) {
+	$gender = getDefaultGender($read['gender']);
+		if (checkOnline($read['thisvisit'])) {print <<<EOT
+-->
+							<span class="{$gender}_ol mr5" title="在线" alt="在线">在线</span>
+<!--
+EOT;
+		} else {print<<<EOT
+-->
+							<span class="{$gender}_unol mr5" title="离线" alt="离线">离线</span>
+<!--
+EOT;
+		}
+	}
+print <<<EOT
+-->
+							<a href="{$db_userurl}$read[authorid]">$read[author]</a>
+						</div>
+<!--
+EOT;
+	if ($read['honor']) {print <<<EOT
+-->
+						<div class="readHonor">$read[honor]</div>
+<!--
+EOT;
+	}
+$topPostId = '';
+$read['istop'] == 'topped' && $topPostId = 'tp_';
+print <<<EOT
+-->
+						<div class="readFace">
+							<div class="fl">
+								<div class="card" style="display:none" id="readFace_{$read[lou]}" onMouseOver="this.style.display='';" onMouseOut="this.style.display='none';">
+									<dl class="cc">
+										<dt class="fl">
+											<div class="cc"><a href="{$db_userurl}$read[authorid]" class="face_img"><img class="pic" src="{$read[face]}" {$read[facesize]} border="0" title="$read[author]" /></a></div>
+											<p>UID：$read[authorid]</p>
+										</dt>
+										<dd class="ddA">
+											<ul class="cc half">
+												<li><span>注册时间</span>{$read[regdate]}</li>
+												<li><span>最后登录</span>{$read[lastlogin]}</li>
+<!--
+EOT;
+if($db_ifonlinetime){print <<<EOT
+-->
+												<li><span>在线时间</span>$read[ontime]小时</li>
+<!--
+EOT;
+}print <<<EOT
+-->
+											</ul>
+										</dd>
+										<dd class="ddA">
+											<ul class="cc half">
+												<li><span>发帖</span>$read[postnum]</li>
+												<li><a href="apps.php?q=article&uid=$read[authorid]" target="_blank">搜Ta的帖子</a></li>
+												<li><span>精华</span>
+<!--
+EOT;
+if($read['digests']){print <<<EOT
+-->
+													<a href="searcher.php?authorid=$read[authorid]&digest=1" target="_blank">$read[digests]</a>
+<!--
+EOT;
+}else{print <<<EOT
+-->
+													$read[digests]
+<!--
+EOT;
+}
+$ccolor = 1;
+$firstCreditString = '';
+$secondCreditString = '';
+foreach ($db_showcustom as $ctype) {
+if (!$creditnames[$ctype]) continue;
+$ccolor = ($ccolor > 3) ? 1 : $ccolor + 1;
+$cvalue = is_numeric($ctype) ? $customdb[$read['authorid']][$ctype] : $read[$ctype];
+!$cvalue && $cvalue = 0;
+$cvalue = $read['anonymous'] ? '*' : $cvalue;
+$firstCreditString .= "<li class=\"cc\"><span>$creditnames[$ctype]</span>$cvalue</li>";
+$secondCreditString .= "<dl class=\"cc\"><dt>$creditnames[$ctype]</dt><dd>$cvalue</dd></dl>";
+}
+print <<<EOT
+-->
+												</li>
+												$firstCreditString
+											</ul>
+										</dd>
+										<dd class="ddB">
+											<a href="{$db_userurl}$read[authorid]" class="add_home">访问TA的空间</a><a href="javascript:;" onClick="sendmsg('pw_ajax.php?action=addfriend&touid=$read[authorid]')" class="add_fri">加好友</a><a href="javascript:;" onClick="sendmsg('pw_ajax.php?action=usertool&uid=$read[authorid]','',this.id)" class="add_pro">用道具</a>
+										</dd>
+									</dl>
+								</div>
+							</div>
+						</div>
+						<a href="{$db_userurl}$read[authorid]" id="card_sf_{$read[pid]}_{$read[authorid]}" class="userCard face_img">
+<!--
+EOT;
+if ($read['authorid'] != 0) {print<<<EOT
+-->
+<img onMouseOver="readFace.show('readFace_{$read[lou]}');" onMouseOut="readFace.clear()" class="pic" src="{$read[face]}" {$read['facesize']} border="0" title="$read[author]" />
+<!--
+EOT;
+} else { print<<<EOT
+-->
+<img  class="pic" src="{$read[face]}" {$read['facesize']} border="0" title="$read[author]" />
+<!--
+EOT;
+}print<<<EOT
+-->
+						</a>
+						<div class="readLevel mb5"><span>级别： <a href="profile.php?action=permission&gid=$read[groupid]">{$read[level]}</a></span><img src="$imgpath/$stylepath/level/$read[lpic].gif" /></div>
+						<div class="readUser_info cc mb10">
+<!--
+EOT;
+if ($db_readinfo) {
+print<<<EOT
+-->
+							<div class="one" id="basic_{$topPostId}info_$read[pid]" $basicInfoStyle>
+								<dl class="cc"><dt>发帖</dt><dd>$read[postnum]</dd></dl>
+								$secondCreditString
+<!-- 
+EOT;
+if($customfield){
+foreach($customfield as $k=>$val){
+if($val['viewinread']){
+if($val['viewright']&&$winduid!=$read['authorid']&&strpos(",$val[viewright],",",$groupid,")===false){
+continue;
+}$field="field_".(int)$val[id];
+if($val[type]==3){
+foreach(explode("\n",$val['options']) as $k=>$v){
+list($k,$v)=explode('=',$v);
+if($read[$field]==$k){
+$read[$field]=$v;
+}}}print <<<EOT
+-->
+									<dl class="cc"><dt>$val[title]</dt><dd>$read[$field]</dd></dl>
+<!--
+EOT;
+}}}
+print <<<EOT
+-->
+							</div>
+<!--
+EOT;
+}
+print<<<EOT
+-->
+						</div>
+						<div>$read[medals]</div>
+					</div>
+				</td>
+				<td class="floot_right" id="td_$read[pid]">
+				<a name="post_$read[pid]"></a>
+<!--
+EOT;
+if($overprint && $read['pid'] == 'tpc'){
+print <<<EOT
+-->
+					<div class="overprint" id="read_overprint"><img src="$overprint"/></div>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+<div class="tipTop s6">
+<!--
+EOT;
+	if ($read['istop'] == 'topped') {
+print <<<EOT
+-->
+						<a class="s2 b cp" onClick="copyFloorUrl('$read[pid]')" title="复制此楼地址">置顶</a>&nbsp;&nbsp;来自<a href="$read[jumpurl]" class="mr5">$read[floor]楼</a>
+<!--
+EOT;
+	} elseif (!empty($db_floorname[$read['lou']])) {print <<<EOT
+-->
+						<a class="s2 b cp" onClick="copyFloorUrl('$read[pid]')" title="复制此楼地址">{$db_floorname[$read[lou]]}</a>&nbsp;&nbsp;<!--
+EOT;
+	} else { print<<<EOT
+-->
+						<a class="s2 b cp" onClick="copyFloorUrl('$read[pid]')" title="复制此楼地址">$read[lou]$db_floorunit</a>&nbsp;<!--
+EOT;
+	}print <<<EOT
+-->
+						<span title="$read[postdate]">发表于: $read[posttime]</span>
+<!--
+EOT;
+	if ($read['ipfrom'] || $read['ip']) {
+		$tmpHtml = $read['ipfrom'] ? '来自:' . $read['ipfrom'] : $read['ip'];
+		$tmpTitle = ($read['ipfrom'] && $read['ip']) ? ' title="' . $read['ip'] . '"' : '';
+		($isGM || $pwSystem['banuserip']) && $tmpTitle .= ' class="cp" onclick="viewIp(this)"';
+print <<<EOT
+-->
+						, <span id="viewip_{$read['pid']}_{$read['lou']}"{$tmpTitle}>$tmpHtml</span>
+<!--
+EOT;
+	}
+print <<<EOT
+-->
+<!--
+EOT;
+	if (isset($read['cyid'])) {print <<<EOT
+--> , 来自群:<a href="apps.php?q=group&cyid=$read[cyid]">$read[cname]</a>
+<!--
+EOT;
+	}
+	if ($read['lou'] == 0) {print<<<EOT
+-->
+<!--
+EOT;
+	}
+	if ($read['authorid']==$winduid || $isGM || $pwSystem['deltpcs'] || $colonyManageCheck) {
+		if ($db_ajax & 4){
+			$edit_title = getLangInfo('other','ajax_edit_way');
+		} else {
+			$edit_title = getLangInfo('other','edit');
+		}
+print <<<EOT
+-->
+ , <a href="post.php?action=modify&fid=$fid&tid=$tid&pid=$read[pid]&article=$read[lou]" id="modify_$read[pid]" onClick="return sendurl(this,4,'',event)" title="{$edit_title}" class="s4">编辑</a>
+<!--
+EOT;
+	}
+print <<<EOT
+-->
+                    </div>
+<!--
+EOT;
+	if ($read['lou'] != 0) {print <<<EOT
+-->
+					<div class="read_h1" style="margin-bottom:10px;" id="subject_$read[pid]">$db_union[2]$read[icon]$read[subject]</div>
+<!--
+EOT;
+	} elseif (!$read['ifcheck']) {print <<<EOT
+-->
+					<div class="blockquote">该帖需要管理员审核通过后才能正常显示！</div>
+<!--
+EOT;
+	}print <<<EOT
+-->
+				<div class="readCon_right">
+<!--
+EOT;
+	if ($ifmagic && $read['lou']==0) {print <<<EOT
+-->
+						<div class="mb10 cp" id="myshow_pic" style="color:$linkcolor;" onClick="logo_onclick(event);"><img src="http://rs.phpwind.net/{$magicid}T.gif" style="display:block;width:52px;height:52px;text-align:center" title="{$magicname}" />
+							<div style="display:inline;text-align:center;white-space:nowrap;"><img id="my_close" src="$imgpath/post/my_close.gif" />重播</div>
+						</div>
+<!--
+EOT;
+	}print <<<EOT
+-->
+<!--
+EOT;
+	list($htmlAdvert,$arrayAdvert) = pwAdvert('Mode.Forum.Layer.TidRight',$fid,$read[lou]+1);
+	if ($htmlAdvert) {print <<<EOT
+-->
+						<div id="ads_r_$read[pid]">{$htmlAdvert}</div>
+<!--
+EOT;
+	}print <<<EOT
+-->
+					</div>
+<div class="readContent">
+<!--管理提醒-->
+<!--
+EOT;
+	if ($read['remindinfo']) {print <<<EOT
+-->
+						<div id="mag_$read[pid]" class="operTips tac f12 mb10 s6">&mdash;
+<!--
+EOT;
+		if ($read['remindinfo'][1]) {print <<<EOT
+-->
+							({$read[remindinfo][1]})
+<!--
+EOT;
+		}print <<<EOT
+-->
+							{$read[remindinfo][0]}
+<!--
+EOT;
+		if ($read['remindinfo'][2]) {print <<<EOT
+-->
+							({$read[remindinfo][2]})
+<!--
+EOT;
+		}print <<<EOT
+-->
+							&mdash;
+						</div>
+<!--
+EOT;
+	}print <<<EOT
+-->
+<!--帖子顶部ad-->
+<!--
+EOT;
+	list($htmlAdvert,$arrayAdvert) = pwAdvert('Mode.Forum.Layer.TidUp',$fid,$read[lou]+1);
+	if ($htmlAdvert) {print <<<EOT
+-->
+						<div class="cc mb10" id="ads_c_$read[pid]">{$htmlAdvert}</div>
+<!--
+EOT;
+	}print <<<EOT
+-->
+
+<!--
+EOT;
+if($read['lou']!=0 && $special == 'read_debate'){
+print <<<EOT
+-->
+					<div class="cc mb10">
+<!--
+EOT;
+if($read['standpoint']==1){print <<<EOT
+-->
+						<div class="dig3 fl"><span class="fl">正方支持者</span><div class="fl" onClick="dodebate('votepid_$read[pid]',$tid,$read[pid])">支持:<span id="votepid_$read[pid]">$read[vote]</span></div></div>
+<!--
+EOT;
+}elseif($read['standpoint']==2){print <<<EOT
+-->
+						<div class="dig4 fl"><span class="fl">反方支持者</span><div class="fl" onClick="dodebate('votepid_$read[pid]',$tid,$read[pid])">支持:<span id="votepid_$read[pid]">$read[vote]</span></div></div>
+<!--
+EOT;
+}else{print <<<EOT
+-->
+						<div class="dig5 tac fl">我是中立者</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+					</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--活动参加按钮-->
+<!--
+EOT;
+if($pcid>0 && $read[lou]==0){
+if($read['endtime']<$timestamp){
+$joininfo="<span class=\"bt2\"><span><button>已结束</button></span></span>";
+}elseif($read['begintime']>$timestamp){
+$joininfo="<span class=\"bt2\"><span><button>还没到报名时间</button></span></span>";
+}elseif($read['nums']>=$read['limitnum'] && $read['limitnum']){
+$joininfo="<span class=\"bt2\"><span><button>人数已满</button></span></span>";
+}elseif($read['authorid']==$winduid && $winduid){
+$joininfo="";
+}elseif($pcuid==$winduid && $winduid){
+$joininfo="您已报名<span class=\"btn2\"><span><button type=\"button\" id=\"pcjoin\" onclick=\"sendmsg('pw_ajax.php?action=pcjoin&tid=$tid&authorid=$read[authorid]&pcid=$pcid','',this.id);\">补报</button></span></span>";
+}else{
+if($winduid){
+	$joininfo="<span class=\"btn2\"><span><button type=\"button\" id=\"pcjoin\" onclick=\"sendmsg('pw_ajax.php?action=pcjoin&tid=$tid&authorid=$read[authorid]&pcid=$pcid','',this.id);\">我要报名</button></span></span>";
+}else{
+	$joininfo="<span class=\"btn2\"><span><button type=\"button\" id=\"pcjoin\" onclick=\"sendmsg('job.php?action=pcjoin&tid=$tid','',this.id);\">我要报名</button></span></span>";
+}
+}
+print<<<EOT
+-->
+					<div class="mb10">$joininfo</div>
+<!--
+EOT;
+}print<<<EOT
+-->
+<!--content_read-->
+					<div class="tpc_content">
+					<table width="100%"><tr><td>
+						<div id="p_$read[pid]" class="c"></div>
+<!--
+EOT;
+if($read['lou'] == 0 && $topicvalue && !$read['ifshield'] && !($read['groupid'] == 6 && $db_shield )){print<<<EOT
+-->
+						$topicvalue
+<!--
+EOT;
+}print<<<EOT
+-->
+						<div class="f14 mb10" id="read_$read[pid]" style="word-wrap:break-word;word-break:break-all;width:100%;overflow:hidden;">
+						$read[content]
+						</div>
+<!--
+EOT;
+if($read[lou]==0){print<<<EOT
+-->
+						$orderMemberList
+<!--
+EOT;
+}if($read[lou]==0 && $pcid>0 && $winduid){print<<<EOT
+-->
+						<div class="f14 mb10"><a name="pcinfo"></a><div id="pc_show"><div style="padding:13px 30px;"><img src="$imgpath/loading.gif" align="absbottom" /> 正在加载数据...</div></div>
+						</div>
+<script>
+var isadminright = parseInt('$isadminright');
+var payway = parseInt('$payway');
+var ifend = parseInt('$ifend');
+
+if (isadminright == 1) {
+	var jointype = 1;
+} else if (isadminright == 2) {
+	var jointype = 2;
+} else {
+	var jointype = 3;
+}
+
+function ajaxview(url) {
+	try {ajaxget(url,'pc_show');} catch(e){}
+	return false;
+}
+
+function ajaxget(url,tag) {
+	try {
+		ajax.send(url, '', function() {
+			if (ajax.request.responseText.indexOf('<') != -1) {
+				getObj(tag).innerHTML = ajax.request.responseText;
+			}
+		});
+	} catch(e){}
+	return false;
+}
+
+window.onReady(function () {
+	setTimeout(function(){ajaxget('pw_ajax.php?action=pcmember&pcid=$pcid&tid=$tid&jointype='+jointype+'&payway='+payway+'&ifend='+ifend,'pc_show')},200);
+});
+
+function pc_del(pcmid,pcid,jointype,payway) {
+	try {
+		ajax.send('pw_ajax.php?action=pcdel&pcmid='+pcmid+'&pcid='+pcid+'&jointype='+jointype+'&payway='+payway+'&tid='+tid,'',function() {
+			var rText = ajax.request.responseText.split('\t');
+			if (rText[0] == 'success') {
+				ajaxget('pw_ajax.php?action=pcmember&pcid=$pcid&jointype='+rText[1]+'&tid='+rText[2]+'&payway='+rText[3],'pc_show');
+				showDialog('success','操作成功!',2);
+			} else if (rText[0] == 'noright') {
+				showDialog('error','您没有删除的权限',2);
+			} else {
+				showDialog('error','非法操作',2);
+			}
+		});
+	return false;
+	} catch(e){}
+}
+
+function pc_modify() {
+	var rText = ajax.request.responseText.split('\t');
+	if (rText[0] == 'success') {
+		ajaxget('pw_ajax.php?action=pcmember&pcid=$pcid&jointype='+rText[1]+'&tid='+rText[2]+'&payway='+rText[3],'pc_show');
+		showDialog('success','操作成功!',2);
+	} else if (rText[0] == 'numserror') {
+		showDialog('error','数量错误或者不能为0',2);
+	} else if (rText[0] == 'pcjoin_more') {
+		showDialog('error','您报的人数已超总人数',2);
+	} else if (rText[0] == 'pcjoin_pcid_more') {
+		showDialog('error','您购买数量已超总数',2);
+	} else {
+		showDialog('error','非法操作',2);
+	}
+}
+
+function pc_join() {
+	ajaxget('pw_ajax.php?action=pcmember&pcid=$pcid&tid=$tid&jointype='+jointype+'&payway='+payway,'pc_show');
+	closep();
+}
+</script>
+<!--
+EOT;
+}print<<<EOT
+-->
+						</td></tr></table>
+					</div>
+<!--content_read-->
+					</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="floot_bottom">
+<!--
+EOT;
+if ($read['aid']) {print <<<EOT
+-->
+					<div id="read_Att_{$read['pid']}">
+<!--
+EOT;
+	if ($read['ifhide']>0) {print <<<EOT
+-->
+						<blockquote class="blockquote mb10 cc hidden" id="hidden_att_{$read['pid']}">附件设置隐藏，需要回复后才能看到</blockquote>
+<!--
+EOT;
+	} else {
+		if ($read['pic']) {print <<<EOT
+-->
+						<div class="imgList">
+<!--
+EOT;
+			$show_img_all = '';
+			if (count($read['pic']) >= 5) {
+				$show_img_all = 'none';
+print <<<EOT
+-->
+							<h4>
+								<span class="fr gray">
+								<a href="javascript:void(0)" id="imgAction_{$read['lou']}_small" class="current" onClick="showAttImg('$read[lou]', 'small')">小图</a> | <a href="javascript:void(0)" id="imgAction_{$read['lou']}_all" onClick="showAttImg('$read[lou]', 'all')">大图</a>
+								</span>图片
+							</h4>
+							<ul class="cc tac" id="imgList_{$read['lou']}_small">
+<!--
+EOT;
+				$i=0;
+				foreach ($read['pic'] as $pic) {
+					$picTitle = $pic['descrip'] ? ' title="描述：' . $pic['descrip'] . '"' : '';
+					print <<<EOT
+-->
+								<li id="att_small_$pic[aid]"><img src="$pic[miniUrl]" src_data="$pic[url]" onClick="readImg.show('$read[lou]', '$i');"{$picTitle} /></li>
+<!--
+EOT;
+					$i++;
+				}print <<<EOT
+-->
+							</ul>
+<!--
+EOT;
+			}print <<<EOT
+-->
+							<ul class="cc one" style="display:{$show_img_all}" id="imgList_{$read['lou']}_all">
+<!--
+EOT;
+			foreach ($read['pic'] as $pic) {
+print <<<EOT
+-->
+								<li id="att_$pic[aid]">
+<!--
+EOT;
+				if ($pic['descrip']) {print <<<EOT
+-->
+									描述:$pic[descrip]<br />
+<!--
+EOT;
+				}print <<<EOT
+-->
+									图片:$pic[name]<br />$pic[img]
+<!--
+EOT;
+				if ($pic['dfadmin']) {print <<<EOT
+-->
+									[<a class="cp s4" onClick="delatt('$read[pid]','$pic[aid]');">删除</a>]
+<!--
+EOT;
+				}
+print <<<EOT
+-->
+								</li>
+<!--
+EOT;
+
+			}print <<<EOT
+-->
+							</ul>
+						</div>
+<!--
+EOT;
+		}
+		if ($read['picurl']) {
+			foreach ($read['picurl'] as $k => $picture) {
+				if ($picture ){print <<<EOT
+-->
+							<div class="mb10" id="att_$k">远程图片:<a href="job.php?action=showimg&tid={$tid}&pid={$read[pid]}&fid={$fid}&aid={$k}&verify={$picture[verify]}" target="_blank">$picture[name]</a>
+<!--
+EOT;
+					if ($picture['dfadmin']) {print <<<EOT
+-->
+								[<a style="cursor:pointer" onClick="delatt('$read[pid]','$k');">删除</a>]
+<!--
+EOT;
+					}
+print <<<EOT
+-->
+							</div>
+<!--
+EOT;
+				}
+			}
+		}
+		if ($read['downattach']) {
+			foreach ($read['downattach'] as $attach) {
+				if ($attach) {
+print <<<EOT
+-->
+							<div class="mb10" id="att_$attach[aid]">
+<!--
+EOT;
+					if ($attach['descrip']) {
+print <<<EOT
+-->
+								描述:$attach[descrip]<br />
+<!--
+EOT;
+					}
+					$att_id = $db_attfg ? "id=\"fg_$attach[aid]\"" : '';
+					$mt = md5($attach['size'].$attach['name']);
+print <<<EOT
+-->
+					
+								附件: <img src="$imgpath/$stylepath/file/$attach[type].gif" align="absmiddle" /> <a $att_id href="job.php?action=download&aid=$attach[aid]&mt=$mt" onClick="return ajaxurl(this);"> <font color="red">$attach[name]</font></a> ($attach[size] K) 下载次数:$attach[hits]
+<!--
+EOT;
+					if ($attach['needrvrc']) {
+						if ($attach['special'] == 2) {
+print <<<EOT
+-->
+								，<span class="mr10">售价:{$attach[needrvrc]}{$attach[cname]}</span><a href="job.php?action=attachbuy&type=record&aid=$attach[aid]" onClick="return ajaxurl(this);" title="查看" class="mr10 s4">[记录]</a>
+<!--
+EOT;
+						} else {print <<<EOT
+-->
+								，该附件已加密，拥有{$attach[needrvrc]}{$attach[cname]}才能下载
+<!--
+EOT;
+						}
+					} elseif (in_array($attach['ext'],array('mp3','wma','wmv','rm','swf'))) {
+print <<<EOT
+-->
+								<a class="cp s4" onClick="playatt('$attach[aid]');">[试播]</a>
+<!--
+EOT;
+					}
+					if ($attach['dfadmin']) {
+print <<<EOT
+-->
+								<a class="cp s4" onClick="delatt('$read[pid]','$attach[aid]');">[删除]</a>
+<!--
+EOT;
+					}
+					if ($attach['type'] == 'img' && viewHiddenAtt($attach)) {
+print <<<EOT
+-->
+								{$attach['img']}
+<!--
+EOT;
+					}
+print <<<EOT
+-->
+							</div>
+<!--
+EOT;
+				}
+			}
+		}
+	}
+print <<<EOT
+-->
+						</div>
+<!--
+EOT;
+}
+if ($viewpic) {print <<<EOT
+-->
+						<div class="mb10 tips">本主题包含附件，请 <a href="login.php#breadCrumb" class="s4" rel="nofollow">登录</a> 后查看, 或者 <a href="{$regurl}#breadCrumb" class="s4" rel="nofollow">注册</a> 成为会员</div>
+
+<!--
+EOT;
+}
+print <<<EOT
+-->
+					<div id="w_$read[pid]" class="c"></div>
+<!--
+EOT;
+if ($db_sharesite == 1 && $read[pid] == 'tpc'){
+$summary = substrs($read[content],100);
+print <<<EOT
+-->
+									<div class="shareAll cc mb10">
+										<em>分享到</em>
+										<a href="javascript:void(0)" onClick="window.open('http://share.jianghu.taobao.com/share/addShare.htm?title='+encodeURIComponent(document.title.substring(0,76))+'&url='+encodeURIComponent(location.href)+'&content=','_blank','scrollbars=no,width=600,height=450,left=75,top=20,status=no,resizable=yes'); void 0" title="淘江湖">淘江湖</a>
+										<a href="javascript:(function(){window.open('http://v.t.sina.com.cn/share/share.php?title='+encodeURIComponent(document.title)+'&url='+encodeURIComponent(location.href)+'&source=bookmark','_blank','width=450,height=400');})()" title="新浪微博" style="background-position:0 -20px;">新浪</a>
+										<a href="javascript:void(0)" onClick="window.open( 'http://v.t.qq.com/share/share.php?url='+encodeURIComponent(document.location)+'&appkey=&site=&title='+encodeURI(document.title),'', 'width=700, height=680, top=0, left=0, toolbar=no, menubar=no, scrollbars=no, location=yes, resizable=no, status=no' );" title="QQ微博" style="background-position:0 -40px;">QQ微博</a>
+										<a href="javascript:void(0);" onclick="window.open('http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url='+encodeURIComponent('http://phpwind.net/read-htm-tid-1333976.html')+'&title='+encodeURIComponent(document.title)+'&summary='+encodeURIComponent('$summary'));return false;" title="QQ空间" style="background-position:0 -60px;">QQ空间</a>
+										<a href="javascript:d=document;t=d.selection?(d.selection.type!='None'?d.selection.createRange().text:''):(d.getSelection?d.getSelection():'');void(kaixin=window.open('http://www.kaixin001.com/~repaste/repaste.php?&rurl='+escape(d.location.href)+'&rtitle='+escape(d.title)+'&rcontent='+escape(d.title),'kaixin'));kaixin.focus();" title="开心" style="background-position:0 -80px;">开心</a>
+										<a href="javascript:void((function(s,d,e){if(/renren\.com/.test(d.location))return;var f='http://share.renren.com/share/buttonshare?link=',u=d.location,l=d.title,p=[e(u),'&title=',e(l)].join('');function%20a(){if(!window.open([f,p].join(''),'xnshare',['toolbar=0,status=0,resizable=1,width=626,height=436,left=',(s.width-626)/2,',top=',(s.height-436)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent))setTimeout(a,0);else%20a();})(screen,document,encodeURIComponent));" title="人人" style="background-position:0 -100px;">人人</a>
+										<a href="javascript:void(function(){var d=document,e=encodeURIComponent,s1=window.getSelection,s2=d.getSelection,s3=d.selection,s=s1?s1():s2?s2():s3?s3.createRange().text:'',r='http://www.douban.com/recommend/?url='+e(d.location.href)+'&title='+e(d.title)+'&sel='+e(s)+'&v=1',x=function(){if(!window.open(r,'douban','toolbar=0,resizable=1,scrollbars=yes,status=1,width=450,height=330'))location.href=r+'&r=1'};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})()" title="豆瓣" style="background-position:0 -120px;">豆瓣</a>
+										<a onClick="(function(){var url = 'link=http://news.163.com/&amp;source='+ encodeURIComponent('网易新闻')+ '&amp;info='+ encodeURIComponent(document.title) + ' ' + encodeURIComponent(document.location.href);window.open('http://t.163.com/article/user/checkLogin.do?'+url+'&amp;'+new Date().getTime(),'newwindow','height=330,width=550,top='+(screen.height-280)/2+',left='+(screen.width-550)/2+', toolbar=no, menubar=no, scrollbars=no,resizable=yes,location=no, status=no');})()" href="javascript:void(0);" title="网易微博" style="background-position:0 -140px;">网易微博</a>
+										<!--<a href="javascript:void(0);" onclick="window.open('http://share.tianya.cn/openapp/restpage/activity/appendDiv.jsp?ccTitle='+encodeURIComponent(document.title)+'&ccUrl='+encodeURIComponent(document.location.href));return false;" title="天涯" style="background-position:0 -160px;">天涯</a>-->
+										<a href="javascript:void(0);" onClick="window.open('http://apps.hi.baidu.com/share/?title='+encodeURIComponent(document.title.substring(0,76))+'&url='+encodeURIComponent(location.href));return false;" title="百度空间" style="background-position:0 -180px;">百度</a>
+										<a href="javascript:void(0);" onClick="window.open('http://xianguo.com/service/submitfav/?link='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title));return false;" title="鲜果" style="background-position:0 -200px;">鲜果</a>
+										<a href="javascript:void(0);" onClick="window.open('http://bai.sohu.com/share/blank/add.do?link='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title));return false;" title="白社会" style="background-position:0 -220px;">白社会</a>
+										<a href="javascript:void(0);" onClick="window.open('http://space.feixin.10086.cn/api/share?title='+encodeURIComponent(document.title)+'&url='+encodeURIComponent(location.href));return false;" title="飞信" style="background-position:0 -240px;">飞信</a>
+									</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--
+EOT;
+list($htmlAdvert,$arrayAdvert) = pwAdvert('Mode.Forum.Layer.TidDown',$fid,$read[lou]+1);
+if($htmlAdvert){print <<<EOT
+-->
+					<div class="mb10 cc" id="ads_c_$read[pid]">{$htmlAdvert}</div>
+<!--
+EOT;
+}if($db_iftag && $read['tag']){print <<<EOT
+-->
+					<div class="tal mb10">关键词： {$read[tag]}</div>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+
+<!--
+EOT;
+if($read['signature']){
+$bannedSignature = getstatus($read['userstatus'], PW_USERSTATUS_BANSIGNATURE);
+print <<<EOT
+-->
+					<div class="sigline"></div>
+					<div class="signature pr" style="max-height:{$db_signheight}px;maxHeight:{$db_signheight}px; overflow:hidden;">
+<!--
+EOT;
+if($bannedSignature){
+print <<<EOT
+-->
+						
+<!--
+EOT;
+}else{
+print <<<EOT
+-->
+						$read[signature]
+<!--
+EOT;
+}
+print <<<EOT
+-->
+						</div>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+           <div class="tipBottom cc">
+						<div class="fr">
+							<a onClick="sendmsg('pw_ajax.php?action=report&type=topic&tid=$tid&pid=$read[pid]','',this.id);" title="举报此帖" href="javascript:;" class="mr5">举报</a>
+						</div>
+             			</div>
+                </td>
+            </tr>
+        </table>
+	</div>
+<!--
+EOT;
+$db_union[2]='';
+}}print <<<EOT
+-->
+</form>
+</div>
+<!--有问题的地方结束-->
+<div id="photo_pop_mask" onClick="readImg.hidePhoto()" class="pImg_bg" style="display:none"></div></div>
+<div id="photo_pop" class="pImg_wrap" style="display:none"><table border="0" cellspacing="0" cellpadding="0"><tbody><tr><td class="bcr1"></td><td class="pibg1"></td><td class="bcr2"></td></tr><tr><td class="pibg4"></td><td><div class="pImg tac">
+<div id="imgLoading" class="imgLoading" style="margin:auto;">
+<div class="aPre" id="prephoto" onClick="readImg.prevPhoto()" title="上一张"></div>
+<div class="aNext" id="nextphoto" onClick="readImg.nextPhoto()" title="下一张"></div>
+<img id="photo_path"  src="$imgpath/water/watermark.jpg" align="absmiddle" />
+</div>
+<div class="cc w" style="padding:10px 5px 5px;">
+	<div class="fl mr10" id="photo_pop_page"></div><!--a href="javascript:;" class="fl mr20" onclick="readImg.viewAll()">原图</a-->
+	<a href="javascript://" class="pImg_close" onClick="readImg.hidePhoto()">关闭</a>
+</div>
+</div></td><td class="pibg2"></td></tr><tr><td class="bcr4"></td><td class="pibg3"></td><td class="bcr3"></td></tr></tbody></table></div>
+<div class="cc mb10">
+<!--
+EOT;
+if($pwforum->foruminfo['allowtype']){print <<<EOT
+-->
+<a href="{$postUrl}" class="post fr" id="td_post1" title="发帖">发帖</a>
+<!--
+EOT;
+}print <<<EOT
+-->
+<a href="post.php?action=reply&fid=$fid&tid=$tid" class="replay fr mr10">回复</a>
+	<div style="padding-top:3px;"><span class="pages"><a href="thread.php?fid=$fid" class="w">&laquo;&nbsp;返回列表</a></span><span class="fl">$pages$db_union[5]</span></div>
+</div>
+<!--
+EOT;
+if($db_windpost['checkurl']){print<<<EOT
+-->
+<div id="checkurl" class="popout" style="display:none;"><table border="0" cellspacing="0" cellpadding="0"><tbody><tr><td class="bgcorner1"></td><td class="pobg1"></td><td class="bgcorner2"></td></tr><tr><td class="pobg4"></td><td><div class="popoutContent">
+	<div class="popTop" id="suburl">$db_bbsurl</div>
+	<div class="p10">访问内容超出本站范围，不能确定是否安全</div>
+	<div class="popBottom">
+		<span class="btn2"><span><button type="button" id="trueurl">继续访问</button></span></span>
+		<span class="bt2"><span><button type="button" onClick="closep();">取消访问</button></span></span>
+	</div>
+</div></td><td class="pobg2"></td></tr><tr><td class="bgcorner4"></td><td class="pobg3"></td><td class="bgcorner3"></td></tr></tbody></table></div>
+<!--
+EOT;
+}print<<<EOT
+-->
+<script>
+var tid = '$tid';
+var fid = '$fid';
+var mt;
+var totalpage = parseInt('$numofpage');
+var db_ajax = '$db_ajax';
+var page = parseInt('$page');
+var jurl = 'read.php?tid=$tid&fpage=$fpage&toread=$toread{$urladd}&page=';
+var db_htmifopen = '$db_htmifopen';
+var db_dir = '$db_dir';
+var db_ext = '$db_ext';
+var db_bbsurl = '$db_bbsurl';
+var copyurl = '$db_bbsurl/read.php?tid=$tid' + (page > 1 ? '&page=' + page : '') + '&'+'a=$winduid';
+<!--
+EOT;
+if($db_windpost['checkurl'] == '1'){print<<<EOT
+-->
+var db_urlcheck = '$db_urlcheck';
+<!--
+EOT;
+}print<<<EOT
+-->
+//window.onReady(userCard.init);
+
+/*pingpage*/
+function showPingPage(fid, tid, pid) {
+	if (getObj('pingPage_'+pid).style.display == "none") {
+		pingHideCtrl(pid);
+	}
+	var pingPageNum = getObj('pingPageNum_'+pid).value * 1;
+	ajax.send("pw_ajax.php?action=pingpage", "page="+pingPageNum+"&fid="+fid+"&tid="+tid+"&pid="+pid, function(){
+		var gotText = ajax.request.responseText;
+
+		var trs=gotText.split("<!-- splitTr -->");
+		var tr, td, trData, pingId, pingIdMatch;
+		for(var i=1,len=trs.length;i<len;i++) {
+			pingIdMatch = trs[i].match(/<\!\-\- pingId\:(\d+) \-\->/i);
+			pingId = pingIdMatch[1];
+			trData = trs[i].split("<!-- split -->");
+
+			tr = document.createElement("tr");
+			tr.id = 'pingLogTr_' + pingId;
+			tr.onmouseover = function() {showPingDelLink(this, true)};
+			tr.onmouseout = function() {showPingDelLink(this, false)};
+			td = document.createElement("th");
+			td.innerHTML = trData[0];
+			tr.appendChild(td);
+
+			for(var j=1; j<=6; j++) {
+				td = document.createElement("td");
+				td.innerHTML = trData[j];
+				tr.appendChild(td);
+			}
+			getObj('pingPage_'+pid).appendChild(tr);
+		}
+		if (gotText.indexOf('__pingPageOver__') != -1) { getObj('pingMore_'+pid).style.display='none';return ;}
+	});
+	getObj('pingPageNum_'+pid).value = pingPageNum + 1;
+}
+function delPingLog(fid, tid, pid, pingid) {
+	showDialog({type:'confirm',message:"你确定要删除这条评分动态么？",okText:'确认',onOk:function(){
+		read.obj = getObj("pingDel_"+pingid);
+		read.guide();
+		ajax.send("pw_ajax.php?action=delpinglog", "fid="+fid+"&tid="+tid+"&pid="+pid+"&pingid="+pingid, function(){
+			if (ajax.request.responseText == 'success') {
+				showDialog('success','删除评分动态成功！');
+
+				if (getObj('pingLogTr_'+pingid)) {
+					getObj('pingLogTr_'+pingid).style.display = "none";
+				}
+
+				if (getObj('createpingLogTr_'+pingid)) {
+					getObj('createpingLogTr_'+pingid).style.display = "none";
+				}
+				if (getObj('pingNum_'+pid)) {
+					var pingNums = getObj('pingNum_'+pid);
+					pingNums.innerHTML  = parseInt(pingNums.innerHTML) - 1;
+				}
+
+			} else {
+					showDialog('error','删除评分动态出错！');
+			}
+		});
+	}});
+}
+function showPingDelLink(trObj, isShow) {
+	pingId = trObj.id.match(/\d+/i);
+	linkObj = getObj("pingDel_"+pingId);
+	if (linkObj) {
+		linkObj.style.display = isShow ? '' : 'none';
+	}
+}
+function pingHideCtrl(pid) {
+	if (getObj('pingPage_'+pid).style.display == "") {
+		getObj('pingPage_'+pid).style.display = "none";
+		getObj('createpingbox_'+pid).style.display = "none";
+		getObj('pingHide_'+pid).innerHTML = "显示";
+		SetCookie('read_hidepinglog', 1);
+	} else {
+		getObj('pingPage_'+pid).style.display = "";
+		getObj('createpingbox_'+pid).style.display = "";
+		getObj('pingHide_'+pid).innerHTML = "隐藏";
+		SetCookie('read_hidepinglog', 0);
+	}
+}
+function copyFloorUrl(o) {
+	var floorurl = '$db_bbsurl/read.php?tid=$tid' + (page > 1 ? '&page=' + page : '') + '#';
+	if (is_ie) {
+		window.clipboardData.setData("Text",floorurl+o);
+		showDialog('success','已成功复制',1);
+	} else {
+		prompt('按下 Ctrl+C 复制到剪贴板', floorurl+o)
+	}
+}
+if(is_webkit)
+	getObj('bookmarkExplore').parentNode.removeChild(getObj('bookmarkExplore'));
+</script>
+<script type="text/javascript" src="js/pw_lwd.js"></script>
+<script type="text/javascript" src="js/pw_ajax.js"></script>
+<link rel="stylesheet" type="text/css" href="$imgpath/post/fast_editor.css?{$GLOBALS['wind_repair']}" media="all" />
+<link rel="stylesheet" type="text/css" href="js/breeze/editor/style/style.css?{$GLOBALS['wind_repair']}" />
+<table cellPadding="0" cellSpacing="0" style="display:none">
+	<tbody id="att_mode"><tr>
+		<td width="220"><input class="input" type="file" name="attachment_" style="width:155px;" /></td>
+		<td>描述 <input class="input" type="text" name="atc_desc" size="18" /></td>
+		<td></td></tr>
+	</tbody>
+</table>
+<div class="t">
+<form name="FORM" method="post" action="post.php?" enctype="multipart/form-data" onSubmit="return checkpost(this);">
+		<input type="hidden" name="atc_autourl" value="1" />
+		<input type="hidden" value="2" name="step" />
+		<input type="hidden" value="" name="replytouser" />
+		<input type="hidden" value="reply" name="action" />
+		<input type="hidden" value="$fid" name="fid" />
+		<input type="hidden" value="$tid" name="tid" />
+		<input type="hidden" name="verify" value="verify" />
+		<input type="hidden" name="_hexie" value="_hexie" />
+  <div class="h b">快速回复</div>
+	<table width="100%">
+		<tr class="vt">
+			<td class="floot_left">
+				<div class="p10">
+					<div class="face_img"><img src="images/face/none.gif"></div>
+				</div>
+			</td>
+			<td style="background:#fff;">
+				<div class="fp_content p10">
+					<div class="cc mb5">
+						<div class="pr fl mr5"><input type="text" class="input" id="atc_title" name="atc_title" value="$titletop1" size="40" /><span id="atc_title_warn" class="gray pd5" style="display:none; position:absolute;top:-20px;right:0;background:#fffff3;">限 $db_titlemax 字节</span></div>
+<!--
+EOT;
+if(!$psot_sta && ($t_per>0 || $admincheck) && $t_exits==1){
+	if ($t_sub_exits == 1) {print <<<EOT
+-->
+						<select name="p_type" style="width:75px;" class="mr5" onChange="getSubType(this.value);">
+<!--
+EOT;
+	} else {print <<<EOT
+-->
+						<select name="p_type" style="width:75px;" class="mr5">
+<!--
+EOT;
+	}print <<<EOT
+-->
+							<option value="0">不分类</option>
+<!--
+EOT;
+foreach($t_typedb as $key=>$value){
+if($value){print <<<EOT
+-->
+							<option value="$key">$value[name]</option>
+<!--
+EOT;
+}}print <<<EOT
+-->
+						</select>
+<!--
+EOT;
+if ($t_sub_exits == 1) {print <<<EOT
+-->
+						<select name="p_sub_type" id="p_sub_type" style="width:75px" class="mr5"><option value="">不分类</option></select>
+<!--
+EOT;
+}print <<<EOT
+-->
+<script>
+function getSubType(id){
+	var selobj = getObj('p_sub_type');
+	selobj.options.length=0;
+	selobj.options.add(new Option("不分类","0"));
+	var t_subtypedb = JSONParse('$t_subtypedb');
+	for (var temp in t_subtypedb) {
+		if (temp == id) {
+			for (var temp2 in t_subtypedb[temp]) {
+				if (typeof sel_subid != "undefined" && sel_subid == temp2) {
+					selobj.options.add(new Option(t_subtypedb[temp][temp2],temp2));
+				} else {
+					selobj.options.add(new Option(t_subtypedb[temp][temp2],temp2));
+				}
+			}
+		}
+	}
+}
+</script>
+<!--
+EOT;
+}elseif($special === 'read_debate'){print <<<EOT
+-->
+						<select name="standpoint" id="standpoint" class="mr5">
+							<option value="0" $debate_0>闲聊一下</option>
+<!--
+EOT;
+if($debatestand != 2){print <<<EOT
+-->
+							<option value="1" $debate_1>正方观点</option>
+<!--
+EOT;
+}if($debatestand != 1){
+print <<<EOT
+-->
+							<option value="2" $debate_2>反方观点</option>
+<!--
+EOT;
+}print <<<EOT
+-->
+						</select>
+<!--
+EOT;
+}print <<<EOT
+-->
+					</div>
+<!--
+EOT;
+if(isset($db_sitemsg['reply']['0']) && $db_sitemsg['reply']['0'] && $psot_sta){
+print<<<EOT
+-->
+					<div style="background:#fffeed;padding:5px 10px;margin:0 0 5px;">{$db_sitemsg[reply][array_rand($db_sitemsg[reply])]}</div>
+<!--
+EOT;
+}elseif(isset($db_sitemsg['post']['0']) && $db_sitemsg['post']['0']){print<<<EOT
+-->
+					<div style="background:#fffeed;padding:5px 10px;margin:0 0 5px;">{$db_sitemsg[post][array_rand($db_sitemsg[post])]}</div>
+<!--
+EOT;
+}print<<<EOT
+-->
+					<div class="B_editor B_editor_fp cc" id="fp_editor" onClick="loadEditor(event);">
+<!--
+EOT;
+$_G['uploadtype'] && $db_uploadfiletype = $_G['uploadtype'];
+$db_uploadfiletype = (is_array($db_uploadfiletype) ? $db_uploadfiletype : unserialize($db_uploadfiletype));
+$attachAllow = pwJsonEncode($db_uploadfiletype);
+$imageAllow = pwJsonEncode(getAllowKeysFromArray($db_uploadfiletype, array('jpg','jpeg','gif','png','bmp')));
+print <<<EOT
+-->
+						<div class="B_editor_toolbar B_editor_minitoolbar">
+							<div class="B_tar">
+								<a href="javascript:gotoEditor();" class="fr" hidefocus="true" id="gotoedit">进入高级模式</a>
+							</div>
+							<ul><li class="edit_toolbar">
+								<a href="javascript:;" class="B_ico" title="加粗" data-type="wy_boldIcon" hidefocus="true" style="display:block"><div class="B_boldIcon B_do"></div></a>
+								<div class="B_icoDown" style="display: block;" data-type="wy_foreColor"><a href="javascript://" class="B_ico"><div class="B_foreColor B_do1" title="文字颜色"><span style="background-color: rgb(255, 0, 0);"></span>文字颜色</div></a><em class="B_do1"></em></div>
+								<a href="javascript:;" class="B_ico" title="插入链接" data-type="wy_linkIcon" hidefocus="true" style="display:block"><div class="B_linkIcon B_do"></div></a>
+								<a href="javascript:;" class="B_icoBig" title="图片" data-type="wy_photoBtn" hidefocus="true" style="display:block"><div class="B_photoIcon B_do"></div></a>
+<!--
+EOT;
+if ($db_allowupload) {print <<<EOT
+-->
+								<a href="javascript:;" class="B_icoBig" title="附件" data-type="wy_fileBtn" hidefocus="true" style="display:block"><div class="B_fileIcon B_do"></div></a>
+<!--
+EOT;
+}print <<<EOT
+-->
+							</li></ul>
+						</div>
+						<textarea id="textarea" name="atc_content" style="width:100%;height:140px;padding:0;margin:0;border:0 none;overflow:auto;" onKeyDown="quickpost(event)"></textarea>
+						<span id="autosave"></span><div id="menu_editor" class="wy_menu_B" style="display: none;"></div>
+					</div>
+					<div class="mb10">
+<!--
+EOT;
+if($db_gdcheck & 4){
+$checkCode = L::loadClass('checkcode', 'site');
+$checkCodeString = $checkCode->getCheckCodeTemplate();
+print <<<EOT
+-->
+						<dl class="cc">
+							<dt class="dtA">验证码: </dt>
+							<dd><input class="input" type="text" name="gdcode" size="5" tabindex="6" onFocus="showgd();" id="fs_gdcode"/><br />
+							<div id="ckcode" style="display:none"></div>
+$checkCodeString
+							</dd>
+						</dl>
+<!--
+EOT;
+}list(,$showq)=explode("\t",$db_qcheck);
+if($db_ckquestion & 4 && (!$postq || $winddb[postnum] < $postq) && $db_question){
+$qkey = array_rand($db_question);
+if($db_imagequestion){
+	$question = '<img id="ckquestion" src="ckquestion.php?q='.$qkey.'&t='.$timestamp.'" align="top">';
+}else{
+	$question = $qkey<0 ? getMachineQuestion_1() :  $db_question[$qkey];
+}
+$q_a = $question.($showq && $qkey>0?" （答案：".$db_answer[$qkey] . '）' : '');
+print <<<EOT
+-->
+<style type="text/css">
+.dtA{width:75px;margin-right:5px;}
+.fpbtn{margin-left:80px;}
+</style>
+						<dl class="cc">
+							<dt class="dtA">验证问题:</dt>
+							<dd><input class="input" type="text" name="qanswer" /> <input type="hidden" name="qkey" value="$qkey" />{$q_a}</dd>
+						</dl>
+<!--
+EOT;
+}print <<<EOT
+-->
+					</div>
+					<div><span class="mr20"><span class="btn" style="margin:0;"><span><button title="Ctrl+Enter快速发布" type="submit" name="Submit">提 交</button></span></span></span>
+					</div>
+				</div>
+			</td>
+			<td style="width:250px;">
+				<div id="fp_face" class="fp_show">
+					<div class="fp_show_tab">
+						<b id="doleft" style="display:none" class="tab_left fl" onClick="PwFace.showTab(-1)" title="上一个">上一个</b>
+						<b id="doright" style="display:none" class="tab_right fr" onClick="PwFace.showTab(1)" title="下一个">下一个</b>
+						<ul id="face_tab"></ul>
+					</div>
+					<div class="fp_show_cont">
+                    	<div class="fp_show_height">
+						<ul class="cc" id="face_main"></ul>
+                        </div>
+                        <div id="face_page" class="fp_show_pages cc"></div>
+					</div>
+				</div>
+			</td>
+		</tr>
+	</table>
+	</form>
+</div>
+<!--
+EOT;
+$imageConfigTabs = array();
+($db_allowupload && $_G['allowupload'] && (!$_G['allownum'] || $winddb['uploadnum'] < $_G['allownum'])) && $imageConfigTabs[] = 'local';
+$db_phopen && $imageConfigTabs[] = 'album';
+$imageConfigTabs[] = 'network';
+$imageConfigTabs = "'" . implode("','", $imageConfigTabs) . "'";
+//max attachnum
+$uploadedNum = $winddb['uploadtime'] < $tdtime ? 0 : $winddb['uploadnum'];
+if ($_G['allownum'] > 0 && $_G['allownum'] - $uploadedNum<$db_attachnum){
+	$maxAttachnum = $_G['allownum'] - $uploadedNum;
+} else {
+	$maxAttachnum = $db_attachnum;
+}
+print <<<EOT
+-->
+<script type="text/javascript">
+var titlemax = '$db_titlemax';
+var postmax = '$db_postmax';
+initCheckTextNum('atc_title','atc_title_warn',titlemax);
+//initCheckTextNum('textarea','atc_content_warn',postmax);
+
+document.FORM._hexie.value = '$tmpVerify';
+
+var charset='$db_charset';
+var bbsurl ="{$B_url}";
+var BREEZE_BASE_PATH = getBaseUrl() + 'js/breeze/';
+var editor = null;
+var attachConfig = {
+		'attachnum' : parseInt('$maxAttachnum'),
+		'list' : {},
+		'url' : 'pweditor.php?action=attach',
+		'filetype' : $attachAllow
+	},
+	imageConfig = {
+		tabs : [$imageConfigTabs],
+		url : 'pweditor.php?action=image',
+		filetype : $imageAllow
+	};
+function loadEditor(e) {
+	var e = is_ie ? event : e;
+	var o = e.srcElement || e.target;
+	if (o.id == 'gotoedit') return;
+
+	getObj('fp_editor').onclick = '';
+	loadjs('js/breeze/core/base.js', '', '', function() {
+		B.require('editor.editor', 'editor.ubb', function(B){
+			editor = B.editor(B.$('#textarea'), 'edit_toolbar', 'boldIcon foreColor linkIcon photoBtn fileBtn',{'currentMode' : 'UBB'});
+			var s = B.hasClass(o, 'B_do') ? o.parentNode : (B.hasClass(o, 'B_do1') ? o : null);
+			if (s && s.events && s.events['mousedown']){
+				var handlers = s.events['mousedown'],evt = {};
+				evt.preventDefault = function(){};
+				for (var i in handlers) {
+					handlers[i](evt);
+				}
+			}
+		});
+	});
+}
+var dataStorage = {
+	save : function() {
+		if (PwStorage.save('msg', document.FORM.atc_content.value)) {
+			PwStorage.save('title', document.FORM.atc_title.value, 1);
+			SetCookie('ds', 1);
+			return true;
+		}
+		return false;
+	},
+	load : function() {
+		document.FORM.atc_title.value = PwStorage.load('title') || '';
+		var msg = PwStorage.load('msg');
+		if (msg) {
+			document.FORM.atc_content.value = msg;
+			document.FORM.atc_content.focus();
+		}
+		SetCookie('ds', 0);
+	}
+}
+function gotoEditor() {
+	dataStorage.save();
+	location.href = 'post.php?fid=$fid';
+}
+</script>
+<script src="$db_htmdir/js/face.js"></script>
+<script type="text/javascript" src="js/post.js"></script>
+<script>
+document.FORM.Submit.disabled = false;
+var charset = '$db_charset';
+var stylepath = '$stylepath';
+var cate = '$db_forcetype';
+var cnt = 0;
+
+PwFace.init('face_tab', 'face_main', 3, 16);
+function checkpost(obj){
+	if(cate==1 && obj.p_type!=null && obj.p_type.value==0){
+		showDialog("error","没有选择主题分类",2);
+		obj.p_type.focus();
+		return false;
+	}
+	if(obj.atc_title.value==""){
+		showDialog("error","标题不能为空",2);
+		obj.atc_title.focus();
+		return false;
+	} else if(strlen(obj.atc_title.value)>$db_titlemax){
+		showDialog("error","标题超过最大长度 $db_titlemax 个字节",2);
+		obj.atc_title.focus();
+		return false;
+	}
+	if(strlen(obj.atc_content.value)<$db_postmin){
+		showDialog("error","文章内容少于 $db_postmin 个字节",2);
+		obj.atc_content.focus();
+		return false;
+	} else if(strlen(obj.atc_content.value)>$db_postmax){
+		showDialog("error","文章内容大于 $db_postmax 个字节",2);
+		obj.atc_content.focus();
+		return false;
+	}
+	document.FORM.Submit.disabled = true;
+	cnt++;
+	if(cnt!=1){
+		showDialog("warning","Submission Processing. Please Wait");
+		return false;
+	}
+	//End Add by liaohu for addfloor
+	try{
+		if (is_ie && newAtt.aid < 2) {
+			document.FORM.encoding = "application/x-www-form-urlencoded";
+		}
+	}catch(e){}
+	return true;
+}
+//Begin Add by liaohu for addfloor
+function postfloor(){
+	var url = 'post.php?fid=$fid';
+	ajax.send(url,document.FORM,function(){
+		var rText = ajax.request.responseText.split("//t//");
+		if('success' == rText[0]){
+			var html = rText[1].replace("&lt;!-- --\&gt;","");
+			html.replace("&lt;!--","");
+			html.replace("--&gt;","");
+			document.forms['delatc'].innerHTML += html;
+		}else{
+			showDialog("warning",rText);
+		}
+		cnt = 0;
+		document.FORM.reset();
+		document.FORM.Submit.disabled = false;
+		document.FORM.target = '';
+
+		if(getObj('creditlocation')){
+			setTimeout(function(){
+					getObj('creditlocation').parentNode.removeChild(getObj('creditlocation'));;
+				},3000);
+		};
+	});
+}
+//End Add by liaohu for addfloor
+function checklength(theform,postmaxchars){
+	if(postmaxchars != 0){
+		message = '<br />系统限制最大字节数:'+postmaxchars+' 字节';
+	} else{
+		message = '';
+	}
+	showDialog("warning",'您的信息已有字节数: '+strlen(theform.atc_content.value)+' 字节'+message);
+}
+function addsmile(NewCode){
+    getObj('textarea').value += ' [s:'+NewCode+'] ';
+}
+window.onbeforeunload = function() {
+	saveData('msg', document.FORM.atc_content.value);
+}
+if (FetchCookie('ds') == 1) {
+	try{dataStorage.load();}catch(e){}
+}
+
+function showFace() {
+	var menus = getObj("face_tab").getElementsByTagName('li');
+	if(menus){
+		showTabBtn(menus.length);
+	}
+}
+
+if (document.all) {
+	window.attachEvent('onload', showFace); //对于IE
+} else {
+	window.addEventListener('load', showFace,false); //对于FireFox
+}
+
+</script>
+<!--
+EOT;
+if($anonymity == 1 || $viewpic == 1){print <<<EOT
+-->
+<script type="text/javascript">
+var anonymity = '$anonymity';
+var viewpic = "$viewpic";
+var _ONLOAD=window.onload;
+window.onload=function(){
+	if (viewpic == 1) {
+		option = 'viewpic';
+		popLogin(option);
+	}
+	if (anonymity == 1){
+		_ONLOAD?_ONLOAD():0;
+		var option = '';
+		var allElement=document.FORM.elements;
+		document.FORM.onsubmit = function(){
+			popLogin(option);
+			return false;
+		}
+		var obj = document.getElementById("fs_gdcode");
+		if(obj){
+			obj.onfocus = function(){
+				return false;
+			}
+		}
+		for (var i=0,len=allElement.length;i<len;i++){
+			if(document.all){
+				allElement[i].attachEvent('onclick',function(){
+					popLogin(option);
+				})
+			}else{
+				allElement[i].addEventListener("click",function(){
+					popLogin(option);
+				},false)
+			}
+		}
+	}
+
+}
+function popLogin(option){
+	var url = '{$db_bbsurl}/pw_ajax.php?action=poplogin&anchor=anchor&tid={$tid}&fpage={$fpage}&toread=$toread{$urladd}&page={$page}';
+	if(option){
+		url += '&option='+option;
+	}
+	sendmsg(url,'');
+}
+</script>
+<!--
+EOT;
+}if($ifmagic){
+$tmpReferer = urlencode($pwServer['HTTP_REFERER']);
+print <<<EOT
+-->
+<script>
+var myshow_wink={target:'tipTop',code:'{$magicid}',name:'{$magicname}',refer:'{$tmpReferer}'};
+
+</script>
+<script src="js/winks.js" type="text/javascript"></script>
+<!--
+EOT;
+}print<<<EOT
+-->
+		</div>
+	</div>
+<div class="footer-wrap">
+<div id="bottom"></div>
+<!--
+EOT;
+list($htmlAdvert,$arrayAdvert) = pwAdvert('Site.Footer',$fid,0,'read');
+if($htmlAdvert){print <<<EOT
+-->
+<center style="margin:5px 0;">$htmlAdvert</center>
+<!--
+EOT;
+}print <<<EOT
+-->
+<div class="c"></div>
+<div id="footer">
+<div id="mode-footer" class="mt">
+	<div class="bottom cc tac">
+			<ul>
+<!--
+EOT;
+
+foreach($_Navbar['foot'] as $key => $value){
+	$html = buildNavLinkHtml($value['data']);
+print <<<EOT
+-->
+			<li>$html</li>
+<!--
+EOT;
+};
+print <<<EOT
+-->
+			<li><a href="job.php?action=erasecookie&verify=$GLOBALS[loginhash]" rel="nofollow">清除Cookies</a></li>
+			</ul>
+		</div>
+	</div>
+	<div class="f9 gray tac">Powered by <a href="http://www.phpwind.net/" target="_blank"><b>phpwind</b></a> <a href="http://www.phpwind.net/" target="_blank" class="b s2">v$wind_version</a> <a href="http://www.phpwind.com/certificate.php?host={$pwServer['HTTP_HOST']}" rel="nofollow"><b>Certificate</b></a> Code &copy;2003-2011 <a href="http://www.phpwind.com/" target="_blank"><b>phpwind.com</b></a> Corporation $db_icp $db_statscode<span id="stats"></span>
+<!--
+EOT;
+if($db_ystats_ifopen=='0'){print <<<EOT
+-->
+<script type="text/javascript" src="http://js.tongji.linezing.com/{$db_ystats_unit_id}/tongji.js"></script>
+<noscript>
+	<a href="http://www.linezing.com" target="_blank"><img alt="tongji" src="http://img.tongji.linezing.com/{$db_ystats_unit_id}/tongji.gif"/></a>
+</noscript>
+<!--
+EOT;
+}print <<<EOT
+-->
+	</div>
+</div>
+</div>
+<script type="text/javascript" src="js/global.js"></script>
+</body></html>
+<script>
+var openmenu = {{$db_menuinit}};
+read.InitMenu();
+</script>
+<!--
+EOT;
+?>-->

@@ -1,0 +1,173 @@
+<!--<?php
+$btns = array();
+$db_pwcode && $btns[] = 'pwcodeIcon';
+$db_setform && $btns[] = 'setformIcon';
+$db_windmagic && $allowUseMagic && $btns[] = 'magicIcon';
+($db_xiami_music_open && isset($db_apps_list['11']) && $db_apps_list['11']['status'] == 1) && $btns[] = 'musicIcon';
+count($btns) > 2 && $btns = array_merge(array_slice($btns, 0, 2), array('br'), array_slice($btns, 2));
+$db_allowupload && $_G['allowupload'] && $_G['allowremotepic'] && $btns[] = 'remotePid';
+$btns = $btns ? ",'" . implode(' ', $btns) . "'" : '';
+$fileBtn = ($db_allowupload && $_G['allowupload'] && $pwforum->allowupload($winddb, $groupid)) ? ' fileBtn' : '';
+$photoBtn = ($db_allowupload && $_G['allowupload'] && $pwforum->allowupload($winddb, $groupid)) ? ' photoBtn' : '';
+$musicBtn = $_G['allowmusic'] ? ' musicBtn' : '';
+$videoBtn = $_G['allowvideo'] ? ' videoBtn' : '';
+
+$imageConfigTabs = array();
+$winddb['uploadtime'] < $tdtime && $winddb['uploadnum'] = 0;
+($db_allowupload && $_G['allowupload'] && (!$_G['allownum'] || $winddb['uploadnum'] < $_G['allownum'])) && $imageConfigTabs[] = 'local';
+($db_phopen && $winduid) && $imageConfigTabs[] = 'album';
+$imageConfigTabs[] = 'network';
+$imageConfigTabs = "'" . implode("','", $imageConfigTabs) . "'";
+$allowAt = $_G['allowat'] ? 'true' : 'false';
+$allowAtNum = intval($_G['atnum']);
+//max attachnum
+$uploadedNum = $winddb['uploadtime'] < $tdtime ? 0 : $winddb['uploadnum'];
+if ($_G['allownum'] > 0 && $_G['allownum'] - $uploadedNum<$db_attachnum){
+	$maxAttachnum = $_G['allownum'] - $uploadedNum;
+} else {
+	$maxAttachnum = $db_attachnum;
+}
+//edit atusers
+$atusers = '';
+$tmpPid = intval($pid);
+if($action=='modify' && S::isArray($atcdb['atusers'][$tmpPid])){
+	$atusers = sprintf("'%s'",implode("','",$atcdb['atusers'][$tmpPid]));
+}
+print <<<EOT
+-->
+<link rel="stylesheet" href="js/breeze/editor/style/style.css?{$GLOBALS['wind_repair']}" />
+<textarea id="textarea" name="atc_content" class="B_textarea" tabindex="200">{$atc_content}</textarea>
+<script src="$db_htmdir/js/face.js"></script>
+<script>var BREEZE_BASE_PATH = getBaseUrl() + 'js/breeze/';</script>
+<script src="js/breeze/core/base.js"></script>
+<script type="text/javascript">
+//记录标题和内容，编辑器初始化完成调用(wysisyg_editor.htm line66)
+function initStorage(){
+		if(!editor.currentMode){
+			return false;
+		}
+		var mode=editor.currentMode;
+		B.require('util.localStorage', function(){
+				if(B.util.localStorage&&B.util.localStorage.get!=undefined){
+					var locTitle=B.util.localStorage.get('post_title');
+					var locContent=B.util.localStorage.get('post_content');
+					if(locTitle){
+						getObj("atc_title").value=locTitle;
+					}
+					if(locContent){
+						editor.setHTML(mode=="default"?locContent:editor.html2ubb(locContent));
+					}
+				}
+		});
+}
+//保存数据
+function savePostDateAndGo(url){
+		var title=getObj("atc_title").value;
+		var content=editor.getHTML();
+		if(editor){
+			if(B.util==undefined){
+				B.require('util.localStorage', function(){
+					if(B.util.localStorage&&B.util.localStorage.get!=undefined){
+						if(title!=""){
+							B.util.localStorage.set('post_title', title);
+						}else{
+							B.util.localStorage.remove('post_title');
+						}
+						if(content){
+							B.util.localStorage.set('post_content', content);
+						}
+						//location.href=url;
+					}	
+				});
+			}else{
+				if(B.util.localStorage&&B.util.localStorage.get!=undefined){
+					if(title!=""){
+						B.util.localStorage.set('post_title', title);
+					}else{
+						B.util.localStorage.remove('post_title');
+					}
+					if(content){
+						B.util.localStorage.set('post_content', content);
+					}
+					//location.href=url;
+				}
+			}
+		}
+	return false;	
+}
+//清除储存的数据
+function clearPostData(){
+		if(typeof B!="undefined"&&B.util!=undefined){
+			B.util.localStorage.remove('post_title');
+			B.util.localStorage.remove('post_content');
+		}
+}
+function isEmptyObject(obj){
+	for (var name in obj) return false;
+	return true;
+}
+var attachConfig = {
+		'attachnum' : parseInt('$maxAttachnum'),
+		'list' : {{$attach}},
+		'sell' : {ifopen : '$htmlsell', price : '$db_sellset[price]', income : '$db_sellset[income]', credit : $sellCredit},
+		'enhide' : {ifopen : '$htmlhide', credit : $enhideCredit},
+		'ifhide' : '$attachHide',
+		'postData' : {fid : '$fid'},
+		'remoteAttUrl':'$db_ftpweb',
+		'filetype' : $attachAllow,
+		'atUserList':[{$atusers}]
+	},
+	imageConfig = {
+		tabs : [$imageConfigTabs],
+		url : 'pweditor.php?action=image',
+		filetype : $imageAllow
+	},
+	charset = '$db_charset',
+	editor,
+	toolbar = [
+		'fontSelector sizeSelector br boldIcon italicIcon underlineIcon strikethroughIcon foreColor backColor removeformat',
+		'leftIcon centerIcon rightIcon pgformatIcon br olIcon ulIcon indentIcon outdentIcon',
+		'hrIcon quoteIcon codeIcon sellIcon postIcon br linkIcon unlinkIcon tableIcon undoIcon redoIcon',
+		'faceBtn{$photoBtn}{$fileBtn}{$musicBtn}{$videoBtn}'{$btns}
+	],
+	mini = 'fontSelector sizeSelector boldIcon italicIcon underlineIcon foreColor linkIcon leftIcon centerIcon rightIcon faceBtn photoBtn fileBtn';
+onReady(function(){
+	var textarea=getObj("textarea");
+	B.require('editor.editor', 'editor.ubb', function(B){
+		editor = B.editor(textarea, toolbar, mini, {
+			'currentMode' : FetchCookie('editmode') == 1 ? 'UBB' : 'default',
+			'isSaveMode' : true,
+			'isUBB' : ('{$htmcheck}' == 'checked') ? false : true,
+			'allowAt':{$allowAt},
+			'allowAtLen':{$allowAtNum}
+		});
+		if (!isEmptyObject(attachConfig.list)){
+			var fileIcon = B.$('.B_fileIcon', editor.area).parentNode;
+			B.insertAfter(B.createElement('<div class="B_attachn"><div></div></div>'), fileIcon);
+		}
+		//初始化localStorage数据
+		if (FetchCookie('ds') == 1) {
+			try{dataStorage.load();}catch(e){}
+		}else{
+			initStorage();
+		}
+		if(attachConfig&&attachConfig.atUserList){
+			var list=attachConfig.atUserList;
+			if(list.length<1){
+				return false;
+			}
+			if(typeof pwSearch!="undefined"){
+				pwSearch.init('message.php?type=ajax','action=friend','resultd',"",function(obj){
+					for(var i=0,len=list.length;i<len;i++){
+						pwSearch.add(list[i])
+					}
+				});
+			}
+			
+		}
+	});
+})
+</script>
+<!--
+EOT;
+?>

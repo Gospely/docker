@@ -1,0 +1,301 @@
+<!--<?php
+if($action == 'readme'){
+print <<<EOT
+-->
+<section class="section">
+	<div class="main cc">
+		<textarea class="pact" readonly="readonly">
+			$wind_licence
+		</textarea>
+	</div>
+	<form action="$basename" id="form" method="post">
+		<input type="hidden" name="action" value="$next">
+	</form>
+	<div class="bottom tac">
+		<a href="javascript:;" onclick="document.getElementById('form').submit();return false;" class="btn">$lang[accept]</a>
+	</div>
+</section>
+<!--
+EOT;
+}elseif($action == 'writable'){print <<<EOT
+-->
+<section class="section">
+	<div class="step">
+		<ul>
+			<li class="current"><em>1</em>$lang[environment_check]</li>
+			<li><em>2</em>$lang[insert_data]</li>
+			<li><em>3</em>$lang[install_complete]</li>
+		</ul>
+	</div>
+	<div class="server">
+		<table width="100%">
+			<tr>
+				<td class="td1">$lang[check_enrironment]</td>
+				<td class="td1" width="25%">$lang[current_server]</td>
+				<td class="td1" width="25%">$lang[recommend_env]</td>
+				<td class="td1" width="25%">$lang[lowest_env]</td>
+			</tr>
+			<tr>
+				<td>$lang[os]</td>
+				<td>$currentEnvironment[os]</td>
+				<td>$recommendEnvironment[os]</td>
+				<td>$lowestEnvironment[os]</td>
+			</tr>
+			<tr>
+				<td>$lang[phpversion]</td>
+				<td>$currentEnvironment[version]</td>
+				<td>$recommendEnvironment[version]</td>
+				<td>$lowestEnvironment[version]</td>
+			</tr>
+			<tr>
+				<td>$lang[attach_upload]</td>
+				<td>$currentEnvironment[upload]</td>
+				<td>$recommendEnvironment[upload]</td>
+				<td>$lowestEnvironment[upload]</td>
+			</tr>
+			<tr>
+				<td>$lang[disk_space]</td>
+				<td>$currentEnvironment[space]</td>
+				<td>$recommendEnvironment[space]</td>
+				<td>$lowestEnvironment[space]</td>
+			</tr>
+		</table>
+		<table width="100%">
+			<tr>
+				<td class="td1">$lang[right_check]</td>
+				<td class="td1" width="25%">$lang[current_status]</td>
+				<td class="td1" width="25%">$lang[required_status]</td>
+			</tr>
+<!--
+EOT;
+foreach ($w_check as $value) {
+$valueStatus = in_array($value, $writable) ? '<span class="error_span">&times;</span>' . $lang[writable_error] : '<span class="correct_span">&radic;</span>' . $lang[writable_success];
+print <<<EOT
+-->
+			<tr>
+				<td>$value</td>
+				<td>$valueStatus</td>
+				<td><span class="correct_span">&radic;</span>$lang[writable_success]</td>
+			</tr>
+<!--
+EOT;
+}print <<<EOT
+-->
+		</table>
+	</div>
+	<div class="bottom tac">
+		<form action="$basename" id="form" method="post">
+			<input type="hidden" name="action" value="$next">
+		</form>
+		<a href="javascript:;" onclick="document.getElementById('form').action.value='$action';document.getElementById('form').submit();return false;" class="btn">$lang[recheck]</a><a href="javascript:;" onclick="document.getElementById('form').submit();return false;" class="btn">$lang[step_next]</a>
+	</div>
+</section>
+<!--
+EOT;
+}elseif($action == 'database'){print <<<EOT
+-->
+<section class="section">
+	<div class="step">
+		<ul>
+			<li class="on"><em>1</em>$lang[environment_check]</li>
+			<li class="current"><em>2</em>$lang[insert_data]</li>
+			<li><em>3</em>$lang[install_complete]</li>
+		</ul>
+	</div>
+	<div class="server">
+		<form id="install" action="$basename?" method="post">
+			<input type="hidden" name="action" value="$action">
+			<input type="hidden" name="step" value="2">
+		<table width="100%">
+			<tr>
+				<td class="td1" width="100">$lang[databaseinfo]</td>
+				<td class="td1" width="200">&nbsp;</td>
+				<td class="td1">&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tar">$lang[dbhost]：</td>
+				<td><input type="text" name="dbhost" value="localhost" class="input"></td>
+				<td><span class="gray">$lang[databasetiop]</span></td>
+			</tr>
+<!--
+EOT;
+if ($mysqlichecked) {print <<<EOT
+-->
+			<tr>
+			  <td class="tar">$lang[database]：</td>
+			  <td><input type="radio" name="database" id="mysqli" value="mysqli" $mysqlichecked />&nbsp;<label for="mysqli" style="margin-right:20px;">MySQLi</label><input type="radio" name="database" value="mysql" id="mysql" />&nbsp;<label for="mysql">MySQL</label>
+			  </td>
+			  <td></td>
+			</tr>
+<!--
+EOT;
+}else{print <<<EOT
+-->
+			<input type="hidden" name="database" value="mysql" />
+<!--
+EOT;
+}print <<<EOT
+-->
+			<tr>
+				<td class="tar">$lang[dbuser]：</td>
+				<td><input type="text" name="dbuser" value="root" class="input"></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td class="tar">$lang[dbpw]：</td>
+				<td><input type="text" name="dbpw" value="" class="input"></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td class="tar">$lang[dbname]：</td>
+				<td><input type="text" name="dbname" value="" class="input"></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td class="tar">$lang[dbpres]：</td>
+				<td><input type="text" name="PW" value="pw_" class="input"></td>
+				<td><span class="gray">$lang[dbpretip]</span></td>
+			</tr>
+		</table>
+		<table width="100%">
+			<tr>
+				<td class="td1" width="100">$lang[managermsg]</td>
+				<td class="td1" width="200">&nbsp;</td>
+				<td class="td1">&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tar">$lang[manager]：</td>
+				<td><input type="text" name="manager" value="admin" class="input"></td>
+				<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class="tar">$lang[pwd]：</td>
+				<td><input type="text" name="manager_pwd" class="input"></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td class="tar">$lang[ckpwd]：</td>
+				<td><input type="text" name="manager_ckpwd" class="input"></td>
+				<td></td>
+			</tr>
+			<tr>
+				<td class="tar">Email：</td>
+				<td><input type="text" name="manager_email" class="input" value="admin@admin.com"></td>
+				<td></td>
+			</tr>
+		</table>
+		</form>
+	</div>
+	<div class="bottom tac">
+		<a href="javascript:;" onclick='window.location.href="javascript:history.go(-1)";return false;' class="btn">$lang[step_pre]</a><a href="javascript:;" onclick="postcheck();return false;" class="btn">$lang[step_next]</a>
+	</div>
+</section>
+<script type="text/javascript">
+function postcheck(){
+	var obj = document.getElementById('install');
+	if (!obj.dbhost.value) {
+		alert('$lang[error_dbhost]');
+		obj.dbhost.focus();
+		return false;
+	} else if (!obj.dbuser.value) {
+		alert('$lang[error_dbuser]');
+		obj.dbuser.focus();
+		return false;
+	} else if (!obj.dbname.value) {
+		alert('$lang[error_dbname]');
+		obj.dbname.focus();
+		return false;
+	} else if (!obj.manager.value) {
+		alert('$lang[error_adminname]');
+		obj.manager.focus();
+		return false;
+	} else if (!obj.manager_pwd.value) {
+		alert('$lang[error_adminpwd]');
+		obj.manager_pwd.focus();
+		return false;
+	} else if (obj.manager_pwd.value != obj.manager_ckpwd.value) {
+		alert('$lang[error_ckpwd]');
+		obj.manager_ckpwd.focus();
+		return false;
+	} else if (!obj.manager_email.value) {
+		alert('$lang[error_adminemail]');
+		obj.manager_email.focus();
+		return false;
+	} else if (!obj.dbpw.value && !confirm('$lang[error_dbpw]')) {
+		return false;
+	}
+	obj.submit();
+}
+</script>
+<!--
+EOT;
+}elseif($action == 'view'){print <<<EOT
+-->
+<section class="section">
+<img src="$basename?action=initdata&step=2" width="0" height="0" />
+	<div class="step">
+		<ul>
+			<li class="on"><em>1</em>$lang[environment_check]</li>
+			<li class="on"><em>2</em>$lang[insert_data]</li>
+			<li class="current"><em>3</em>$lang[install_complete]</li>
+		</ul>
+	</div>
+	<div class="install" id="log">
+		<ul id="loginner">
+		</ul>
+	</div>
+	<form id="install" action="$basename?" method="post">
+		<input type="hidden" name="action" value="$next">
+	</form>
+	<div class="bottom tac">
+		<a href="javascript:;" class="btn_old">$lang[installing]</a>
+	</div>
+</section>
+<script type="text/javascript">
+var log = "$log";
+var n = 0;
+var timer = 0;
+log = log.split('<wind>');
+function GoPlay(){
+	if (n > log.length-1) {
+		n=-1;
+		clearIntervals();
+	}
+	if (n > -1) {
+		postcheck(n);
+		n++;
+	}
+}
+function postcheck(n){
+	document.getElementById('loginner').innerHTML += '<li><span class="correct_span">&radic;</span>' + log[n] + '</li>';
+	document.getElementById('log').scrollTop = document.getElementById('log').scrollHeight;
+}
+function setIntervals(){
+	timer = setInterval('GoPlay()',50);
+}
+function clearIntervals(){
+	clearInterval(timer);
+	document.getElementById('install').submit();
+}
+setTimeout(setIntervals, 100);
+</script>
+<!--
+EOT;
+}elseif($action == 'finish'){
+$indexUrl = $bbsurl . '/index.php';
+print <<<EOT
+-->
+<section class="section">
+	<div class="main cc">
+		<div class="success_tip">
+			<a href="$indexUrl" class="f16 b">$lang[install_completed]</a>
+			<p>$lang[complete_tips]<img src="http://nt.phpwind.net/src/install_stats.php?url=$bbsurl&version=$wind_version&type=bbs&charsets=$lang[db_charset]&c=$ceversion&from=$wind_from" width="0" height="0"></p>
+		</div>
+	</div>
+</section>
+<script type="text/javascript">
+setTimeout(function(){window.location.href="$indexUrl"}, 2000);
+</script>
+<!--
+EOT;
+}?>-->

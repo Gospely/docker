@@ -1,0 +1,79 @@
+<!--<?php
+if($page==1){
+
+print <<<EOT
+-->
+<!--辩论开始-->
+<div class="debate">
+	<div class="debate_table mb10">
+		<table width="100%">
+			<tr class="vt">
+				<td style="padding-right:20px;"><h4><strong class="f14 s2 mr10">正方观点({$tmpob}%)</strong><span class="mr10">$debate[obvote] 票</span><a href="read.php?tid=$tid&stand=1&ds=1#a" class="s4">(查看正方用户)</a></h4><p>{$debate['obtitle']}</p></td>
+				<td class="de_ratio"><div class="de_ratio_v" style="height:{$tmpob}%;"><span></span></div></td>
+				<th width="80"></th>
+				<td class="de_ratio"><div class="de_ratio_s" style="height:{$tmpre}%;"><span></span></div></td>
+				<td style="padding-left:20px;"><h4><strong class="f14 s4 mr10">反方观点({$tmpre}%)</strong><span class="mr10">$debate[revote] 票</span><a href="read.php?tid=$tid&stand=2&ds=1#a" class="s4">(查看反方用户)</a></h4><p>{$debate['retitle']}</p></td>
+			</tr>
+		</table>
+	</div>
+	<div class="debate_oper">
+		<table width="100%">
+			<tr>
+				<td>&nbsp;</td>
+				<td width="90" class="tar"><span class="bt2"><span><button onClick="dodebate('y',$tid);return false;">支持正方</button></span></span></td>
+				<th width="70"></th>
+				<td width="90" class="tal"><span class="bt2"><span><button onClick="dodebate('n',$tid);return false;">支持反方</button></span></span></td>
+				<td>&nbsp;</td>
+			</tr>
+		</table>
+	</div>
+</div>
+<script type="text/javascript">
+setCurrent('stand_$stand','stand_0','b s4');
+function dodebate(id,tid,pid) {
+	var url;
+	if (typeof pid == 'undefined') {
+		url = 'pw_ajax.php?action=debate&do=vote&tid='+tid+'&q='+id;
+	} else {
+		url = 'pw_ajax.php?action=debate&do=agree&tid='+tid+'&pid='+pid;
+	}
+	ajax.send(url,'',function(){
+		var str = ajax.request.responseText.split("\t");
+
+		if (typeof str[1] != 'undefined') {
+			if (str[1] == 'TID') {
+			try{
+				getObj('obvote').innerHTML = str[2];
+				getObj('revote').innerHTML = str[3];
+				getObj('obimgob').height = str[4]+'%';
+				getObj('reimgob').height = str[4]+'%';
+				getObj('obimgre').height = str[5]+'%';
+				getObj('reimgre').height = str[5]+'%';
+			}catch(e){}
+<!--
+EOT;
+if($fastpost && $groupid != 'guest'){print <<<EOT
+-->
+				var i = str[6] == 1 ? 2 : 1;
+				document.FORM.standpoint.options[i].disabled = true;
+				document.FORM.standpoint.options[str[6]].selected = true;
+<!--
+EOT;
+}print <<<EOT
+-->
+			} else {
+				getObj(id).innerHTML = str[1];
+			}
+		}
+		ajax.guide();
+		if (typeof pid == 'undefined' && typeof str[1] != 'undefined') {
+			setTimeout("window.location.reload();",2000);
+		}
+	});
+}
+</script>
+<!--辩论结束-->
+<!--
+EOT;
+}
+?>

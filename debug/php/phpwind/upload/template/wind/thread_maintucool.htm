@@ -1,0 +1,227 @@
+<!--<?php print <<<EOT
+-->
+<style type="text/css">
+.imgList ul{padding:0 13px 20px 3px;}
+.imgList li{float:left;width:25%;_width:24.8%;max-width:238px;}
+.imgList li dl{padding:10px 4px 10px 10px;}
+.imgList li dt{border:1px solid #e5e5e5;padding:10px;margin-bottom:8px;overflow:hidden; position:relative;}
+.imgList li:hover dt{border:1px solid $tablecolor;}
+.imgList li dt a img{border:0px solid #e9e7ea;background:#fff;display:block; text-align:center;width:100%;height:150px;}
+.imgList li dd{height:36px;overflow:hidden;}
+.imgList li dd h2{display:block;height:18px;font-weight:100;line-height:18px;overflow:hidden;}
+.imgList li .imgNum{padding:0 5px;height:18px;background:#fdfbf1;color:#6f6214;position:absolute;font-family:Simsun;right:10px;_right:15px;margin-top:-18px;}
+.imgView,.imgFav{width:17px;height:16px;overflow:hidden; text-indent:-2000em;display:block;margin-right:3px;}
+.imgView{background:url($imgpath/pwicon/view.png) no-repeat;}
+.imgFav{background:url($imgpath/pwicon/fav.png) no-repeat;}
+.pw_ulA{border-bottom:0 none;}
+.tr2 td{background:$headcolor;border-bottom:1px solid $headborder;}
+</style>
+	<table width="100%">
+		<tr class="tr2 thread_sort">
+			<td style="padding-left:12px;">
+<!--
+EOT;
+print <<<EOT
+-->
+			<span class="checkbox fr mr10" id="newwindows" unselectable="on">新窗</span>
+<script>
+var orderThreadsClass = {
+	orderThreads : function(orderway){
+		var orderway = orderway || 'tid';
+		var form = document.createElement("form");
+		form.action = "{$pageUrl}&search=img&page=$page#tabA";
+		form.method = "post";
+		var h_type = this.createInput("hidden","type","$type");
+		var h_search = this.createInput("hidden","search","1000");
+		var h_special = this.createInput("hidden","special","$special");
+		var h_orderway = this.createInput("hidden","orderway",orderway);
+		var h_asc = this.createInput("hidden","asc","DESC");
+		form.appendChild(h_type);
+		form.appendChild(h_search);
+		form.appendChild(h_special);
+		form.appendChild(h_orderway);
+		form.appendChild(h_asc);
+		document.body.appendChild(form);
+		setTimeout(function(){/*ie6*/
+			form.submit();
+		},0);
+		return false;
+	},
+	createInput : function(type,name,value){
+		var hidden = document.createElement("input");
+		hidden.type = type;
+		hidden.name = name;
+		hidden.value = value;//↓
+		return hidden;
+	}
+}
+function orderThreads(orderway){
+	orderThreadsClass.orderThreads(orderway);
+}
+</script>
+			排序：<a href="javascript:;" title="按图片数量" onclick="orderThreads('totalnum');" id="thread_sort_totalnum" {$orderClass[totalnum]}>图片数</a>&nbsp;|&nbsp;<a href="javascript:;" title="按发表时间排序" onclick="orderThreads('tid');" id="thread_sort_tid" {$orderClass[tid]}>最新发帖</a></td>
+		</tr>
+	</table>
+	<div class="imgList">
+		<ul class="cc">
+<!--
+EOT;
+$attachsService = L::loadClass('attachs','forum');
+foreach($threaddb as $key => $thread){
+if ($thread['ifshield']) $thread['cover'] = '';
+$attachImg = $attachsService->getThreadAttachMini($thread['cover'],$thread['ifthumb']);
+$threadUrl = ($forumset[iftucool] && $forumset['iftucoolbrowse']) ? "slide.php?tid={$thread[tid]}" : "read.php?tid={$thread[tid]}";
+print <<<EOT
+-->
+
+			<li>
+				<dl>
+					<dt>
+						<a href="$threadUrl#info" name="readlink" target="_self"><img src="$imgpath/blank.gif" style="background:url($attachImg) center center no-repeat;" /></a>
+						<span class="imgNum" title="共有{$thread[totalnum]}张图片">{$thread[totalnum]}</span>
+					</dt>
+					<dd>
+<div class="fr">
+<!--
+EOT;
+if($thread['specialsort']==PW_THREADSPECIALSORT_KMD){print <<<EOT
+-->
+	<a href="read.php?tid={$thread[tid]}" target="_blank">
+		<img src="$imgpath/pwicon/headtopic_4.gif" align="absmiddle" alt="孔明灯帖标志" title="孔明灯帖标志"/>
+	</a>
+<!--
+EOT;
+}elseif($thread[topped]==4){print <<<EOT
+-->
+							<img src="$imgpath/pwicon/headtopic_$thread[topped].gif" alt="置顶帖" title="置顶帖" />
+<!--
+EOT;
+}elseif($thread[topped]){print <<<EOT
+-->
+							<img src="$imgpath/$stylepath/file/headtopic_$thread[topped].gif" alt="置顶帖" title="置顶帖" />
+<!--
+EOT;
+}else{
+	if($thread[locked] == 1){print <<<EOT
+-->
+							<img src="$imgpath/$stylepath/thread/topiclock.gif" alt="锁定帖" title="锁定帖" />	
+<!--
+EOT;
+	}elseif($thread[locked] == 2){print <<<EOT
+-->
+							<img src="$imgpath/$stylepath/thread/topicclose.gif" alt="关闭帖" title="关闭帖" />	
+<!--
+EOT;
+}}if($thread[digest]){print <<<EOT
+-->
+							<img src="$imgpath/$stylepath/file/digest_$thread[digest].gif" alt="精华帖" title="精华帖" />
+<!--
+EOT;
+}print <<<EOT
+--></div>
+						<h2><a href="$threadUrl" class="s4" name="readlink" $isNewWindowOpen>$thread[subject]</a></h2>
+						<p><a href="{$db_userurl}$thread[authorid]" class="mr20 _cardshow" data-card-url="pw_ajax.php?action=smallcard&type=showcard&uid={$thread[authorid]}" target="_blank" data-card-key="{$thread['author']}">$thread[author]</a><span class="f10"><a href="read.php?tid={$thread['tid']}&ds=1" class="s4" title="回复">$thread[replies]</a>&nbsp;/&nbsp;<span title="查看">$thread[hits]</span></span></p>
+					</dd>
+				</dl>
+			</li>
+<!--
+EOT;
+}print <<<EOT
+-->
+		</ul>
+	</div>
+<script>
+function delload(){
+	var objTrs = getElementsByClassName('tr3',getObj('threadlist'));
+	var mover =	 function (){
+		var delObj = getElementsByClassName('s6 w',this);
+		if(delObj.length>0){
+			delObj[0].style.display='';
+		}
+	};
+	var mout = function (){
+		var delObj = getElementsByClassName('s6 w',this);
+		if(delObj.length>0){
+			delObj[0].style.display='none';
+		}
+	};
+	for (var i=0;i<objTrs.length ; i++ ){
+		objTrs[i].onmouseover = mover;
+		objTrs[i].onmouseout =  mout;
+	}
+}
+window.onReady(function(){
+	delload();
+	//调用气泡
+	var pw_bubble=new Bubble([{"name":"pw_all_tip_tucool","id":"pw_all_pos_tucool"},{"name":"pw_all_tip_usercard","id":"pw_all_pos_usercard"}]);
+		pw_bubble.init();
+	//新窗口切换
+	var openwin=new openWin();
+	openwin.init();	
+});
+
+//新窗口切换功能
+var openWin=function(){
+	this.obj=document.getElementById("newwindows");
+	this.links=document.getElementsByName("readlink");
+	this.cookieName="newwindows";
+}
+	openWin.prototype={
+		init:function(){
+			var self=this;
+			var ck=FetchCookie(this.cookieName);
+			if(ck==1){
+				this.add();
+			}else{
+				this.remove();
+			}
+			addEvent(this.obj,"click",function(){
+				self.toggle();
+			})
+			this.obj.onselectstart=function(){
+				return false;
+			}
+		},
+		add:function(){
+			if(hasClass(this.obj,"checkbox_checked")){
+				return false;
+			}else 
+			if(!hasClass(this.obj,"checkbox")){
+				addClass(this.obj,"checkbox_checked");
+			}else{
+				var classname=this.obj.className;
+				this.obj.className=classname.replace("checkbox","checkbox_checked");
+			}
+			for (i=0;i<this.links.length;i++) {
+				this.links[i].setAttribute("target","_blank");
+			}
+			SetCookie("newwindows",1);
+		},
+		remove:function(){
+			if(hasClass(this.obj,"checkbox")){
+				return false;
+			}else 
+			if(!hasClass(this.obj,"checkbox_checked")){
+				addClass(this.obj,"checkbox");
+			}else{
+				var classname=this.obj.className;
+				this.obj.className=classname.replace("checkbox_checked","checkbox");
+			}
+			for (i=0;i<this.links.length;i++) {
+				this.links[i].setAttribute("target","_self");
+			}
+			SetCookie("newwindows",0);
+		},
+		toggle:function(){
+			if (hasClass(this.obj,"checkbox_checked")) {
+				this.remove();
+			}else{
+				this.add();
+			}
+		}
+		
+	}
+</script>
+<!--
+EOT;
+?>

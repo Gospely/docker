@@ -1,0 +1,58 @@
+<!--<?php
+$b = $pro_tab;
+print <<<EOT
+-->
+<style type="text/css">
+.headTrgB{border-bottom:9px $uskin_appBgTop solid;}
+.main{background:url(u/themes/$uskin/images/$uskin_appBg) -1px 0 repeat-y;}
+.contUser{float:left;width:800px;}
+/*兼容:老版本-8.0beta-APP左右分栏样式*/
+</style>
+	<div class="menubar">
+		<div class="navB">
+			<ul class="one">
+				<li id="a_modify"><a href="profile.php?action=modify" hidefocus="true"><img src="u/images/set/modify.png"><span>帐号</span></a></li>
+<!--
+EOT;
+if ($db_authstate) {print <<<EOT
+-->
+				<li id="a_auth"><a href="profile.php?action=auth" hidefocus="true"><img src="u/images/set/auth.png"><span>认证</span></a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+				<li id="a_privacy"><a href="profile.php?action=privacy" hidefocus="true"><img src="u/images/set/privacy.png"><span>隐私</span></a></li>
+				<li id="a_userpay"><a href="userpay.php" hidefocus="true"><img src="u/images/set/userpay.png"><span>积分</span></a></a></li>
+				<li id="a_permission"><a href="profile.php?action=permission" hidefocus="true"><img src="u/images/set/permission.png"><span>权限</span></a></li>
+<!--
+EOT;
+/* platform weibo app */
+$siteBindService = L::loadClass('WeiboSiteBindService', 'sns/weibotoplatform/service'); /* @var $siteBindService PW_WeiboSiteBindService */
+if ($siteBindService->isOpen()) {
+print <<<EOT
+-->
+				<li id="a_weibobind"><a href="profile.php?action=weibobind"><img src="u/images/expand/connect.png"><span>帐号通</span></a></li>
+<!--
+EOT;
+}
+if ($_G['atclog']) {print <<<EOT
+-->
+				 <li id="a_log"><a href="profile.php?action=log" hidefocus="true"><img src="u/images/set/record.png"><span>操作记录</span></a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+			</ul>
+			<!--ul class="two">
+				<li><img src="u/images/set/remind.png">&nbsp;<a href="javascript:;">提醒</a></li>
+				<li id="a_toolcenter"><img src="u/images/set/toolcenter.png">&nbsp;<a href="profile.php?action=toolcenter">道具</a></li>
+				<li id="a_job"><img src="u/images/set/jobcenter.png">&nbsp;<a href="jobcenter.php?action=applied">任务</a></li>
+			</ul-->
+		</div>
+	</div>
+<script>
+setCurrent('a_$b','a_modify','current');
+</script>
+<!--
+EOT;
+?>-->

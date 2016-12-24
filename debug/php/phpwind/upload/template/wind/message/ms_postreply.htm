@@ -1,0 +1,90 @@
+<!--<?php
+list($face) = showfacedesign($winddb['icon'],1,'m');
+$messageServer = L::loadClass('message', 'message');
+$tid = $messageServer->matchTidByConetnt($message[content]);
+print <<<EOT
+-->
+<div id="showmessage"></div>
+<form action="$baseUrl?&type=ajax&action=postReply" name="FORM" method="post"  onsubmit="return MC.sendPostReply('$baseUrl?&type=ajax&action=postReply',document.FORM)"><input type="hidden" name="verify" value="$verifyhash" />
+<table width="100%" style="table-layout:fixed;">
+	<tr class="tr3 vt">
+    	<td class="face" style="vertical-align:top;"><a class="img_50" href="{$db_userurl}$winduid"><i><img width="48" height="48" src="{$face}"></i></a></td>
+        <td>
+            <div class="mb10">
+				<input type="hidden" id="tid" name="tid" value="{$tid}"/>
+                <input type="hidden" id="rid" name="rid" value="{$message[rid]}"/>
+                <input type="hidden" id="parentMid" name="parentMid" value="{$message[mid]}"/>
+<!--
+EOT;
+require_once PrintEot('wysiwyg_editor_message');
+print <<<EOT
+-->
+                <div class="c"></div>
+            </div>
+<!--
+EOT;
+if($db_gdcheck & 8){
+$checkCode = L::loadClass('checkcode', 'site');
+$checkCodeString = $checkCode->getCheckCodeTemplate();
+print <<<EOT
+-->            
+			<div class="mb10">
+				<div id="menu_gd" style="display:none;"></div>$checkCodeString
+				<input class="input" type="text" name="gdcode" id="gdinput" size="5" onfocus="showgd('menu_gd');" /><span class="mr5 cp" onclick="this.previousSibling.focus();">&nbsp;点此显示验证码</span>
+			</div>
+<!--
+EOT;
+}
+print <<<EOT
+-->              
+            <span class="btn" style="margin:0 10px 0 0;"><span><button type="submit" name="Submit">发送</button></span></span>
+<!--
+EOT;
+if($tid){
+print <<<EOT
+--> 
+			<span class="s3"><input name="ifMessagePostReply"  type="checkbox" value="1">&nbsp;回复到帖子</span>
+<!--
+EOT;
+}
+print <<<EOT
+--> 
+		</td>
+	</tr>
+</table>
+</form>
+<div id="menu_face" class="menu" style="display:none;"></div>
+<div id="menu_generalface" class="menu" style="display:none;"></div>
+<script type="text/javascript" src="js/desktop/plugin.js"></script>
+<script type="text/javascript" src="js/pw_search.js"></script>
+<script type="text/javascript" src="js/lang/zh_cn.js"></script>
+<script type="text/javascript" src="js/post.js"></script>
+<script type="text/javascript">
+var maxLength=200;
+function wordlength(target)
+{
+	var val = target.value;
+	var n = 2*val.length-val.replace(/[\u4e00-\u9fa5]/g,'').length;
+	var val=target.value;
+	while(n>maxLength)
+	{
+		var key = val.substr(-1);
+		target.value=val.substr(0,val.length-1);
+		val = target.value;
+		n -= /[\u4e00-\u9fa5]/.test(key)?2:1;
+	}
+	str='('+n+'/'+maxLength+')';
+	var next = target.nextSibling;
+	next.innerHTML=str;
+	if(n==maxLength){
+		next.className='s3';
+		target.maxLength = val.length;
+	}else{
+		next.className="s6";
+		target.maxLength = maxLength;
+	}
+}
+</script>
+<!--
+EOT;
+?>-->

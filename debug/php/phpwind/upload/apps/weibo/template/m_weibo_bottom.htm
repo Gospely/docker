@@ -1,0 +1,64 @@
+<!--<?php
+print<<<EOT
+--><!doctype html>
+<html>
+<head>
+<meta charset="$db_charset" />
+<title>发微博</title>
+<meta name="generator" content="phpwind $wind_version" />
+<meta name="description" content="phpwind" />
+<meta name="keywords" content="phpwind" />
+<base id="headbase" href="$db_bbsurl/" />
+<link rel="stylesheet" href="images/pw_core.css?{$GLOBALS['wind_repair']}" />
+<link rel="stylesheet" href="u/images/style.css?{$GLOBALS['wind_repair']}" />
+<style type="text/css">
+html,body{padding:0;margin:0;background:#fff;overflow:hidden;}
+/*home info*/
+.userInfo{position:absolute;height:170px;padding:0;margin:0;}
+#myFace{padding:0;margin:0 3px 0 10px;}
+.userInfoweek{padding-top:10px;*zoom:1;}
+.userInfoweek:after{content:'\20';display:block;height:0;clear:both;visibility: hidden;}
+.userInfoweek .button{width:87px; font-size:14px;height:29px;border:0;overflow:hidden;vertical-align:middle;padding:0 0 2px 5px;*padding:2px 0 0 5px;margin:0;}
+.homeSk{margin-top:0;}
+/*home info*/
+.userInfo{}
+.userInfoweek .button{background:url(u/themes/default/images/pub.png) no-repeat;color:#ffffff;text-shadow: 1px 1px 0 #2d6dbf;}
+.userInfoweek .button:hover{ background-position:0 -28px;}
+.homeSk_input{background:url(u/themes/default/images/homeSk_input.png) no-repeat;}
+.limit{color:#444444;}
+.homeSk{background:url(u/themes/default/images/textarea.png) no-repeat;}
+</style>
+<script type="text/javascript" src="js/core/core.js"></script>
+<script type="text/javascript" src="js/pw_ajax.js"></script>
+<script>
+var imgpath = '$imgpath';
+var verifyhash = '$verifyhash';
+var winduid = '$winduid';
+var windid	= '$windid';
+var groupid	= '$groupid';
+var charset = '$db_charset';
+var basename = '$basename';
+var temp_basename = '$temp_basename';
+</script>
+</head>
+<body onkeydown="try{keyCodes(event);}catch(e){}">
+<!--
+EOT;
+if ($a == 'post') {print <<<EOT
+-->
+<!--
+EOT;
+require_once uTemplate::printEot('weibo_model');
+$weiboModelTemplate->post($do,$faceurl);
+print <<<EOT
+-->
+<!--
+EOT;
+}print <<<EOT
+-->
+<script type="text/javascript" src="js/app_comment.js"></script>
+<script type="text/javascript" src="js/global.js"></script>
+</body></html>
+<!--
+EOT;
+?>-->

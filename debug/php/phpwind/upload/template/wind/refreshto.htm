@@ -1,0 +1,48 @@
+<?php
+$statime = intval($statime);
+$statime<1 and $statime = 1;
+print <<<EOT
+<!doctype html>
+<html>
+<head>
+<meta charset="$db_charset" />
+<title>{$webPageTitle}提示信息 - Powered by phpwind</title>
+<meta http-equiv="refresh" content="{$statime};url={$URL}">
+<base id="headbase" href="$db_bbsurl/" />
+<link rel="stylesheet" href="$imgpath/pw_core.css?{$GLOBALS['wind_repair']}" />
+EOT;
+@include Pcv($css_path);
+print <<<EOT
+-->
+<link rel="stylesheet" href="$imgpath/register/register.css?{$GLOBALS['wind_repair']}" />
+<script type="text/javascript" src="js/core/core.js"></script>
+<script type="text/javascript" src="js/pw_ajax.js"></script>
+</head>
+<body onKeyDown="try{keyCodes(event);}catch(e){}">
+<div class="wrap">
+	<div id="header">
+		<div class="head_top"></div>
+		<div id="head" class="cc"><a href="$db_bbsurl/"><img src="$imgpath/$stylepath/logo.png" class="fl" title="phpwind" /></a></div>
+	</div>
+	<div class="main-wrap">
+		<div id="main">
+			<div id="pw_content">
+				<div class="p20">
+					<div class="regTitle cc">
+						<h5 class="s6"><b>提示信息</b></h5>
+					</div>
+					<div class="cc">
+						<div class="regCorrect">
+							<p class="f14 mb10">$content</p>
+							<p><a href="$URL" class="s4 f14" tabindex="20">如果您的浏览器没有自动跳转,请点击这里</a></p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</body>
+</html>
+EOT;
+?>

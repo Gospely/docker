@@ -1,0 +1,72 @@
+<!--<?php
+if($listCount <= 10){
+	$sms_0 = "style=\"display: none;\"";
+	$sms_1 = "style=\"display: '';\"";
+}else{
+	$sms_0 = $relation[actived_time] <= $value[created_time] || ($index > $listCount-1)  ? "style=\"display: none;\"" : "style=\"display: '';\"";
+	$sms_1 = $relation[actived_time] <= $value[created_time] || ($index > $listCount-1)  ? "style=\"display: '';\"" : "style=\"display: none;\"";
+}
+$value['content1'] = strip_tags($value['content']);
+print <<<EOT
+-->
+<script type="text/javascript">
+	trclick = function(e,id,flag){
+		var e=e||window.event;
+		var elem=e.target||e.srcElement;
+		if(elem.tagName == 'DIV'){
+			return false;
+		};
+		MC.showDetailMsg(id,flag);
+	}
+</script>
+<tr class="tr3" id="sms_0_{$value[id]}" $sms_0 oncopy="return true;" oncut="return true;">
+	<td class="face">&nbsp;</td>
+	<td><a href="{$_linkUrl}">{$value[create_username]}</a></td>
+	<td><div class="lh_18 imgnone">{$value[content1]}</div></td>
+	<td><a href="javascript:" onclick="trclick(event,{$value[id]},1)" class="a_start" title="展开">展开</a></td>
+</tr>
+<tr class="tr3 vt" id="sms_1_{$value[id]}" $sms_1>
+	<td class="face" style="vertical-align:top;"><a class="img_50" href="{$_linkUrl}"><i><img width="48" height="48" src="{$value[face]}"></i></a></td>
+	<td class="name" style="vertical-align:top;width:120px;"><p>
+<!--
+EOT;
+if(checkOnline($value['thisvisit']) && $value[create_uid] != $winduid){
+$gender = getDefaultGender($value['gender']);
+print <<<EOT
+--><span class="{$gender}_ol mr5" title="在线" alt="在线">在线</span>
+<!--
+EOT;
+}print <<<EOT
+-->
+<a href="{$_linkUrl}">{$value[create_username]}</a>
+<!--
+EOT;
+if($value[create_uid] != $winduid){
+print <<<EOT
+--><a class="send_message w" href="$baseUrl?type=post&username={$value[create_username]}">[发消息]</a>
+<!--
+EOT;
+}print <<<EOT
+-->
+</p><span title="$value[created_time_detail]">{$value[created_time_format]}</span>
+<!--
+EOT;
+if($value[status] == '1' && $value[create_uid] == $winduid && $chatType != 'm'){
+print <<<EOT
+--><img title="对方未读" src="u/images/message/otherun.png" align="absmiddle" />
+<!--
+EOT;
+}elseif($value[create_uid] == $winduid && $chatType != 'm'){
+print <<<EOT
+--><img title="对方已读" src="u/images/message/otheread.png" align="absmiddle" />
+<!--
+EOT;
+}print <<<EOT
+-->
+</em></td>
+<td><div class="textMes">{$value[content]}</div></td>
+<td style="vertical-align:top;"></td>
+</tr>
+<!--
+EOT;
+?>-->

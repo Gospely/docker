@@ -1,0 +1,121 @@
+<!--<?php
+print <<<EOT
+-->
+<script>
+	var quickPost = function(){
+		this.titleObj = getObj('quickpostTitle');
+		this.changeTitleObj = getObj('changeTitle');
+		this.originalTitle = this.titleObj.innerHTML;
+		this.atc_title = getObj('qp_atc_title'); //表单 title
+	}
+	quickPost.prototype = {
+		"changeTitle" : function (obj){
+			obj.style.display = 'none';
+			this.originalTitle = this.titleObj.innerHTML;
+			this.titleObj.innerHTML = '<input id="newTitle" type="text" style="padding:5px;" maxlength="50" size="60" class="input mr10" value="'+ this.originalTitle +'" onblur="qp.saveTitle();"><span class="btn2"><span><button onclick="qp.saveTitle();return false;" type="button">保存</button></span></span><span class="bt2"><span><button onclick="qp.cancelSave();return false;" type="button">取消</button></span></span>';
+		},
+		"saveTitle"	: function(){
+			this.changeTitleObj.style.display = '';
+			this.atc_title.value = this.titleObj.innerHTML = getObj('newTitle').value;
+		},
+		"cancelSave" : function(){
+			this.changeTitleObj.style.display = '';
+			this.titleObj.innerHTML = this.originalTitle;
+		}
+	}
+	var qp =null;
+	window.onReady(function(){
+		qp = new quickPost();
+		getObj('quickpostArea').focus();
+<!--
+EOT;
+if($pid==0){print <<<EOT
+-->
+		qp.atc_title.value = qp.originalTitle;
+<!--
+EOT;
+}print <<<EOT
+-->
+	});
+</script>
+<div style="width:550px;">
+<div class="popTop" style="cursor:move" onmousedown="read.move(event);"><span class="adel cp" onclick="clearEditorDialog(1);">关闭</span>回复</div>
+	<form name="quickpostForm" method="post" action="" enctype="multipart/form-data">
+	<input type="hidden" name="replytouser" value="$old_author" />
+	<input type="hidden" name="pid" value="$pid" />
+	<div id="quickpostHiddens" style="display:none"></div>
+	<div class="p10">
+		<div class="cc mb10">
+			<input type="hidden" name="atc_title" id="qp_atc_title" value="" />
+			<span class="mr10" id="quickpostTitle">$atc_title</span><a href="javascript:void(0);" id="changeTitle" onclick="qp.changeTitle(this);" class="s4">[改标题]</a>
+		</div>
+<!--
+EOT;
+if($pid > 0){print <<<EOT
+-->
+		<div class="blockquote3 mb10" style="background-image:none;">
+			<span class="quote_left">{$old_author}: {$quote_content}</span><span class="quote_right mr10"></span><span class="gray">($postTime)</span>
+		</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+		<div class="B_editor B_editor_fp cc" id="qk_editor" style="width:530px">
+			<div class="B_editor_toolbar B_editor_minitoolbar">
+				<div class="B_tar">
+					<a href="javascript:gotoEditor(1,{$pid});" class="fr gotoedit" hidefocus="true">进入高级模式</a>
+					<span class="B_onCodeMode">代码模式</span>
+				</div>
+				<ul>
+					<li class="edit_toolbar">
+						<a href="javascript:;" class="B_ico" title="加粗" data-type="wy_boldIcon" hidefocus="true" style="display:block"><div class="B_boldIcon B_do"></div></a>
+						<div class="B_icoDown" style="display: block;" data-type="wy_foreColor"><a href="javascript://" class="B_ico"><div class="B_foreColor B_do1" title="文字颜色"><span style="background-color: rgb(255, 0, 0);"></span>文字颜色</div></a><em unselectable="on" class="B_do1"></em></div>
+						<a href="javascript:;" class="B_ico" title="插入链接" data-type="wy_linkIcon" hidefocus="true" style="display:block"><div class="B_linkIcon B_do"></div></a>
+						<!--<a href="javascript:;" class="B_icoBig" title="插入图片" data-type="wy_photoBtn" hidefocus="true" style="display:block"><div class="B_photoIcon B_do"></div></a>
+						<a href="javascript:;" class="B_icoBig" title="插入附件" data-type="wy_fileBtn" hidefocus="true" style="display:block"><div class="B_fileIcon B_do"></div></a>-->
+						<a href="javascript:;" class="B_ico" title="插入表情" data-type="wy_faceBtn" hidefocus="true" style="display:block"><div class="B_faceIcon B_do"></div></a>
+					</li>
+				</ul>
+			</div>
+			<textarea id="quickpostArea" name="atc_content" class="editorTextarea" style="width:535px;*width:100%;max-width:100%;min-width:100%;height:140px;padding:0;margin:0;border:0 none;overflow:auto;"></textarea>
+			<textarea id="quoteContent" style="display:none" name="quote_content">$atc_content</textarea>
+		</div>
+		<div class="c mb10">&nbsp;</div>
+<!--
+EOT;
+list($postq,$showq)=explode("\t",$db_qcheck);
+empty($winddb['postnum']) && $winddb['postnum']=0;
+if (($db_ckquestion & 4) && (!$postq || $winddb['postnum'] < $postq) && $db_question) {
+	$qkey = array_rand($db_question);
+	if ($db_imagequestion) {
+		$question = '<img id="qk_ckquestion" src="ckquestion.php?q='.$qkey.'&t='.$timestamp.'" align="top">';
+	} else {
+		$question = $qkey<0 ? getMachineQuestion_1() :  $db_question[$qkey];
+	}
+	$q_a = $question.($showq && $qkey>0?" 正确答案:".$db_answer[$qkey] : '');
+print <<<EOT
+-->
+					<div class="cc mb5"><span style="line-height:24px;width:60px;float:left">验证问题: </span><input class="input mr5" size="5" type="text" name="qanswer" /><input type="hidden" name="qkey" value="$qkey" />{$q_a}</div>
+<!--
+EOT;
+}if (($db_gdcheck & 4) && (!$db_postgd || $winddb['postnum'] < $db_postgd)) {
+$checkCode = L::loadClass('checkcode', 'site');
+$checkCodeString = $checkCode->getCheckCodeTemplate();
+print <<<EOT
+-->
+					<div class="cc mb10"><span style="line-height:24px;width:60px;float:left">验证码: </span>
+						<input class="input mr5" type="text" name="gdcode" size="5" onfocus="showgd('qk_ckcode');" />
+							<span id="qk_ckcode" style="display:none"></span>
+$checkCodeString
+					</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+		<span class="mr20"><span style="margin:0;" class="btn"><span><button name="Submit" type="submit" title="Ctrl+Enter快速发布"> 回 复 </button></span></span></span>
+		</div>
+	</form>
+</div>
+<!--
+EOT;
+?>-->

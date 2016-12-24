@@ -1,0 +1,232 @@
+<!--<?php
+print <<<EOT
+-->
+						<!--投票开始-->
+						<div class="vote">
+							<h4><span class="b">最多可选{$readvote[mostvotes]}项，共有{$voters}人参与，</span>
+<!--
+EOT;
+if($viewvoter){print <<<EOT
+-->
+								<a href="javascript:void(0)" id="viewVoters" class="fn s4">查看参与人员</a>
+<!--
+EOT;
+}if($readvote['modifiable'] && $action != 'modify' && $readvote['havevote'] && !$vote_close){print <<<EOT
+-->
+								<a href="read.php?fid=$fid&tid=$tid&displayMode=1&action=modify" class="fn s4">修改投票</a>
+<!--
+EOT;
+}print <<<EOT
+-->
+							</h4>
+							<table>
+<!--
+EOT;
+$perValueClasses = array('','perbgA','perbgB','perbgC','perbgD');
+foreach ($votedb as $key => $vote) {
+	$perValueClass =$perValueClasses[++$i % 5];
+print <<<EOT
+-->
+								<tr>
+									<td colspan="3" class="vote_text">
+<!--
+EOT;
+if (!$vote_close && (!$readvote['havevote'] || $action == 'modify')) {
+	is_array($vote['voter']) && $vote['voterHtml'] = implode(' , ',$vote['voter']);
+print <<<EOT
+-->
+									<span class="vote_pick"><input type="$votetype" value="$key" id="votetype{$key}" name="voteid[]" onclick="checkVote(this)" autocomplete="off" /></span>
+<!--
+EOT;
+}print <<<EOT
+--><label for="votetype{$key}">$vote[name]</label>
+									</td>
+								</tr>
+								<tr>
+									<td class="vote_numline">
+										<div class="perCent"><div class="perValue $perValueClass" style="width:{$vote['percent']}%;"><span></span></div></div>
+									</td>
+									<td class="vote_result"><div>{$vote['num']}<span class="gray">({$vote['percent']}%)</span></div></td>
+									<td>&nbsp;</td>
+								</tr>
+								<tr>
+									<td colspan="4">
+										<div class="vote_part">
+											{$vote['voterHtml']}
+										</div>
+									</td>
+								</tr>
+<!--
+EOT;
+}print <<<EOT
+-->
+							</table>
+<!--
+EOT;
+if (!$vote_close && (!$readvote['havevote'] || $action == 'modify')) {print <<<EOT
+-->
+							<div class="vote_Bot"><span class="btn2"><span><button type="button" onclick="vv.vote();">投票</button></span></span></div>
+<!--
+EOT;
+}print <<<EOT
+-->			
+						</div>
+<div class="popout" id="popoutViewVoters" style="display:none"><table border="0" cellspacing="0" cellpadding="0"><tbody><tr><td class="bgcorner1"></td><td class="pobg1"></td><td class="bgcorner2"></td></tr><tr><td class="pobg4"></td><td><div class="popoutContent">
+<div style="width:350px;">
+<div class="popTop"><a href="javascript:void(0)" class="adel" onclick="closep()">关闭</a>参与人员</div>
+	<div class="p15 partici">
+		<div class="mb10">
+			<select style="width:315px;" id="voteOptions" onchange="vv.set(this.value);">
+<!--
+EOT;
+foreach ($votedb as $key => $vote) {
+$vote[name] = substrs($vote[name],35);
+print <<<EOT
+-->
+				<option value="{$key}">{$vote[name]}</option>
+<!--
+EOT;
+}print <<<EOT
+-->	
+			</select>
+		</div>
+		<div id="voterList">
+<!--
+EOT;
+foreach ($votedb as $key => $vote) {print <<<EOT
+-->
+		<ul class="cc" id="voterList_$key" style="display:none">
+<!--
+EOT;
+	if ($vote['voter']) {
+		foreach((array)$vote['voter'] as $v){
+		$urltmpname = urlencode($v);
+print <<<EOT
+-->
+
+			<li><a href="u.php?username=$urltmpname" class="s4" target="_blank">$v</a></li>
+<!--
+EOT;
+		}
+	} else {
+print <<<EOT
+-->
+		暂时没有人员投该选项
+<!--
+EOT;
+	}print <<<EOT
+-->
+		</ul>
+<!--
+EOT;
+}print <<<EOT
+-->
+		</div>
+	</div>
+</div>
+</div></td><td class="pobg2"></td></tr><tr><td class="bgcorner4"></td><td class="pobg3"></td><td class="bgcorner3"></td></tr></tbody></table></div>
+<script type="text/javascript">
+var tempnum = 0;
+var voteid = '';
+var multi = '$readvote[mostvotes]';
+function checkVote(obj){
+	if ((obj.type == 'checkbox' || obj.type == 'radio') && multi != 0) {
+		if (!tempnum) {
+			tempnum = 0;
+		}
+		if (!voteid) {
+			voteid = '';
+		}
+		if (obj.checked) {
+			if(obj.type == 'checkbox'){
+				if (tempnum == multi) {
+					obj.checked = false;
+					return;
+				}
+				voteid += (voteid ? '|' : '') + obj.value;
+				tempnum++;
+			} else {
+				voteid = obj.value;
+				tempnum = 1;
+			}
+		} else {
+			if (voteid){
+				var t = [],s=voteid.split('|');
+				for (var i in s){
+					s[i] != obj.value && t.push(s[i]); 
+				}
+				voteid = t.join('|');
+			}
+			tempnum--;
+		}
+	}
+}
+</script>
+
+<script type="text/javascript">
+var tid = "$tid";
+<!--
+EOT;
+if($readvote['modifiable'] && $action == 'modify'){print <<<EOT
+-->
+var voteaction = 'modify';
+<!--
+EOT;
+}print <<<EOT
+-->
+var pwVoters = function(){
+	this.click = getObj('viewVoters');
+	this.popoutViewVoters = getObj('popoutViewVoters');
+	this.voteOptions = getObj('voteOptions');
+	this.voterList = getObj('voterList');
+}
+pwVoters.prototype = {
+	"init" : function(){
+		var self = this;
+		if(!this.click){
+			return false;
+		}
+		addEvent(this.click,"click",function(){
+			//self.get(tid,0);
+			read.open(self.popoutViewVoters,self.click,3);
+			self.set(self.voteOptions.value);
+		});
+	},
+	"vote" : function(){
+		var self = this;
+		if (!voteid) {
+			showDialog('error','您还没有选择!',1);
+			return false;
+		}
+		var data = "tid=" + tid + "&voteid=" + voteid;
+		if(typeof (voteaction) != 'undefined') data += '&voteaction=' + voteaction;
+		ajax.send("job.php?action=vote",data, function(){
+			var rText = ajax.request.responseText.split('\t');
+			if (rText[0]=='success') {
+				showDialog('success','投票成功!',1);
+				setTimeout(function(){location.reload()},300);
+			} else {
+				showDialog('error',ajax.request.responseText,1);
+			}
+		});
+	},
+	"set" : function(key){
+		var childNodes = this.voterList.childNodes;
+		for (var i=0;j=childNodes.length,i<j;i++){
+			if (childNodes[i].id) {
+				getObj(childNodes[i].id).style.display = 'none';
+			}
+		}
+		if (getObj("voterList_" + key)) getObj("voterList_" + key).style.display = '';
+	}
+}
+var vv =null;
+window.onReady(function(){
+	vv = new pwVoters();
+	vv.init();
+	//addEvent(vv.voteOptions,"change", function(){alert(123);});
+});
+</script>
+<!--
+EOT;
+?>

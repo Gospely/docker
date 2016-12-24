@@ -1,0 +1,53 @@
+<!--<?php
+print <<<EOT
+-->
+<style type="text/css">
+.headTrgB{border-bottom:9px $uskin_appBgTop solid;}
+.main{background:url(u/themes/$uskin/images/$uskin_appBg) -1px 0 repeat-y;}
+.contUser{float:right;width:800px;overflow:hidden;}
+/*兼容:老版本-8.0beta-APP左右分栏样式*/
+</style>
+<script type="text/javascript" src="js/message.js"></script>
+<div class="menubar">
+    <div class="navB">
+	<a href="{$baseUrl}?type=post" class="postMes">写新消息</a>
+        <ul class="one" style="padding-top:0;">
+            <li id="left_sms"><a href="{$baseUrl}?type=sms" hidefocus="true"><img src="u/images/message/sms.png"><span>站内信</span><em style="color:#ff5500;">{$messageNumber}</em></a></li>
+            <li id="left_notice"><a href="{$baseUrl}?type=notice" hidefocus="true"><img src="u/images/message/notice.png"><span>通知</span><em style="color:#ff5500;">{$noticeNumber}</em></a></li>
+            <li id="left_request"><a href="{$baseUrl}?type=request" hidefocus="true"><img src="u/images/message/request.png"><span>请求</span><em style="color:#ff5500;">{$requestNumber}</em></a></li>
+            <li id="left_groupsms"><a href="{$baseUrl}?type=groupsms" hidefocus="true"><img src="u/images/message/groupsms.png"><span>群消息</span><em style="color:#ff5500;">{$groupsmsNumber}</em></a></li>
+<!-- 
+EOT;
+if($db_history){
+print <<<EOT
+-->			
+			<li id="left_history"><a href="{$baseUrl}?type=history" hidefocus="true"><img src="u/images/message/history.png">历史消息</a></li>
+<!-- 
+EOT;
+}
+print <<<EOT
+-->				
+					<li id="left_shield"><a href="{$baseUrl}?type=shield" hidefocus="true"><img src="u/images/message/history.png">消息设置</a></li>
+        </ul>
+    </div>
+<script type="text/javascript">
+	MC.setCurrent('','left_{$subtype}','current');
+</script>
+<div class="c mb10"></div>
+<!--<?php
+EOT;
+if($_G['maxmsg']){
+print <<<EOT
+-->
+    <div class="mb10" style="padding:10px 20px;">
+        <p class="mb5"><span class="fr f10">$percent</span>空间使用</p>
+        <div class="perCent"><div class="perValue" style="width:$percent;"></div></div>
+    </div>
+<!--<?php
+EOT;
+}print <<<EOT
+-->
+</div>
+<!--
+EOT;
+?>-->

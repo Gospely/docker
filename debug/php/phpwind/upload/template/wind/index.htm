@@ -1,0 +1,542 @@
+<!--<?php print <<<EOT
+-->
+<!--
+EOT;
+list($htmlAdvert,$arrayAdvert) = pwAdvert('Mode.TextIndex');
+if($htmlAdvert){print <<<EOT
+-->
+<div class="textMes">
+	<table width="100%" cellspacing="0" cellpadding="0">
+<!--
+EOT;
+$tmpCount=0;
+$idp = 100/$db_txtadnum;
+foreach($arrayAdvert as $value){
+if($tmpCount==0){print <<<EOT
+-->
+		<tr class="tr3">
+<!--
+EOT;
+}$tmpCount++;print <<<EOT
+-->
+			<td class="black tac" width="$idp%">$value</td>
+<!--
+EOT;
+if($tmpCount==$db_txtadnum){
+$tmpCount=0;print <<<EOT
+-->
+		</tr>
+<!--
+EOT;
+}}if($tmpCount && $tmpCount<$db_txtadnum){
+for($i=$tmpCount;$i<$db_txtadnum;$i++){print <<<EOT
+-->
+			<td width="$idp%">&nbsp;</td>
+<!--
+EOT;
+}print <<<EOT
+-->
+		</tr>
+<!--
+EOT;
+}print <<<EOT
+-->
+	</table>
+</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+<div id="infobox" class="cc mb10">
+	<ul class="fr">
+		<li class="mr10"><a href="searcher.php?sch_time=newatc">新帖</a></li>
+		<li class="mr5"><a href="searcher.php?digest=1">精华</a></li>
+<!--
+EOT;
+if (!empty($shortcutforum)){print <<<EOT
+--><li id="id_shortcut" onClick="read.open('menu_shortcut',this.id,0,22);" class="fr pd5"><a href="javascript:;" class="link_down"><span>书签</span></a></li>
+<!--
+EOT;
+}
+print<<<EOT
+-->
+	</ul>
+	<ul class="pw_ulC fl">
+<!--
+EOT;
+if($db_todaypost){print <<<EOT
+-->
+    	<li>今日<em><a href="searcher.php?sch_time=today" class="s2 b" rel="nofollow">$tposts</a></em></li>
+        <li>昨日<em class="b s2">$yposts</em></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+        <li>最高日<em>$hposts</em></li>
+        <li>帖子<em>$article</em></li>
+        <li>会员<em><a href="member.php" rel="nofollow">$totalmember</a></em></li>
+        <li class="none">新会员<em>$newmember</em></li>
+    </ul>
+</div><div id="pw_content" class="mb10">
+<!--
+EOT;
+if($threadright){print<<<EOT
+-->
+<script type="text/javascript" src="http://app.phpwind.net/static/js/client.js"></script>
+<script>
+var server = new PwJs.Server("pwthread");
+server.start();
+</script>
+<!--
+EOT;
+}print <<<EOT
+-->
+<div class="pr">
+<!--
+EOT;
+if($db_newinfoifopen) portalEcho('bbsindex');
+if($notice_A){
+$noticebg_newinfo = $db_newinfoifopen ? ' noticebg_newinfo' : '';
+print <<<EOT
+-->
+<div class="noticebg{$noticebg_newinfo}">
+	<div id="notice">
+		<div id="notice0">
+			<ul>
+<!--
+EOT;
+foreach($notice_A as $value){print <<<EOT
+-->
+				<li><a href="$value[url]">$value[subject]</a> <span class="f9 gray">$value[startdate]</span></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+			</ul>
+		</div>
+	</div>
+</div>
+<script>
+function bbsNoticePlay(){
+	if (bbsNoticeH){
+		if(parseInt(bbsNoticeC.style.height)<bbsNoticeC.scrollHeight)
+		{
+			bbsNoticeC.style.visibility = 'hidden';
+		}
+		bbsNoticeH=false;
+		bbsNoticeO=setTimeout(bbsNoticePlay,500);
+	} else {
+		bbsNoticeC.style.visibility='';
+		bbsNoticeC.scrollTop=(bbsNoticeC.scrollTop+19>=bbsNoticeC.scrollHeight)?0:(bbsNoticeC.scrollTop+18);
+		bbsNoticeH=true;
+		bbsNoticeO=setTimeout(bbsNoticePlay,4000);
+	}
+}
+var bbsNoticeH = true;
+var bbsNoticeC = getObj('notice0');
+bbsNoticeC.onmouseover = function(){if(bbsNoticeO && bbsNoticeH){clearTimeout(bbsNoticeO);bbsNoticeO=0;}};
+bbsNoticeC.onmouseout  = function(){if(!bbsNoticeO){bbsNoticeO = setTimeout(bbsNoticePlay,4000);bbsNoticeH=true;}};
+var bbsNoticeO = setTimeout(bbsNoticePlay,4000);
+</script>
+<!--
+EOT;
+}print <<<EOT
+-->
+</div>
+<div id="cloudwind_index_top"></div>
+<!--
+EOT;
+$yunsearchKeywordList = CloudWind::getSearchKeywordsForList($GLOBALS['fid'],$GLOBALS['winduid']);
+if($yunsearchKeywordList){
+print <<<EOT
+-->
+$yunsearchKeywordList
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--
+EOT;
+if($db_iftag && $db_tagindex && $tagdb = L::config('tagdb','tagdb')){print <<<EOT
+-->
+<div class="t">
+	<div class="h"><h3 class="cateT">热门标签</h3></div>
+	<div class="tTable">
+	<table width="100%" cellspacing="0" cellpadding="0">
+		<tr>
+			<td style="padding:10px 0;">
+<!--
+EOT;
+$num=0;
+foreach($tagdb as $key=>$val){
+$key=preg_replace('/"([^"]+)"/','$1',$key);
+$rawkey=rawurlencode($key); $num++;
+if($num>$db_tagindex) break;
+print <<<EOT
+-->
+				<a href="link.php?action=tag&tagname=$rawkey" class="w mr20">$key</a>
+<!--
+EOT;
+}print <<<EOT
+-->
+			</td>
+		</tr>
+	</table>
+	</div>
+</div>
+<!--
+EOT;
+}$_adindex = 0;
+foreach($catedb as $k=>$cate){
+if($forumdb[$cate['fid']]){
+$_adindex++;
+if($cate['across']){print <<<EOT
+-->
+<div id="t_$cate[fid]" class="t">
+    <div class="h"><a class="closeicon fr cp" onclick="return IndexDeploy('$cate[fid]',0)"><img id="img_$cate[fid]" alt="展开收起" src="$imgpath/$stylepath/index/cate_$cate[deploy_img].gif" /></a>
+<!--
+EOT;
+if($cate['admin']){print <<<EOT
+-->
+				<span class="fr mr10">分栏版主:&nbsp;&nbsp;$cate[admin]</span>
+<!--
+EOT;
+}print <<<EOT
+--><h3 class="cateT"><a href="index.php?m=bbs&cateid=$cate[fid]" class="mr10">$cate[name]</a></h3></div>
+    <div class="tTable">
+        <table width="100%" style="table-layout:fixed;">
+        	<tbody style="display:$cate[tbody_style];" id="cate_$cate[fid]" class="across">
+<!--
+EOT;
+$a=0;
+$count =count($forumdb[$cate[fid]]);
+$j=1;
+$forumslastClass = '';
+foreach($forumdb[$cate['fid']] as $forums){
+if(ceil($count/$cate['across']) == $j) {
+	$forumslastClass = 'tr3none';
+}
+$forumClass = $forums[logo] ? '' : 'class="'.$forums[pic].'"';
+if($a==0){print <<<EOT
+-->
+            <tr class="tr3 $forumslastClass">
+<!--
+EOT;
+}$a++;print <<<EOT
+-->
+						<th $forumClass id="fid_{$forums[fid]}" height="40">
+<!--
+EOT;
+if($forums['logo']){print <<<EOT
+-->
+          			<a href="thread.php?fid=$forums[fid]" target="_blank"><img src="$forums[logo]" class="fl mr10" alt="forumlogo" /></a>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+
+                    <h2 class="forumT mr10"><a href="thread.php?fid=$forums[fid]" id="fn_$forums[fid]">$forums[name]</a></h2>
+<!--
+EOT;
+if($db_todaypost && $forums[tpost]){print <<<EOT
+-->
+						<span class="s2 mr10">(今日$forums[tpost])</span>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--
+EOT;
+if($threadright && ($threadright[down][admin] || in_array(0,$threadright[down][other]) || in_array($cate[fid],$threadright[down][other]) || in_array($forums[fid],$threadright[down][other])) ){print <<<EOT
+-->
+					<a class="s4" href="javascript:;" id="jh_forum$forums[fid]" onclick="sendmsg('apps.php?q=appthread&forumid=$forums[fid]&do=downall','',this.id)">充实内容</a>
+<!--
+EOT;
+}print <<<EOT
+-->
+					<p class="fNum"><span class="mr10">主题:$forums[topics]</span>帖子:$forums[article]</p>
+<!--
+EOT;
+if($forums[au]){print <<<EOT
+-->
+					<p class="fNum"><a href="$forums[ft]">最后发帖:{$forums[newtitle]}</a></p>
+<!--
+EOT;
+}if($forums[pic]=='lock'){print <<<EOT
+-->
+					认证版块
+<!--
+EOT;
+}print <<<EOT
+-->
+                </th>
+<!--
+EOT;
+if($a==$cate['across']){
+$j++;
+$a=0;
+print <<<EOT
+-->
+            </tr>
+<!--
+EOT;
+}}if($a!=0){
+for($i=$a;$i<$cate['across'];$i++){print <<<EOT
+-->
+			<td>&nbsp;</td>
+<!--
+EOT;
+}
+if ($a < $cate['across']){
+print <<<EOT
+-->
+	 </tr>
+<!--
+EOT;
+}
+}print <<<EOT
+-->
+			</tbody>
+        </table>
+    </div>
+</div>
+<!--
+EOT;
+}else{print <<<EOT
+-->
+<div id="t_$cate[fid]" class="t">
+    <div class="h"><a class="closeicon fr cp" onclick="return IndexDeploy('$cate[fid]',0)"><img id="img_$cate[fid]" alt="展开收起" src="$imgpath/$stylepath/index/cate_$cate[deploy_img].gif" /></a>
+<!--
+EOT;
+if($cate[admin]){print <<<EOT
+--><span class="fr mr10">分栏版主:&nbsp;&nbsp;$cate[admin]</span>
+<!--
+EOT;
+}print <<<EOT
+--><h3 class="cateT"><a href="$db_bfn?m=bbs&cateid=$cate[fid]">$cate[name]</a></h3></div>
+	<div class="tTable">
+			<table width="100%" style="table-layout:fixed;">
+					<tbody id="cate_$cate[fid]" style="display:$cate[tbody_style];">
+<!--
+EOT;
+$count =count($forumdb[$cate[fid]]);
+$i=0;
+foreach($forumdb[$cate[fid]] as $forums){
+$i++;
+$length=$count-$i;
+$forumlastClass = $length==0 ? 'tr3none' : '';
+$forumClass = $forums[logo] ? '' : 'class="'.$forums[pic].'"';
+print <<<EOT
+-->
+					<tr class="tr3 $forumlastClass" id="fid_$forums[fid]">
+							<th $forumClass>
+<!--
+EOT;
+if($forums[logo]){print <<<EOT
+-->
+								<a href="thread.php?fid=$forums[fid]" target="_blank"><img alt="forumlogo" src="$forums[logo]" class="fl mr10"></a>
+<!--
+EOT;
+}print <<<EOT
+-->
+								<h2 class="forumT"><a href="thread.php?fid=$forums[fid]" id="fn_$forums[fid]" class="mr10">$forums[name]</a></h2>
+<!--
+EOT;
+if($db_todaypost && $forums[tpost]){print <<<EOT
+-->
+								<span class="s2 mr10">(今日<span class="f10">$forums[tpost]</span>)</span>
+<!--
+EOT;
+}if($threadright && ($threadright[down][admin] || in_array(0,$threadright[down][other]) || in_array($cate[fid],$threadright[down][other]) || in_array($forums[fid],$threadright[down][other])) ){print <<<EOT
+-->
+							<a class="s4" href="javascript:;" id="jh_forum$forums[fid]" onclick="sendmsg('apps.php?q=appthread&forumid=$forums[fid]&do=downall','',this.id)">充实内容</a>
+<!--
+EOT;
+}if($forums[descrip]){
+print <<<EOT
+-->
+				<p id="desc_$forums[fid]">{$forums[descrip]}</p>
+<!--
+EOT;
+}if($forums[forumappinfo][forum_erect]){
+print <<<EOT
+-->
+				<p id="appinfo_$forums[fid]">{$forums[forumappinfo][forum_erect]}</p>
+<!--
+EOT;
+}if($showsub[$forums['fid']]){print <<<EOT
+-->
+				<p>子版:&nbsp;{$showsub[$forums[fid]]}</p>
+<!--
+EOT;
+}if($forums[admin]){print <<<EOT
+-->
+
+				<p>版主:
+<!--
+EOT;
+if($db_adminshow && $forums[admin]){print <<<EOT
+-->
+				<select name="admin" onchange="Ajump(this.options[this.selectedIndex].value)" style="width:80px;">
+					<option value=""> 版主列表</option>
+					$forums[admin]
+				</select>
+<!--
+EOT;
+}else{print <<<EOT
+-->
+				$forums[admin]
+<!--
+EOT;
+}print <<<EOT
+--></p>
+<!--
+EOT;
+}print <<<EOT
+-->
+							</th>
+							<td class="num tac" style="width:120px;"><em>$forums[topics]</em>/$forums[article]</td>
+							<td class="re">
+<!--
+EOT;
+if($forums[au]){
+$cardusername = urlencode($forums[au]);
+print <<<EOT
+-->
+									<p><a href="$forums[ft]" class="s4">$forums[t]</a></p>
+									<p class="fNum">{$forums[newtitle]} <a href="u.php?username={$forums[au]}" target="_blank" class=" _cardshow" data-card-url="pw_ajax.php?action=smallcard&type=showcard&username={$cardusername}" data-card-key="{$forums['au']}">$forums[au]</a></p>
+<!--
+EOT;
+}if($forums[pic]=='lock'){print <<<EOT
+-->
+				<div style="line-height:3;">认证版块</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+							</td>
+					</tr>
+<!--
+EOT;
+}print <<<EOT
+-->
+		</tbody>
+	</table>
+	</div>
+</div>
+<!--
+EOT;
+}
+list($htmlAdvert,$arrayAdvert) = pwAdvert('Mode.Layer.Index',-1,$_adindex);
+if($htmlAdvert){print <<<EOT
+-->
+<div class="tac" style="border-top:1px dotted #ddd;line-height:1;">$htmlAdvert</div>
+<!--
+EOT;
+}}}print <<<EOT
+-->
+</div>
+<div id="cloudwind_index_bottom"></div>
+<div class="t" style="overflow:hidden;">
+<div style="margin-top:-2px;">
+<!--
+EOT;
+if($db_indexlink==1){print <<<EOT
+-->
+			<div class="h">
+<!--
+EOT;
+if($db_ifselfshare && $groupid!='guest'){print <<<EOT
+-->
+					<a id="selfshare" href="javascript:;" title="自助友情链接" class="cp fr" onclick="sendmsg('pw_ajax.php','action=sharelink',this.id)">自助友情链接</a>
+<!--
+EOT;
+}print <<<EOT
+-->
+					<strong>友情链接</strong></div>
+				<div class="tTable">
+<!--
+EOT;
+foreach($sharelink[0] as $share){ print <<<EOT
+-->
+			$share
+<!--
+EOT;
+}print <<<EOT
+-->
+			<div class="sharelink2 cc">$sharelink[1]</div>
+			</div>
+<!--
+EOT;
+}if($db_indexshowbirth && $brithcache!='empty'){print <<<EOT
+-->
+<div class="h b">生日会员</div>
+<div class="tTable"><table cellspacing="0" cellpadding="0" width="100%" style="table-layout:fixed;">
+			<tr>
+				<td style="word-break: keep-all;">
+<!--
+EOT;
+if(!$brithcache){print <<<EOT
+-->
+				今天站点里没有人过生日
+<!--
+EOT;
+}else{print <<<EOT
+-->
+				<div class="brithcache cc">$brithcache</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+				</td>
+			</tr>
+</table></div>
+<!--
+EOT;
+}print <<<EOT
+-->
+<div class="h">在线用户<a name="online"></a> -  共 $usertotal 人在线,$userinbbs 位会员,$guestinbbs 位访客,最多 $higholnum 人发生在 $mostinbbstime </div>
+<div class="tTable"><table cellspacing="0" cellpadding="0" width="100%" style="table-layout:fixed;">
+		<tr>
+			<td style="padding:8px 0;">
+<!--
+EOT;
+foreach($showgroup as $value){
+$groupimage = $stylepath.'/group/'.$value.'.gif';
+if($value && (is_file($imgdir.'/'.$groupimage) || $db_http!='N')){print <<<EOT
+-->
+				<span class="w mr10"><img src="$imgpath/$groupimage" align="absmiddle" alt="$ltitle[$value]" /> $ltitle[$value]</span>
+<!--
+EOT;
+}}print <<<EOT
+-->
+				<span class="w mr10"><img src="$imgpath/$stylepath/group/6.gif" align="absmiddle" alt="普通会员" /> 普通会员</span>
+<!--
+EOT;
+if($db_indexonline){
+if($online == 'yes' && $index_whosonline){print <<<EOT
+-->
+				<a name="online"></a> [<a href="javascript:;" onclick="window.location='$db_bbsurl/index.php?m=bbs&online=no#online';return false">关闭在线列表</a>]
+				<hr class="hrA">
+				$index_whosonline
+<!--
+EOT;
+}else{print <<<EOT
+-->
+				<a name="online"></a> [<a href="javascript:;" onclick="window.location='$db_bbsurl/index.php?m=bbs&online=yes#online';return false" rel="nofollow" >打开在线列表</a>]
+<!--
+EOT;
+}}print <<<EOT
+-->
+			</td>
+		</tr>
+	</table>
+</div>
+	</div>
+</div>
+<script type="text/javascript" src="js/Deploy.js"></script>
+<!--
+EOT;
+$head_pop && require PrintEot($head_pop);
+?>-->
