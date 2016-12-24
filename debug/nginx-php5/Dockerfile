@@ -29,7 +29,7 @@ RUN apt-get update -y && \
 	inotify-tools \
 	nano \
 	pwgen \
-	supervisor \
+	supervisor && \
 	apt-get clean && \
 	echo -n > /var/lib/apt/extended_states && \
 	rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
