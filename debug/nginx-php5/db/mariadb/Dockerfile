@@ -1,29 +1,26 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-mariadb
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/nginx-php:5
 
 # specify maintainer
 MAINTAINER sharkseven <shark@dodora.cn>
+ENV DBUSER=docker
+ENV DBPASS=docker
 
-ADD init /init
-RUN sudo add-apt-repository ppa:ondrej/php
-RUN apt-get update -y && \
-	apt-get install -y \
-	nginx \
-	curl \
-	nano \
-	git \
-	php5-fpm \
-	php5-cli \
-	php5-intl \
-	php5-mcrypt \
-	php5-apcu \
-	php5-gd \
-	php5-curl
-
-RUN chmod +x /init/init.sh
-RUN /init/init.sh
-
-EXPOSE 80
-
-# run nginx and php5-fpm on startup
-RUN echo "/etc/init.d/php5-fpm start" >> /etc/bash.bashrc
-RUN echo "/etc/init.d/nginx start" >> /etc/bash.bashrc
+RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CBCB082A1BB943DB && \
+	echo "deb http://ftp.osuosl.org/pub/mariadb/repo/10.1/debian/ jessie main" > /etc/apt/sources.list.d/mariadb.list && \
+	apt-get update && \
+	apt-get install -y mariadb-server && \
+	apt-get clean && \
+	echo -n > /var/lib/apt/extended_states && \
+	rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
+RUN sed -i -e "s/^bind-address/#bind-address/" /etc/mysql/my.cnf && \
+	sed -i -e "s/^datadir.*=.*/datadir = \/data/" /etc/mysql/my.cnf && \
+	sed -i -e "s/^user.*=.*/user = core/" /etc/mysql/my.cnf && \
+	sed -i -e "s/\/var\/log\/mysql/\/data\/log/" /etc/mysql/my.cnf && \
+	chown -R core:adm /var/log/mysql.err && \
+	chown -R core:adm /var/log/mysql.log && \
+	chown -R core:adm /var/log/mysql && \
+	chown -R core:root /run/mysqld
+ADD config /config
+ADD supervisord.conf /etc/supervisor/conf.d/mariadb.conf
+EXPOSE 3306
+ENTRYPOINT /config/main
