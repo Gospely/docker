@@ -9,8 +9,6 @@ RUN apt-get install -y git nodejs mongodb build-essential
 
 RUN git clone https://github.com/NodeBB/NodeBB.git /root/temp
 
-RUN cd /root/temp
-RUN npm install --production
 EXPOSE 4567
 
-ENTRYPOINT cd /root/workspace && npm start || /bin/bash
+ENTRYPOINT cd /root/temp && npm install --production || cd /root/workspace  && npm start || /bin/bash
