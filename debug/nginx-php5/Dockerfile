@@ -6,7 +6,7 @@ MAINTAINER sharkseven <shark@dodora.cn>
 ADD init /init
 RUN apt-get update
 RUN apt-get install -y language-pack-en-base
-RUN base -c "LC_ALL=en_US.UTF-8 add-apt-repository ppa:ondrej/php"
+RUN bash -c "LC_ALL=en_US.UTF-8 add-apt-repository ppa:ondrej/php"
 
 RUN apt-get update -y && \
 	apt-get install -y \
