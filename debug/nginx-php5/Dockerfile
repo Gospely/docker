@@ -5,6 +5,7 @@ MAINTAINER sharkseven <shark@dodora.cn>
 
 ADD init /init
 RUN apt-get update
+RUN apt-get install python-software-properties
 RUN apt-get install -y language-pack-en-base
 RUN bash -c "LC_ALL=en_US.UTF-8 add-apt-repository ppa:ondrej/php"
 
