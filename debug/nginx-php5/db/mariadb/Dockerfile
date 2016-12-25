@@ -5,7 +5,7 @@ MAINTAINER sharkseven <shark@dodora.cn>
 ENV DBUSER=docker
 ENV DBPASS=docker
 RUN apt-get update && \
-	apt-get DEBIAN_FRONTEND=nointeractive  install -y mariadb-server && \
+	DEBIAN_FRONTEND=nointeractive apt-get install -y mariadb-server && \
 	apt-get clean && \
 	echo -n > /var/lib/apt/extended_states && \
 	rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
