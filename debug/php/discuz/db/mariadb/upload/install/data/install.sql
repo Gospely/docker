@@ -17,14 +17,14 @@ CREATE TABLE pre_common_admincp_cmenu (
   PRIMARY KEY (id),
   KEY uid (uid),
   KEY displayorder (displayorder)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_admincp_group;
 CREATE TABLE pre_common_admincp_group (
   cpgroupid smallint(6) unsigned NOT NULL AUTO_INCREMENT,
   cpgroupname varchar(255) NOT NULL,
   PRIMARY KEY (cpgroupid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_admincp_member;
 CREATE TABLE pre_common_admincp_member (
@@ -32,14 +32,14 @@ CREATE TABLE pre_common_admincp_member (
   cpgroupid int(10) unsigned NOT NULL,
   customperm text NOT NULL,
   PRIMARY KEY (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_admincp_perm;
 CREATE TABLE pre_common_admincp_perm (
   cpgroupid smallint(6) unsigned NOT NULL,
   perm varchar(255) NOT NULL,
   UNIQUE KEY cpgroupperm (cpgroupid,perm)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_admincp_session;
 CREATE TABLE pre_common_admincp_session (
@@ -51,7 +51,7 @@ CREATE TABLE pre_common_admincp_session (
   errorcount tinyint(1) NOT NULL DEFAULT '0',
   `storage` mediumtext NOT NULL,
   PRIMARY KEY (uid,panel)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_admingroup;
 CREATE TABLE pre_common_admingroup (
@@ -118,7 +118,7 @@ CREATE TABLE pre_common_admingroup (
   allowmanagecollection tinyint(1) NOT NULL DEFAULT '0',
   allowmakehtml tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (admingid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_adminnote;
 CREATE TABLE pre_common_adminnote (
@@ -130,7 +130,7 @@ CREATE TABLE pre_common_adminnote (
   expiration int(10) unsigned NOT NULL DEFAULT '0',
   message text NOT NULL,
   PRIMARY KEY (id)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_advertisement;
 CREATE TABLE pre_common_advertisement (
@@ -145,7 +145,7 @@ CREATE TABLE pre_common_advertisement (
   starttime int(10) unsigned NOT NULL DEFAULT '0',
   endtime int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (advid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_advertisement_custom;
 CREATE TABLE pre_common_advertisement_custom (
@@ -153,7 +153,7 @@ CREATE TABLE pre_common_advertisement_custom (
   `name` varchar(255) NOT NULL,
   PRIMARY KEY (id),
   KEY `name` (`name`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_banned;
 CREATE TABLE pre_common_banned (
@@ -166,7 +166,7 @@ CREATE TABLE pre_common_banned (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   expiration int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (id)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_block;
 CREATE TABLE pre_common_block (
@@ -197,7 +197,7 @@ CREATE TABLE pre_common_block (
   notinherited tinyint(1) NOT NULL DEFAULT '0',
   isblank tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (bid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_block_favorite;
 CREATE TABLE pre_common_block_favorite (
@@ -207,7 +207,7 @@ CREATE TABLE pre_common_block_favorite (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (favid),
   KEY uid (uid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_block_item;
 CREATE TABLE pre_common_block_item (
@@ -231,7 +231,7 @@ CREATE TABLE pre_common_block_item (
   enddate int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (itemid),
   KEY bid (bid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_block_item_data;
 CREATE TABLE pre_common_block_item_data (
@@ -260,7 +260,7 @@ CREATE TABLE pre_common_block_item_data (
   stickgrade tinyint(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (dataid),
   KEY bid (bid,stickgrade,displayorder,verifiedtime)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_block_permission;
 CREATE TABLE pre_common_block_permission (
@@ -272,7 +272,7 @@ CREATE TABLE pre_common_block_permission (
   inheritedtplname varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (bid,uid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_block_pic;
 CREATE TABLE pre_common_block_pic (
@@ -284,7 +284,7 @@ CREATE TABLE pre_common_block_pic (
   `type` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (picid),
   KEY bid (bid,itemid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_block_style;
 CREATE TABLE pre_common_block_style (
@@ -302,7 +302,7 @@ CREATE TABLE pre_common_block_style (
   PRIMARY KEY (styleid),
   KEY `hash` (`hash`),
   KEY blockclass (blockclass)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_block_xml;
 CREATE TABLE pre_common_block_xml (
@@ -315,7 +315,7 @@ CREATE TABLE pre_common_block_xml (
   signtype varchar(255) NOT NULL,
   `data` text NOT NULL,
   PRIMARY KEY (id)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_cache;
 CREATE TABLE pre_common_cache (
@@ -323,7 +323,7 @@ CREATE TABLE pre_common_cache (
   cachevalue mediumblob NOT NULL,
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (cachekey)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_card;
 CREATE TABLE pre_common_card (
@@ -341,7 +341,7 @@ CREATE TABLE pre_common_card (
   uid mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
   KEY dateline (dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_card_log;
 CREATE TABLE pre_common_card_log (
@@ -356,14 +356,14 @@ CREATE TABLE pre_common_card_log (
   PRIMARY KEY (id),
   KEY dateline (dateline),
   KEY operation_dateline (operation,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_card_type;
 CREATE TABLE pre_common_card_type (
   id smallint(6) NOT NULL AUTO_INCREMENT,
   typename char(20) NOT NULL DEFAULT '',
   PRIMARY KEY (id)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_connect_guest;
 CREATE TABLE pre_common_connect_guest (
@@ -372,7 +372,7 @@ CREATE TABLE pre_common_connect_guest (
   conuinsecret char(16) NOT NULL DEFAULT '',
   conqqnick char(100) NOT NULL DEFAULT '',
   PRIMARY KEY (conopenid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_credit_log;
 CREATE TABLE pre_common_credit_log (
@@ -394,7 +394,7 @@ CREATE TABLE pre_common_credit_log (
   KEY operation (operation),
   KEY relatedid (relatedid),
   KEY dateline (dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_credit_log_field;
 CREATE TABLE pre_common_credit_log_field (
@@ -402,7 +402,7 @@ CREATE TABLE pre_common_credit_log_field (
   title varchar(100) NOT NULL,
   `text` text NOT NULL,
   KEY logid (logid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_credit_rule;
 CREATE TABLE pre_common_credit_rule (
@@ -424,7 +424,7 @@ CREATE TABLE pre_common_credit_rule (
   fids text NOT NULL,
   PRIMARY KEY (rid),
   UNIQUE KEY `action` (`action`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_credit_rule_log;
 CREATE TABLE pre_common_credit_rule_log (
@@ -447,7 +447,7 @@ CREATE TABLE pre_common_credit_rule_log (
   PRIMARY KEY (clid),
   KEY uid (uid,rid,fid),
   KEY dateline (dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_credit_rule_log_field;
 CREATE TABLE pre_common_credit_rule_log_field (
@@ -457,7 +457,7 @@ CREATE TABLE pre_common_credit_rule_log_field (
   `user` text NOT NULL,
   app text NOT NULL,
   PRIMARY KEY (uid,clid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_cron;
 CREATE TABLE pre_common_cron (
@@ -474,7 +474,7 @@ CREATE TABLE pre_common_cron (
   `minute` char(36) NOT NULL DEFAULT '',
   PRIMARY KEY (cronid),
   KEY nextrun (available,nextrun)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_devicetoken;
 CREATE TABLE pre_common_devicetoken (
@@ -482,7 +482,7 @@ CREATE TABLE pre_common_devicetoken (
   token char(50) NOT NULL,
   PRIMARY KEY (uid),
   KEY token (token)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_district;
 CREATE TABLE pre_common_district (
@@ -494,7 +494,7 @@ CREATE TABLE pre_common_district (
   displayorder smallint(6) NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
   KEY upid (upid,displayorder)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_diy_data;
 CREATE TABLE pre_common_diy_data (
@@ -507,7 +507,7 @@ CREATE TABLE pre_common_diy_data (
   username varchar(15) NOT NULL DEFAULT '',
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (targettplname,tpldirectory)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_domain;
 CREATE TABLE pre_common_domain (
@@ -518,7 +518,7 @@ CREATE TABLE pre_common_domain (
   PRIMARY KEY (id,idtype),
   KEY domain (domain,domainroot),
   KEY idtype (idtype)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_failedip;
 CREATE TABLE pre_common_failedip (
@@ -527,7 +527,7 @@ CREATE TABLE pre_common_failedip (
   count tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (ip,lastupdate),
   KEY lastupdate (lastupdate)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_failedlogin;
 CREATE TABLE pre_common_failedlogin (
@@ -536,7 +536,7 @@ CREATE TABLE pre_common_failedlogin (
   count tinyint(1) unsigned NOT NULL DEFAULT '0',
   lastupdate int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (ip,username)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_friendlink;
 CREATE TABLE pre_common_friendlink (
@@ -548,7 +548,7 @@ CREATE TABLE pre_common_friendlink (
   logo varchar(255) NOT NULL DEFAULT '',
   `type` tinyint(3) NOT NULL DEFAULT '0',
   PRIMARY KEY (id)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_grouppm;
 CREATE TABLE pre_common_grouppm (
@@ -559,7 +559,7 @@ CREATE TABLE pre_common_grouppm (
   message text NOT NULL,
   numbers mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (id)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_invite;
 CREATE TABLE pre_common_invite (
@@ -579,7 +579,7 @@ CREATE TABLE pre_common_invite (
   orderid char(32) NOT NULL DEFAULT '',
   PRIMARY KEY (id),
   KEY uid (uid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_magic;
 CREATE TABLE pre_common_magic (
@@ -603,7 +603,7 @@ CREATE TABLE pre_common_magic (
   PRIMARY KEY (magicid),
   UNIQUE KEY identifier (identifier),
   KEY displayorder (available,displayorder)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_magiclog;
 CREATE TABLE pre_common_magiclog (
@@ -621,7 +621,7 @@ CREATE TABLE pre_common_magiclog (
   KEY `action` (`action`),
   KEY targetuid (targetuid,dateline),
   KEY magicid (magicid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_mailcron;
 CREATE TABLE pre_common_mailcron (
@@ -631,7 +631,7 @@ CREATE TABLE pre_common_mailcron (
   sendtime int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (cid),
   KEY sendtime (sendtime)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_mailqueue;
 CREATE TABLE pre_common_mailqueue (
@@ -642,7 +642,7 @@ CREATE TABLE pre_common_mailqueue (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (qid),
   KEY mcid (cid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member;
 CREATE TABLE pre_common_member (
@@ -675,7 +675,7 @@ CREATE TABLE pre_common_member (
   KEY groupid (groupid),
   KEY conisbind (conisbind),
   KEY regdate (regdate)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_action_log;
 CREATE TABLE pre_common_member_action_log (
@@ -685,7 +685,7 @@ CREATE TABLE pre_common_member_action_log (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
   KEY dateline (dateline,`action`,uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_connect;
 CREATE TABLE pre_common_member_connect (
@@ -702,7 +702,7 @@ CREATE TABLE pre_common_member_connect (
   PRIMARY KEY (uid),
   KEY conuin (conuin),
   KEY conopenid (conopenid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_count;
 CREATE TABLE pre_common_member_count (
@@ -735,7 +735,7 @@ CREATE TABLE pre_common_member_count (
   blacklist mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (uid),
   KEY posts (posts)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_crime;
 CREATE TABLE pre_common_member_crime (
@@ -748,7 +748,7 @@ CREATE TABLE pre_common_member_crime (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (cid),
   KEY uid (uid,`action`,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_field_forum;
 CREATE TABLE pre_common_member_field_forum (
@@ -763,7 +763,7 @@ CREATE TABLE pre_common_member_field_forum (
   groups mediumtext NOT NULL,
   attentiongroup varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_field_home;
 CREATE TABLE pre_common_member_field_home (
@@ -787,7 +787,7 @@ CREATE TABLE pre_common_member_field_home (
   stickblogs text NOT NULL,
   PRIMARY KEY (uid),
   KEY domain (domain)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_forum_buylog;
 CREATE TABLE pre_common_member_forum_buylog (
@@ -796,7 +796,7 @@ CREATE TABLE pre_common_member_forum_buylog (
   credits int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (uid,fid),
   KEY fid (fid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_grouppm;
 CREATE TABLE pre_common_member_grouppm (
@@ -805,7 +805,7 @@ CREATE TABLE pre_common_member_grouppm (
   `status` tinyint(1) NOT NULL DEFAULT '0',
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (uid,gpmid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_log;
 CREATE TABLE pre_common_member_log (
@@ -813,7 +813,7 @@ CREATE TABLE pre_common_member_log (
   `action` char(10) NOT NULL DEFAULT '',
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_magic;
 CREATE TABLE pre_common_member_magic (
@@ -821,21 +821,21 @@ CREATE TABLE pre_common_member_magic (
   magicid smallint(6) unsigned NOT NULL DEFAULT '0',
   num smallint(6) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (uid,magicid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_medal;
 CREATE TABLE pre_common_member_medal (
   uid mediumint(8) unsigned NOT NULL,
   medalid smallint(6) unsigned NOT NULL,
   PRIMARY KEY (uid,medalid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_newprompt;
 CREATE TABLE pre_common_member_newprompt (
   uid mediumint(8) unsigned NOT NULL,
   `data` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_profile;
 CREATE TABLE pre_common_member_profile (
@@ -892,7 +892,7 @@ CREATE TABLE pre_common_member_profile (
   field7 text NOT NULL,
   field8 text NOT NULL,
   PRIMARY KEY (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_profile_setting;
 CREATE TABLE pre_common_member_profile_setting (
@@ -914,7 +914,7 @@ CREATE TABLE pre_common_member_profile_setting (
   choices text NOT NULL,
   validate text NOT NULL,
   PRIMARY KEY (fieldid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_security;
 CREATE TABLE pre_common_member_security (
@@ -928,14 +928,14 @@ CREATE TABLE pre_common_member_security (
   PRIMARY KEY (securityid),
   KEY uid (uid,fieldid),
   KEY dateline (dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_secwhite;
 CREATE TABLE pre_common_member_secwhite (
   uid int(10) NOT NULL,
   dateline int(10) NOT NULL,
   PRIMARY KEY (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=HEAP;
 
 DROP TABLE IF EXISTS pre_common_member_stat_field;
 CREATE TABLE pre_common_member_stat_field (
@@ -947,7 +947,7 @@ CREATE TABLE pre_common_member_stat_field (
   updatetime int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (optionid),
   KEY fieldid (fieldid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_status;
 CREATE TABLE pre_common_member_status (
@@ -967,7 +967,7 @@ CREATE TABLE pre_common_member_status (
   profileprogress tinyint(2) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (uid),
   KEY lastactivity (lastactivity,invisible)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_validate;
 CREATE TABLE pre_common_member_validate (
@@ -981,7 +981,7 @@ CREATE TABLE pre_common_member_validate (
   remark text NOT NULL,
   PRIMARY KEY (uid),
   KEY `status` (`status`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_verify;
 CREATE TABLE pre_common_member_verify (
@@ -1001,7 +1001,7 @@ CREATE TABLE pre_common_member_verify (
   KEY verify5 (verify5),
   KEY verify6 (verify6),
   KEY verify7 (verify7)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_member_verify_info;
 CREATE TABLE pre_common_member_verify_info (
@@ -1015,7 +1015,7 @@ CREATE TABLE pre_common_member_verify_info (
   PRIMARY KEY (vid),
   KEY verifytype (verifytype,flag),
   KEY uid (uid,verifytype,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_myapp;
 CREATE TABLE pre_common_myapp (
@@ -1035,7 +1035,7 @@ CREATE TABLE pre_common_myapp (
   icondowntime int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (appid),
   KEY flag (flag,displayorder)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_myinvite;
 CREATE TABLE pre_common_myinvite (
@@ -1051,7 +1051,7 @@ CREATE TABLE pre_common_myinvite (
   PRIMARY KEY (id),
   KEY `hash` (`hash`),
   KEY uid (touid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_mytask;
 CREATE TABLE pre_common_mytask (
@@ -1063,7 +1063,7 @@ CREATE TABLE pre_common_mytask (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (uid,taskid),
   KEY parter (taskid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_nav;
 CREATE TABLE pre_common_nav (
@@ -1088,7 +1088,7 @@ CREATE TABLE pre_common_nav (
   logo varchar(255) NOT NULL,
   PRIMARY KEY (id),
   KEY navtype (navtype)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_onlinetime;
 CREATE TABLE pre_common_onlinetime (
@@ -1097,14 +1097,14 @@ CREATE TABLE pre_common_onlinetime (
   total mediumint(8) unsigned NOT NULL DEFAULT '0',
   lastupdate int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_optimizer;
 CREATE TABLE pre_common_optimizer (
   k char(100) NOT NULL DEFAULT '',
   v char(255) NOT NULL DEFAULT '',
   PRIMARY KEY (k)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_patch;
 CREATE TABLE pre_common_patch (
@@ -1114,7 +1114,7 @@ CREATE TABLE pre_common_patch (
   `status` tinyint(1) NOT NULL DEFAULT '0',
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`serial`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_plugin;
 CREATE TABLE pre_common_plugin (
@@ -1131,7 +1131,7 @@ CREATE TABLE pre_common_plugin (
   version varchar(20) NOT NULL DEFAULT '',
   PRIMARY KEY (pluginid),
   UNIQUE KEY identifier (identifier)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_pluginvar;
 CREATE TABLE pre_common_pluginvar (
@@ -1146,7 +1146,7 @@ CREATE TABLE pre_common_pluginvar (
   extra text NOT NULL,
   PRIMARY KEY (pluginvarid),
   KEY pluginid (pluginid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_process;
 CREATE TABLE pre_common_process (
@@ -1155,7 +1155,7 @@ CREATE TABLE pre_common_process (
   extra int(10) DEFAULT NULL,
   PRIMARY KEY (processid),
   KEY expiry (expiry)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=HEAP;
 
 DROP TABLE IF EXISTS pre_common_regip;
 CREATE TABLE pre_common_regip (
@@ -1163,7 +1163,7 @@ CREATE TABLE pre_common_regip (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   count smallint(6) NOT NULL DEFAULT '0',
   KEY ip (ip)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_relatedlink;
 CREATE TABLE pre_common_relatedlink (
@@ -1172,7 +1172,7 @@ CREATE TABLE pre_common_relatedlink (
   url varchar(255) NOT NULL DEFAULT '',
   extent tinyint(3) NOT NULL DEFAULT '0',
   PRIMARY KEY (id)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_remote_port;
 CREATE TABLE pre_common_remote_port (
@@ -1181,7 +1181,7 @@ CREATE TABLE pre_common_remote_port (
   useip char(15) NOT NULL DEFAULT '',
   `port` smallint(6) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (id,idtype)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_report;
 CREATE TABLE pre_common_report (
@@ -1201,7 +1201,7 @@ CREATE TABLE pre_common_report (
   PRIMARY KEY (id),
   KEY urlkey (urlkey),
   KEY fid (fid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_searchindex;
 CREATE TABLE pre_common_searchindex (
@@ -1218,7 +1218,7 @@ CREATE TABLE pre_common_searchindex (
   ids text NOT NULL,
   PRIMARY KEY (searchid),
   KEY srchmod (srchmod)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_seccheck;
 CREATE TABLE pre_common_seccheck (
@@ -1231,7 +1231,7 @@ CREATE TABLE pre_common_seccheck (
   KEY dateline (dateline),
   KEY succeed (succeed),
   KEY verified (verified)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=HEAP;
 
 DROP TABLE IF EXISTS pre_common_secquestion;
 CREATE TABLE pre_common_secquestion (
@@ -1240,7 +1240,7 @@ CREATE TABLE pre_common_secquestion (
   question text NOT NULL,
   answer varchar(255) NOT NULL,
   PRIMARY KEY (id)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_session;
 CREATE TABLE pre_common_session (
@@ -1260,14 +1260,14 @@ CREATE TABLE pre_common_session (
   tid mediumint(8) unsigned NOT NULL DEFAULT '0',
   UNIQUE KEY sid (sid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=HEAP;
 
 DROP TABLE IF EXISTS pre_common_setting;
 CREATE TABLE pre_common_setting (
   skey varchar(255) NOT NULL DEFAULT '',
   svalue text NOT NULL,
   PRIMARY KEY (skey)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_smiley;
 CREATE TABLE pre_common_smiley (
@@ -1279,14 +1279,14 @@ CREATE TABLE pre_common_smiley (
   url varchar(30) NOT NULL DEFAULT '',
   PRIMARY KEY (id),
   KEY `type` (`type`,displayorder)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_sphinxcounter;
 CREATE TABLE pre_common_sphinxcounter (
   indexid tinyint(1) NOT NULL,
   maxid int(10) NOT NULL,
   PRIMARY KEY (indexid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_stat;
 CREATE TABLE pre_common_stat (
@@ -1323,7 +1323,7 @@ CREATE TABLE pre_common_stat (
   friend int(10) unsigned NOT NULL DEFAULT '0',
   addfriend int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (daytime)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_statuser;
 CREATE TABLE pre_common_statuser (
@@ -1331,7 +1331,7 @@ CREATE TABLE pre_common_statuser (
   daytime int(10) unsigned NOT NULL DEFAULT '0',
   `type` char(20) NOT NULL DEFAULT '',
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_style;
 CREATE TABLE pre_common_style (
@@ -1341,7 +1341,7 @@ CREATE TABLE pre_common_style (
   templateid smallint(6) unsigned NOT NULL DEFAULT '0',
   extstyle varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (styleid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_stylevar;
 CREATE TABLE pre_common_stylevar (
@@ -1351,7 +1351,7 @@ CREATE TABLE pre_common_stylevar (
   substitute text NOT NULL,
   PRIMARY KEY (stylevarid),
   KEY styleid (styleid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_syscache;
 CREATE TABLE pre_common_syscache (
@@ -1360,7 +1360,7 @@ CREATE TABLE pre_common_syscache (
   dateline int(10) unsigned NOT NULL,
   `data` mediumblob NOT NULL,
   PRIMARY KEY (cname)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_tag;
 CREATE TABLE pre_common_tag (
@@ -1370,7 +1370,7 @@ CREATE TABLE pre_common_tag (
   PRIMARY KEY (tagid),
   KEY tagname (tagname),
   KEY `status` (`status`,tagid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_tagitem;
 CREATE TABLE pre_common_tagitem (
@@ -1379,7 +1379,7 @@ CREATE TABLE pre_common_tagitem (
   idtype char(10) NOT NULL DEFAULT '',
   UNIQUE KEY item (tagid,itemid,idtype),
   KEY idtype (idtype,itemid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_task;
 CREATE TABLE pre_common_task (
@@ -1404,7 +1404,7 @@ CREATE TABLE pre_common_task (
   displayorder smallint(6) unsigned NOT NULL DEFAULT '0',
   version varchar(15) NOT NULL DEFAULT '',
   PRIMARY KEY (taskid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_taskvar;
 CREATE TABLE pre_common_taskvar (
@@ -1418,7 +1418,7 @@ CREATE TABLE pre_common_taskvar (
   `value` text NOT NULL,
   PRIMARY KEY (taskvarid),
   KEY taskid (taskid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_template;
 CREATE TABLE pre_common_template (
@@ -1427,7 +1427,7 @@ CREATE TABLE pre_common_template (
   `directory` varchar(100) NOT NULL DEFAULT '',
   copyright varchar(100) NOT NULL DEFAULT '',
   PRIMARY KEY (templateid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_template_block;
 CREATE TABLE pre_common_template_block (
@@ -1436,7 +1436,7 @@ CREATE TABLE pre_common_template_block (
   bid mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (targettplname,tpldirectory,bid),
   KEY bid (bid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_template_permission;
 CREATE TABLE pre_common_template_permission (
@@ -1448,7 +1448,7 @@ CREATE TABLE pre_common_template_permission (
   inheritedtplname varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (targettplname,uid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_uin_black;
 CREATE TABLE pre_common_uin_black (
@@ -1457,7 +1457,7 @@ CREATE TABLE pre_common_uin_black (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (uin),
   UNIQUE KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_usergroup;
 CREATE TABLE pre_common_usergroup (
@@ -1480,7 +1480,7 @@ CREATE TABLE pre_common_usergroup (
   maxinviteday smallint(6) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (groupid),
   KEY creditsrange (creditshigher,creditslower)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_usergroup_field;
 CREATE TABLE pre_common_usergroup_field (
@@ -1595,7 +1595,7 @@ CREATE TABLE pre_common_usergroup_field (
   buildgroupcredits smallint(6) unsigned NOT NULL DEFAULT '0',
   allowimgcontent tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (groupid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_visit;
 CREATE TABLE pre_common_visit (
@@ -1603,7 +1603,7 @@ CREATE TABLE pre_common_visit (
   `view` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (ip),
   KEY ip (ip,`view`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=HEAP;
 
 DROP TABLE IF EXISTS pre_common_word;
 CREATE TABLE pre_common_word (
@@ -1614,14 +1614,14 @@ CREATE TABLE pre_common_word (
   replacement varchar(255) NOT NULL DEFAULT '',
   extra varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (id)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_common_word_type;
 CREATE TABLE pre_common_word_type (
   id smallint(6) unsigned NOT NULL AUTO_INCREMENT,
   typename varchar(15) NOT NULL DEFAULT '',
   PRIMARY KEY (id)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_connect_disktask;
 CREATE TABLE pre_connect_disktask (
@@ -1638,7 +1638,7 @@ CREATE TABLE pre_connect_disktask (
   PRIMARY KEY (taskid),
   KEY openid (openid),
   KEY `status` (`status`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_connect_feedlog;
 CREATE TABLE pre_connect_feedlog (
@@ -1651,7 +1651,7 @@ CREATE TABLE pre_connect_feedlog (
   `status` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (flid),
   UNIQUE KEY tid (tid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_connect_memberbindlog;
 CREATE TABLE pre_connect_memberbindlog (
@@ -1664,7 +1664,7 @@ CREATE TABLE pre_connect_memberbindlog (
   KEY uid (uid),
   KEY uin (uin),
   KEY dateline (dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_connect_postfeedlog;
 CREATE TABLE pre_connect_postfeedlog (
@@ -1677,7 +1677,7 @@ CREATE TABLE pre_connect_postfeedlog (
   `status` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (flid),
   UNIQUE KEY pid (pid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_connect_tthreadlog;
 CREATE TABLE pre_connect_tthreadlog (
@@ -1692,7 +1692,7 @@ CREATE TABLE pre_connect_tthreadlog (
   PRIMARY KEY (twid),
   KEY nexttime (tid,nexttime),
   KEY updatetime (tid,updatetime)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_access;
 CREATE TABLE pre_forum_access (
@@ -1709,7 +1709,7 @@ CREATE TABLE pre_forum_access (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (uid,fid),
   KEY listorder (fid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_activity;
 CREATE TABLE pre_forum_activity (
@@ -1732,7 +1732,7 @@ CREATE TABLE pre_forum_activity (
   KEY starttimefrom (starttimefrom),
   KEY expiration (expiration),
   KEY applynumber (applynumber)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_activityapply;
 CREATE TABLE pre_forum_activityapply (
@@ -1749,7 +1749,7 @@ CREATE TABLE pre_forum_activityapply (
   KEY uid (uid),
   KEY tid (tid),
   KEY dateline (tid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_announcement;
 CREATE TABLE pre_forum_announcement (
@@ -1764,7 +1764,7 @@ CREATE TABLE pre_forum_announcement (
   groups text NOT NULL,
   PRIMARY KEY (id),
   KEY timespan (starttime,endtime)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_attachment;
 CREATE TABLE pre_forum_attachment (
@@ -1778,7 +1778,7 @@ CREATE TABLE pre_forum_attachment (
   KEY tid (tid),
   KEY pid (pid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_attachment_0;
 CREATE TABLE pre_forum_attachment_0 (
@@ -1802,7 +1802,7 @@ CREATE TABLE pre_forum_attachment_0 (
   KEY tid (tid),
   KEY pid (pid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_attachment_1;
 CREATE TABLE pre_forum_attachment_1 (
@@ -1826,7 +1826,7 @@ CREATE TABLE pre_forum_attachment_1 (
   KEY tid (tid),
   KEY pid (pid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_attachment_2;
 CREATE TABLE pre_forum_attachment_2 (
@@ -1850,7 +1850,7 @@ CREATE TABLE pre_forum_attachment_2 (
   KEY tid (tid),
   KEY pid (pid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_attachment_3;
 CREATE TABLE pre_forum_attachment_3 (
@@ -1874,7 +1874,7 @@ CREATE TABLE pre_forum_attachment_3 (
   KEY tid (tid),
   KEY pid (pid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_attachment_4;
 CREATE TABLE pre_forum_attachment_4 (
@@ -1898,7 +1898,7 @@ CREATE TABLE pre_forum_attachment_4 (
   KEY tid (tid),
   KEY pid (pid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_attachment_5;
 CREATE TABLE pre_forum_attachment_5 (
@@ -1922,7 +1922,7 @@ CREATE TABLE pre_forum_attachment_5 (
   KEY tid (tid),
   KEY pid (pid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_attachment_6;
 CREATE TABLE pre_forum_attachment_6 (
@@ -1946,7 +1946,7 @@ CREATE TABLE pre_forum_attachment_6 (
   KEY tid (tid),
   KEY pid (pid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_attachment_7;
 CREATE TABLE pre_forum_attachment_7 (
@@ -1970,7 +1970,7 @@ CREATE TABLE pre_forum_attachment_7 (
   KEY tid (tid),
   KEY pid (pid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_attachment_8;
 CREATE TABLE pre_forum_attachment_8 (
@@ -1994,7 +1994,7 @@ CREATE TABLE pre_forum_attachment_8 (
   KEY tid (tid),
   KEY pid (pid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_attachment_9;
 CREATE TABLE pre_forum_attachment_9 (
@@ -2018,14 +2018,14 @@ CREATE TABLE pre_forum_attachment_9 (
   KEY tid (tid),
   KEY pid (pid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_attachment_exif;
 CREATE TABLE pre_forum_attachment_exif (
   aid mediumint(8) unsigned NOT NULL,
   exif text NOT NULL,
   PRIMARY KEY (aid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_attachment_unused;
 CREATE TABLE pre_forum_attachment_unused (
@@ -2041,7 +2041,7 @@ CREATE TABLE pre_forum_attachment_unused (
   thumb tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (aid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_attachtype;
 CREATE TABLE pre_forum_attachtype (
@@ -2051,7 +2051,7 @@ CREATE TABLE pre_forum_attachtype (
   maxsize int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
   KEY fid (fid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_bbcode;
 CREATE TABLE pre_forum_bbcode (
@@ -2068,7 +2068,7 @@ CREATE TABLE pre_forum_bbcode (
   displayorder tinyint(3) NOT NULL DEFAULT '0',
   perm text NOT NULL,
   PRIMARY KEY (id)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_collection;
 CREATE TABLE pre_forum_collection (
@@ -2095,7 +2095,7 @@ CREATE TABLE pre_forum_collection (
   KEY hotcollection (threadnum,lastupdate),
   KEY follownum (follownum),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_collectioncomment;
 CREATE TABLE pre_forum_collectioncomment (
@@ -2111,7 +2111,7 @@ CREATE TABLE pre_forum_collectioncomment (
   PRIMARY KEY (cid),
   KEY ctid (ctid,dateline),
   KEY userrate (ctid,uid,rate)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_collectionfollow;
 CREATE TABLE pre_forum_collectionfollow (
@@ -2122,7 +2122,7 @@ CREATE TABLE pre_forum_collectionfollow (
   lastvisit int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (uid,ctid),
   KEY ctid (ctid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_collectioninvite;
 CREATE TABLE pre_forum_collectioninvite (
@@ -2131,14 +2131,14 @@ CREATE TABLE pre_forum_collectioninvite (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (ctid,uid),
   KEY dateline (dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_collectionrelated;
 CREATE TABLE pre_forum_collectionrelated (
   tid mediumint(8) unsigned NOT NULL DEFAULT '0',
   collection text NOT NULL,
   PRIMARY KEY (tid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_collectionteamworker;
 CREATE TABLE pre_forum_collectionteamworker (
@@ -2148,7 +2148,7 @@ CREATE TABLE pre_forum_collectionteamworker (
   username varchar(15) NOT NULL DEFAULT '',
   lastvisit int(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (ctid,uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_collectionthread;
 CREATE TABLE pre_forum_collectionthread (
@@ -2158,7 +2158,7 @@ CREATE TABLE pre_forum_collectionthread (
   reason varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (ctid,tid),
   KEY ctid (ctid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_creditslog;
 CREATE TABLE pre_forum_creditslog (
@@ -2171,7 +2171,7 @@ CREATE TABLE pre_forum_creditslog (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   operation char(3) NOT NULL DEFAULT '',
   KEY uid (uid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_debate;
 CREATE TABLE pre_forum_debate (
@@ -2195,7 +2195,7 @@ CREATE TABLE pre_forum_debate (
   negareplies mediumint(8) unsigned NOT NULL,
   PRIMARY KEY (tid),
   KEY uid (uid,starttime)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_debatepost;
 CREATE TABLE pre_forum_debatepost (
@@ -2209,7 +2209,7 @@ CREATE TABLE pre_forum_debatepost (
   PRIMARY KEY (pid),
   KEY pid (pid,stand),
   KEY tid (tid,uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_faq;
 CREATE TABLE pre_forum_faq (
@@ -2222,7 +2222,7 @@ CREATE TABLE pre_forum_faq (
   message text NOT NULL,
   PRIMARY KEY (id),
   KEY displayplay (displayorder)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_filter_post;
 CREATE TABLE pre_forum_filter_post (
@@ -2231,7 +2231,7 @@ CREATE TABLE pre_forum_filter_post (
   postlength int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (tid,pid),
   KEY tid (tid,postlength)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_forum;
 CREATE TABLE pre_forum_forum (
@@ -2287,7 +2287,7 @@ CREATE TABLE pre_forum_forum (
   KEY forum (`status`,`type`,displayorder),
   KEY fup_type (fup,`type`,displayorder),
   KEY fup (fup)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_forum_threadtable;
 CREATE TABLE pre_forum_forum_threadtable (
@@ -2296,7 +2296,7 @@ CREATE TABLE pre_forum_forum_threadtable (
   threads int(11) unsigned NOT NULL DEFAULT '0',
   posts int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (fid,threadtableid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_forumfield;
 CREATE TABLE pre_forum_forumfield (
@@ -2351,7 +2351,7 @@ CREATE TABLE pre_forum_forumfield (
   KEY dateline (dateline),
   KEY lastupdate (lastupdate),
   KEY activity (activity)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_forumrecommend;
 CREATE TABLE pre_forum_forumrecommend (
@@ -2371,7 +2371,7 @@ CREATE TABLE pre_forum_forumrecommend (
   PRIMARY KEY (tid),
   KEY displayorder (fid,displayorder),
   KEY position (position)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_groupcreditslog;
 CREATE TABLE pre_forum_groupcreditslog (
@@ -2379,7 +2379,7 @@ CREATE TABLE pre_forum_groupcreditslog (
   uid mediumint(8) unsigned NOT NULL,
   logdate int(8) NOT NULL DEFAULT '0',
   PRIMARY KEY (fid,uid,logdate)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_groupfield;
 CREATE TABLE pre_forum_groupfield (
@@ -2391,7 +2391,7 @@ CREATE TABLE pre_forum_groupfield (
   UNIQUE KEY `types` (fid,`type`),
   KEY fid (fid),
   KEY `type` (`type`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_groupinvite;
 CREATE TABLE pre_forum_groupinvite (
@@ -2401,7 +2401,7 @@ CREATE TABLE pre_forum_groupinvite (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   UNIQUE KEY ids (fid,inviteuid),
   KEY dateline (dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_grouplevel;
 CREATE TABLE pre_forum_grouplevel (
@@ -2416,7 +2416,7 @@ CREATE TABLE pre_forum_grouplevel (
   specialswitch text NOT NULL,
   PRIMARY KEY (levelid),
   KEY creditsrange (creditshigher,creditslower)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_groupuser;
 CREATE TABLE pre_forum_groupuser (
@@ -2432,7 +2432,7 @@ CREATE TABLE pre_forum_groupuser (
   PRIMARY KEY (fid,uid),
   KEY uid_lastupdate (uid,lastupdate),
   KEY userlist (fid,`level`,lastupdate)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_hotreply_member;
 CREATE TABLE pre_forum_hotreply_member (
@@ -2441,7 +2441,7 @@ CREATE TABLE pre_forum_hotreply_member (
   uid mediumint(8) unsigned NOT NULL DEFAULT '0',
   attitude tinyint(1) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (pid,uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_hotreply_number;
 CREATE TABLE pre_forum_hotreply_number (
@@ -2452,7 +2452,7 @@ CREATE TABLE pre_forum_hotreply_number (
   total mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (pid),
   KEY tid (tid,total)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_imagetype;
 CREATE TABLE pre_forum_imagetype (
@@ -2463,7 +2463,7 @@ CREATE TABLE pre_forum_imagetype (
   displayorder tinyint(3) NOT NULL DEFAULT '0',
   `directory` char(100) NOT NULL,
   PRIMARY KEY (typeid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_medal;
 CREATE TABLE pre_forum_medal (
@@ -2481,7 +2481,7 @@ CREATE TABLE pre_forum_medal (
   PRIMARY KEY (medalid),
   KEY displayorder (displayorder),
   KEY available (available,displayorder)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_medallog;
 CREATE TABLE pre_forum_medallog (
@@ -2497,7 +2497,7 @@ CREATE TABLE pre_forum_medallog (
   KEY `status` (`status`,expiration),
   KEY uid (uid,medalid,`type`),
   KEY dateline (dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_memberrecommend;
 CREATE TABLE pre_forum_memberrecommend (
@@ -2506,7 +2506,7 @@ CREATE TABLE pre_forum_memberrecommend (
   dateline int(10) unsigned NOT NULL,
   KEY tid (tid),
   KEY uid (recommenduid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_moderator;
 CREATE TABLE pre_forum_moderator (
@@ -2515,7 +2515,7 @@ CREATE TABLE pre_forum_moderator (
   displayorder tinyint(3) NOT NULL DEFAULT '0',
   inherited tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (uid,fid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_modwork;
 CREATE TABLE pre_forum_modwork (
@@ -2525,7 +2525,7 @@ CREATE TABLE pre_forum_modwork (
   count smallint(6) unsigned NOT NULL DEFAULT '0',
   posts smallint(6) unsigned NOT NULL DEFAULT '0',
   KEY uid (uid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_newthread;
 CREATE TABLE pre_forum_newthread (
@@ -2535,7 +2535,7 @@ CREATE TABLE pre_forum_newthread (
   PRIMARY KEY (tid),
   KEY fid (fid),
   KEY dateline (dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_onlinelist;
 CREATE TABLE pre_forum_onlinelist (
@@ -2543,7 +2543,7 @@ CREATE TABLE pre_forum_onlinelist (
   displayorder tinyint(3) NOT NULL DEFAULT '0',
   title varchar(30) NOT NULL DEFAULT '',
   url varchar(30) NOT NULL DEFAULT ''
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_order;
 CREATE TABLE pre_forum_order (
@@ -2561,7 +2561,7 @@ CREATE TABLE pre_forum_order (
   UNIQUE KEY orderid (orderid),
   KEY submitdate (submitdate),
   KEY uid (uid,submitdate)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_poll;
 CREATE TABLE pre_forum_poll (
@@ -2575,7 +2575,7 @@ CREATE TABLE pre_forum_poll (
   pollpreview varchar(255) NOT NULL DEFAULT '',
   voters mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (tid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_polloption;
 CREATE TABLE pre_forum_polloption (
@@ -2587,7 +2587,7 @@ CREATE TABLE pre_forum_polloption (
   voterids mediumtext NOT NULL,
   PRIMARY KEY (polloptionid),
   KEY tid (tid,displayorder)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_polloption_image;
 CREATE TABLE pre_forum_polloption_image (
@@ -2607,7 +2607,7 @@ CREATE TABLE pre_forum_polloption_image (
   KEY poid (poid),
   KEY tid (tid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_pollvoter;
 CREATE TABLE pre_forum_pollvoter (
@@ -2618,7 +2618,7 @@ CREATE TABLE pre_forum_pollvoter (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   KEY tid (tid),
   KEY uid (uid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_post;
 CREATE TABLE pre_forum_post (
@@ -2656,7 +2656,7 @@ CREATE TABLE pre_forum_post (
   KEY invisible (invisible),
   KEY displayorder (tid,invisible,dateline),
   KEY `first` (tid,`first`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_post_location;
 CREATE TABLE pre_forum_post_location (
@@ -2669,7 +2669,7 @@ CREATE TABLE pre_forum_post_location (
   PRIMARY KEY (pid),
   KEY tid (tid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_post_moderate;
 CREATE TABLE pre_forum_post_moderate (
@@ -2678,13 +2678,13 @@ CREATE TABLE pre_forum_post_moderate (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
   KEY `status` (`status`,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_post_tableid;
 CREATE TABLE pre_forum_post_tableid (
   pid int(10) unsigned NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (pid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_postcache;
 CREATE TABLE pre_forum_postcache (
@@ -2694,7 +2694,7 @@ CREATE TABLE pre_forum_postcache (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (pid),
   KEY dateline (dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_postcomment;
 CREATE TABLE pre_forum_postcomment (
@@ -2715,7 +2715,7 @@ CREATE TABLE pre_forum_postcomment (
   KEY score (score),
   KEY rpid (rpid),
   KEY pid (pid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_postlog;
 CREATE TABLE pre_forum_postlog (
@@ -2729,7 +2729,7 @@ CREATE TABLE pre_forum_postlog (
   KEY fid (fid),
   KEY uid (uid),
   KEY dateline (dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_poststick;
 CREATE TABLE pre_forum_poststick (
@@ -2739,7 +2739,7 @@ CREATE TABLE pre_forum_poststick (
   dateline int(10) unsigned NOT NULL,
   PRIMARY KEY (tid,pid),
   KEY dateline (tid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_promotion;
 CREATE TABLE pre_forum_promotion (
@@ -2747,7 +2747,7 @@ CREATE TABLE pre_forum_promotion (
   uid mediumint(8) unsigned NOT NULL DEFAULT '0',
   username char(15) NOT NULL DEFAULT '',
   PRIMARY KEY (ip)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_ratelog;
 CREATE TABLE pre_forum_ratelog (
@@ -2761,7 +2761,7 @@ CREATE TABLE pre_forum_ratelog (
   KEY pid (pid,dateline),
   KEY dateline (dateline),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_relatedthread;
 CREATE TABLE pre_forum_relatedthread (
@@ -2771,7 +2771,7 @@ CREATE TABLE pre_forum_relatedthread (
   keywords varchar(255) NOT NULL DEFAULT '',
   relatedthreads text NOT NULL,
   PRIMARY KEY (tid,`type`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_replycredit;
 CREATE TABLE pre_forum_replycredit (
@@ -2782,7 +2782,7 @@ CREATE TABLE pre_forum_replycredit (
   membertimes smallint(6) unsigned NOT NULL DEFAULT '0',
   random tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (tid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_rsscache;
 CREATE TABLE pre_forum_rsscache (
@@ -2797,7 +2797,7 @@ CREATE TABLE pre_forum_rsscache (
   guidetype char(10) NOT NULL DEFAULT '',
   UNIQUE KEY tid (tid),
   KEY fid (fid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_sofa;
 CREATE TABLE pre_forum_sofa (
@@ -2805,7 +2805,7 @@ CREATE TABLE pre_forum_sofa (
   fid mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (tid),
   KEY ftid (fid,tid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_spacecache;
 CREATE TABLE pre_forum_spacecache (
@@ -2814,7 +2814,7 @@ CREATE TABLE pre_forum_spacecache (
   `value` text NOT NULL,
   expiration int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (uid,variable)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_statlog;
 CREATE TABLE pre_forum_statlog (
@@ -2823,7 +2823,7 @@ CREATE TABLE pre_forum_statlog (
   `type` smallint(5) unsigned NOT NULL DEFAULT '0',
   `value` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (logdate,fid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_thread;
 CREATE TABLE pre_forum_thread (
@@ -2879,7 +2879,7 @@ CREATE TABLE pre_forum_thread (
   KEY authorid (authorid),
   KEY isgroup (isgroup,lastpost),
   KEY special (special)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_thread_moderate;
 CREATE TABLE pre_forum_thread_moderate (
@@ -2888,14 +2888,14 @@ CREATE TABLE pre_forum_thread_moderate (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
   KEY `status` (`status`,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_threadaddviews;
 CREATE TABLE pre_forum_threadaddviews (
   tid mediumint(8) unsigned NOT NULL DEFAULT '0',
   addviews int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (tid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_threadcalendar;
 CREATE TABLE pre_forum_threadcalendar (
@@ -2905,7 +2905,7 @@ CREATE TABLE pre_forum_threadcalendar (
   hotnum int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (cid),
   KEY fid (fid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_threadclass;
 CREATE TABLE pre_forum_threadclass (
@@ -2917,27 +2917,27 @@ CREATE TABLE pre_forum_threadclass (
   moderators tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (typeid),
   KEY fid (fid,displayorder)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_threadclosed;
 CREATE TABLE pre_forum_threadclosed (
   tid mediumint(8) unsigned NOT NULL DEFAULT '0',
   redirect mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (tid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_threaddisablepos;
 CREATE TABLE pre_forum_threaddisablepos (
   tid mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (tid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=HEAP;
 
 DROP TABLE IF EXISTS pre_forum_threadhidelog;
 CREATE TABLE pre_forum_threadhidelog (
   tid mediumint(8) unsigned NOT NULL DEFAULT '0',
   uid mediumint(8) unsigned NOT NULL DEFAULT '0',
   UNIQUE KEY uid (tid,uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_threadhot;
 CREATE TABLE pre_forum_threadhot (
@@ -2946,7 +2946,7 @@ CREATE TABLE pre_forum_threadhot (
   tid mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (cid,tid),
   KEY fid (fid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_threadimage;
 CREATE TABLE pre_forum_threadimage (
@@ -2954,7 +2954,7 @@ CREATE TABLE pre_forum_threadimage (
   attachment varchar(255) NOT NULL DEFAULT '',
   remote tinyint(1) unsigned NOT NULL DEFAULT '0',
   KEY tid (tid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_threadlog;
 CREATE TABLE pre_forum_threadlog (
@@ -2967,7 +2967,7 @@ CREATE TABLE pre_forum_threadlog (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (tid,fid,uid),
   KEY dateline (dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_threadmod;
 CREATE TABLE pre_forum_threadmod (
@@ -2983,7 +2983,7 @@ CREATE TABLE pre_forum_threadmod (
   reason char(40) NOT NULL DEFAULT '',
   KEY tid (tid,dateline),
   KEY expiration (expiration,`status`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_threadpartake;
 CREATE TABLE pre_forum_threadpartake (
@@ -2991,7 +2991,7 @@ CREATE TABLE pre_forum_threadpartake (
   uid mediumint(8) unsigned NOT NULL DEFAULT '0',
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   KEY tid (tid,uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_threadpreview;
 CREATE TABLE pre_forum_threadpreview (
@@ -2999,7 +2999,7 @@ CREATE TABLE pre_forum_threadpreview (
   `relay` int(10) unsigned NOT NULL DEFAULT '0',
   content text NOT NULL,
   PRIMARY KEY (tid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_threadprofile;
 CREATE TABLE pre_forum_threadprofile (
@@ -3009,14 +3009,14 @@ CREATE TABLE pre_forum_threadprofile (
   `global` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
   KEY `global` (`global`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_threadprofile_group;
 CREATE TABLE pre_forum_threadprofile_group (
   gid mediumint(8) NOT NULL,
   tpid mediumint(8) unsigned NOT NULL,
   PRIMARY KEY (gid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_threadrush;
 CREATE TABLE pre_forum_threadrush (
@@ -3028,7 +3028,7 @@ CREATE TABLE pre_forum_threadrush (
   creditlimit int(10) NOT NULL DEFAULT '-996',
   replylimit smallint(6) NOT NULL DEFAULT '0',
   PRIMARY KEY (tid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_threadtype;
 CREATE TABLE pre_forum_threadtype (
@@ -3046,7 +3046,7 @@ CREATE TABLE pre_forum_threadtype (
   ptemplate text NOT NULL,
   btemplate text NOT NULL,
   PRIMARY KEY (typeid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_trade;
 CREATE TABLE pre_forum_trade (
@@ -3090,7 +3090,7 @@ CREATE TABLE pre_forum_trade (
   KEY typeid (typeid),
   KEY credittradesum (credittradesum),
   KEY expiration (expiration)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_tradecomment;
 CREATE TABLE pre_forum_tradecomment (
@@ -3110,7 +3110,7 @@ CREATE TABLE pre_forum_tradecomment (
   KEY raterid (raterid,`type`,dateline),
   KEY rateeid (rateeid,`type`,dateline),
   KEY orderid (orderid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_tradelog;
 CREATE TABLE pre_forum_tradelog (
@@ -3158,7 +3158,7 @@ CREATE TABLE pre_forum_tradelog (
   KEY sellerlog (sellerid,`status`,lastupdate),
   KEY tid (tid,pid),
   KEY pid (pid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_typeoption;
 CREATE TABLE pre_forum_typeoption (
@@ -3176,7 +3176,7 @@ CREATE TABLE pre_forum_typeoption (
   permprompt mediumtext NOT NULL,
   PRIMARY KEY (optionid),
   KEY classid (classid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_typeoptionvar;
 CREATE TABLE pre_forum_typeoptionvar (
@@ -3189,7 +3189,7 @@ CREATE TABLE pre_forum_typeoptionvar (
   KEY sortid (sortid),
   KEY tid (tid),
   KEY fid (fid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_typevar;
 CREATE TABLE pre_forum_typevar (
@@ -3203,7 +3203,7 @@ CREATE TABLE pre_forum_typevar (
   subjectshow tinyint(1) NOT NULL DEFAULT '0',
   UNIQUE KEY optionid (sortid,optionid),
   KEY sortid (sortid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_forum_warning;
 CREATE TABLE pre_forum_warning (
@@ -3218,7 +3218,7 @@ CREATE TABLE pre_forum_warning (
   PRIMARY KEY (wid),
   UNIQUE KEY pid (pid),
   KEY authorid (authorid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_album;
 CREATE TABLE pre_home_album (
@@ -3241,7 +3241,7 @@ CREATE TABLE pre_home_album (
   PRIMARY KEY (albumid),
   KEY uid (uid,updatetime),
   KEY updatetime (updatetime)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_album_category;
 CREATE TABLE pre_home_album_category (
@@ -3251,7 +3251,7 @@ CREATE TABLE pre_home_album_category (
   num mediumint(8) unsigned NOT NULL DEFAULT '0',
   displayorder smallint(6) NOT NULL DEFAULT '0',
   PRIMARY KEY (catid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_appcreditlog;
 CREATE TABLE pre_home_appcreditlog (
@@ -3266,7 +3266,7 @@ CREATE TABLE pre_home_appcreditlog (
   PRIMARY KEY (logid),
   KEY uid (uid,dateline),
   KEY appid (appid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_blacklist;
 CREATE TABLE pre_home_blacklist (
@@ -3275,7 +3275,7 @@ CREATE TABLE pre_home_blacklist (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (uid,buid),
   KEY uid (uid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_blog;
 CREATE TABLE pre_home_blog (
@@ -3308,7 +3308,7 @@ CREATE TABLE pre_home_blog (
   KEY uid (uid,dateline),
   KEY hot (hot),
   KEY dateline (dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_blog_category;
 CREATE TABLE pre_home_blog_category (
@@ -3318,7 +3318,7 @@ CREATE TABLE pre_home_blog_category (
   num mediumint(8) unsigned NOT NULL DEFAULT '0',
   displayorder smallint(6) NOT NULL DEFAULT '0',
   PRIMARY KEY (catid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_blog_moderate;
 CREATE TABLE pre_home_blog_moderate (
@@ -3327,7 +3327,7 @@ CREATE TABLE pre_home_blog_moderate (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
   KEY `status` (`status`,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_blogfield;
 CREATE TABLE pre_home_blogfield (
@@ -3347,7 +3347,7 @@ CREATE TABLE pre_home_blogfield (
   pushedaid mediumint(8) NOT NULL DEFAULT '0',
   PRIMARY KEY (blogid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_class;
 CREATE TABLE pre_home_class (
@@ -3357,7 +3357,7 @@ CREATE TABLE pre_home_class (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (classid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_click;
 CREATE TABLE pre_home_click (
@@ -3369,7 +3369,7 @@ CREATE TABLE pre_home_click (
   displayorder tinyint(6) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (clickid),
   KEY idtype (idtype,displayorder)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_clickuser;
 CREATE TABLE pre_home_clickuser (
@@ -3381,7 +3381,7 @@ CREATE TABLE pre_home_clickuser (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   KEY id (id,idtype,dateline),
   KEY uid (uid,idtype,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_comment;
 CREATE TABLE pre_home_comment (
@@ -3400,7 +3400,7 @@ CREATE TABLE pre_home_comment (
   PRIMARY KEY (cid),
   KEY authorid (authorid,idtype),
   KEY id (id,idtype,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_comment_moderate;
 CREATE TABLE pre_home_comment_moderate (
@@ -3410,7 +3410,7 @@ CREATE TABLE pre_home_comment_moderate (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
   KEY idtype (idtype,`status`,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_docomment;
 CREATE TABLE pre_home_docomment (
@@ -3426,7 +3426,7 @@ CREATE TABLE pre_home_docomment (
   PRIMARY KEY (id),
   KEY doid (doid,dateline),
   KEY dateline (dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_doing;
 CREATE TABLE pre_home_doing (
@@ -3443,7 +3443,7 @@ CREATE TABLE pre_home_doing (
   PRIMARY KEY (doid),
   KEY uid (uid,dateline),
   KEY dateline (dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_doing_moderate;
 CREATE TABLE pre_home_doing_moderate (
@@ -3452,7 +3452,7 @@ CREATE TABLE pre_home_doing_moderate (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
   KEY `status` (`status`,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_favorite;
 CREATE TABLE pre_home_favorite (
@@ -3467,7 +3467,7 @@ CREATE TABLE pre_home_favorite (
   PRIMARY KEY (favid),
   KEY idtype (id,idtype),
   KEY uid (uid,idtype,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_feed;
 CREATE TABLE pre_home_feed (
@@ -3502,7 +3502,7 @@ CREATE TABLE pre_home_feed (
   KEY dateline (dateline),
   KEY hot (hot),
   KEY id (id,idtype)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_feed_app;
 CREATE TABLE pre_home_feed_app (
@@ -3532,7 +3532,7 @@ CREATE TABLE pre_home_feed_app (
   PRIMARY KEY (feedid),
   KEY uid (uid,dateline),
   KEY dateline (dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_follow;
 CREATE TABLE pre_home_follow (
@@ -3545,7 +3545,7 @@ CREATE TABLE pre_home_follow (
   mutual tinyint(1) NOT NULL DEFAULT '0',
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (uid,followuid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_follow_feed;
 CREATE TABLE pre_home_follow_feed (
@@ -3557,7 +3557,7 @@ CREATE TABLE pre_home_follow_feed (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (feedid),
   KEY uid (uid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_follow_feed_archiver;
 CREATE TABLE pre_home_follow_feed_archiver (
@@ -3569,7 +3569,7 @@ CREATE TABLE pre_home_follow_feed_archiver (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (feedid),
   KEY uid (uid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_friend;
 CREATE TABLE pre_home_friend (
@@ -3583,7 +3583,7 @@ CREATE TABLE pre_home_friend (
   PRIMARY KEY (uid,fuid),
   KEY fuid (fuid),
   KEY uid (uid,num,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_friend_request;
 CREATE TABLE pre_home_friend_request (
@@ -3596,7 +3596,7 @@ CREATE TABLE pre_home_friend_request (
   PRIMARY KEY (uid,fuid),
   KEY fuid (fuid),
   KEY dateline (uid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_friendlog;
 CREATE TABLE pre_home_friendlog (
@@ -3605,7 +3605,7 @@ CREATE TABLE pre_home_friendlog (
   `action` varchar(10) NOT NULL DEFAULT '',
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (uid,fuid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_notification;
 CREATE TABLE pre_home_notification (
@@ -3626,7 +3626,7 @@ CREATE TABLE pre_home_notification (
   KEY category (uid,category,dateline),
   KEY by_type (uid,`type`,dateline),
   KEY from_id (from_id,from_idtype)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_pic;
 CREATE TABLE pre_home_pic (
@@ -3659,7 +3659,7 @@ CREATE TABLE pre_home_pic (
   PRIMARY KEY (picid),
   KEY uid (uid),
   KEY albumid (albumid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_pic_moderate;
 CREATE TABLE pre_home_pic_moderate (
@@ -3668,14 +3668,14 @@ CREATE TABLE pre_home_pic_moderate (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
   KEY `status` (`status`,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_picfield;
 CREATE TABLE pre_home_picfield (
   picid mediumint(8) unsigned NOT NULL DEFAULT '0',
   hotuser text NOT NULL,
   PRIMARY KEY (picid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_poke;
 CREATE TABLE pre_home_poke (
@@ -3687,7 +3687,7 @@ CREATE TABLE pre_home_poke (
   iconid smallint(6) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (uid,fromuid),
   KEY uid (uid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_pokearchive;
 CREATE TABLE pre_home_pokearchive (
@@ -3700,7 +3700,7 @@ CREATE TABLE pre_home_pokearchive (
   iconid smallint(6) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (pid),
   KEY pokeuid (pokeuid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_share;
 CREATE TABLE pre_home_share (
@@ -3724,7 +3724,7 @@ CREATE TABLE pre_home_share (
   KEY uid (uid,dateline),
   KEY hot (hot),
   KEY dateline (dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_share_moderate;
 CREATE TABLE pre_home_share_moderate (
@@ -3733,7 +3733,7 @@ CREATE TABLE pre_home_share_moderate (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
   KEY `status` (`status`,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_show;
 CREATE TABLE pre_home_show (
@@ -3745,7 +3745,7 @@ CREATE TABLE pre_home_show (
   PRIMARY KEY (uid),
   KEY unitprice (unitprice),
   KEY credit (credit)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_specialuser;
 CREATE TABLE pre_home_specialuser (
@@ -3759,7 +3759,7 @@ CREATE TABLE pre_home_specialuser (
   displayorder mediumint(8) unsigned NOT NULL DEFAULT '0',
   KEY uid (uid,`status`),
   KEY displayorder (`status`,displayorder)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_userapp;
 CREATE TABLE pre_home_userapp (
@@ -3776,7 +3776,7 @@ CREATE TABLE pre_home_userapp (
   KEY uid (uid,appid),
   KEY menuorder (uid,menuorder),
   KEY displayorder (uid,displayorder)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_userappfield;
 CREATE TABLE pre_home_userappfield (
@@ -3785,7 +3785,7 @@ CREATE TABLE pre_home_userappfield (
   profilelink text NOT NULL,
   myml text NOT NULL,
   KEY uid (uid,appid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_home_visitor;
 CREATE TABLE pre_home_visitor (
@@ -3796,14 +3796,14 @@ CREATE TABLE pre_home_visitor (
   PRIMARY KEY (uid,vuid),
   KEY vuid (vuid),
   KEY dateline (dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_mobile_setting;
 CREATE TABLE pre_mobile_setting (
   skey varchar(255) NOT NULL DEFAULT '',
   svalue text NOT NULL,
   PRIMARY KEY (skey)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_portal_article_content;
 CREATE TABLE pre_portal_article_content (
@@ -3818,7 +3818,7 @@ CREATE TABLE pre_portal_article_content (
   PRIMARY KEY (cid),
   KEY aid (aid,pageorder),
   KEY pageorder (pageorder)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_portal_article_count;
 CREATE TABLE pre_portal_article_count (
@@ -3829,7 +3829,7 @@ CREATE TABLE pre_portal_article_count (
   favtimes mediumint(8) unsigned NOT NULL DEFAULT '0',
   sharetimes mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (aid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_portal_article_moderate;
 CREATE TABLE pre_portal_article_moderate (
@@ -3838,7 +3838,7 @@ CREATE TABLE pre_portal_article_moderate (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
   KEY `status` (`status`,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_portal_article_related;
 CREATE TABLE pre_portal_article_related (
@@ -3847,7 +3847,7 @@ CREATE TABLE pre_portal_article_related (
   displayorder mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (aid,raid),
   KEY aid (aid,displayorder)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_portal_article_title;
 CREATE TABLE pre_portal_article_title (
@@ -3890,14 +3890,14 @@ CREATE TABLE pre_portal_article_title (
   htmldir varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (aid),
   KEY catid (catid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_portal_article_trash;
 CREATE TABLE pre_portal_article_trash (
   aid mediumint(8) unsigned NOT NULL DEFAULT '0',
   content text NOT NULL,
   PRIMARY KEY (aid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_portal_attachment;
 CREATE TABLE pre_portal_attachment (
@@ -3914,7 +3914,7 @@ CREATE TABLE pre_portal_attachment (
   aid mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (attachid),
   KEY aid (aid,attachid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_portal_category;
 CREATE TABLE pre_portal_category (
@@ -3946,7 +3946,7 @@ CREATE TABLE pre_portal_category (
   noantitheft tinyint(1) NOT NULL DEFAULT '0',
   lastpublish int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (catid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_portal_category_permission;
 CREATE TABLE pre_portal_category_permission (
@@ -3957,7 +3957,7 @@ CREATE TABLE pre_portal_category_permission (
   inheritedcatid mediumint(8) NOT NULL DEFAULT '0',
   PRIMARY KEY (catid,uid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_portal_comment;
 CREATE TABLE pre_portal_comment (
@@ -3973,7 +3973,7 @@ CREATE TABLE pre_portal_comment (
   message text NOT NULL,
   PRIMARY KEY (cid),
   KEY idtype (id,idtype,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_portal_comment_moderate;
 CREATE TABLE pre_portal_comment_moderate (
@@ -3983,7 +3983,7 @@ CREATE TABLE pre_portal_comment_moderate (
   dateline int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (id),
   KEY idtype (idtype,`status`,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_portal_rsscache;
 CREATE TABLE pre_portal_rsscache (
@@ -3997,7 +3997,7 @@ CREATE TABLE pre_portal_rsscache (
   description char(255) NOT NULL DEFAULT '',
   UNIQUE KEY aid (aid),
   KEY catid (catid,dateline)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_portal_topic;
 CREATE TABLE pre_portal_topic (
@@ -4023,7 +4023,7 @@ CREATE TABLE pre_portal_topic (
   htmldir varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (topicid),
   KEY `name` (`name`)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_portal_topic_pic;
 CREATE TABLE pre_portal_topic_pic (
@@ -4040,7 +4040,7 @@ CREATE TABLE pre_portal_topic_pic (
   remote tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (picid),
   KEY topicid (topicid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_security_evilpost;
 CREATE TABLE pre_security_evilpost (
@@ -4056,7 +4056,7 @@ CREATE TABLE pre_security_evilpost (
   PRIMARY KEY (pid),
   KEY `type` (tid,`type`),
   KEY operateresult (operateresult,createtime)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_security_eviluser;
 CREATE TABLE pre_security_eviluser (
@@ -4068,7 +4068,7 @@ CREATE TABLE pre_security_eviluser (
   isreported tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (uid),
   KEY operateresult (operateresult,createtime)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
 
 DROP TABLE IF EXISTS pre_security_failedlog;
 CREATE TABLE pre_security_failedlog (
@@ -4088,4 +4088,4 @@ CREATE TABLE pre_security_failedlog (
   PRIMARY KEY (id),
   KEY pid (pid),
   KEY uid (uid)
-) ENGINE=INNODB DEFAULT CHARSET=utf8;
+) TYPE=MyISAM;
