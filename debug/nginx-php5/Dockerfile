@@ -2,7 +2,7 @@ FROM ubuntu:14.04
 
 MAINTAINER sharkseven <shark@dodora.cn>
 
-ADD init /init
+ADD etc /etc
 
 RUN apt-get update -y && \
 	apt-get install -y \
@@ -64,6 +64,11 @@ RUN wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.32.0/install.s
 
 RUN bash -c '. /root/.nvm/nvm.sh && cd /root/.gospely/.socket && nvm use v4.6.0 && npm install -g cnpm --registry=https://registry.npm.taobao.org && cnpm install'
 
+RUN rm -rf /etc/nginx/*.d /etc/nginx/sites-* && \
+	mkdir -p /etc/nginx/addon.d /etc/nginx/config.d /etc/nginx/host.d /etc/nginx/nginx.d
+ADD etc /etc
+ADD supervisord.conf /etc/supervisor/conf.d/nginx.conf
+
 # 创建配置 数据目录
 RUN mkdir /config /data
 
@@ -73,14 +78,14 @@ RUN useradd -u 500 core
 
 ADD config /config
 
-RUN chmod +x /init/init.sh
-RUN /init/init.sh
 
 EXPOSE 80
 
 # run nginx and php5-fpm on startup
 RUN echo "/etc/init.d/php5-fpm start" >> /etc/bash.bashrc
-RUN echo "/etc/init.d/nginx start" >> /etc/bash.bashrc
+
+
 
 RUN wget -O /config/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64
 RUN chmod +x /config/dumb-init /config/main
+ENTRYPOINT /config/main
