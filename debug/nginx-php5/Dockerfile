@@ -12,6 +12,7 @@ RUN apt-get update -y && \
 	php5-cli \
 	php5-intl \
 	php5-mcrypt \
+	php5-mysql \
 	php5-apcu \
 	php5-gd \
 	php5-curl \
