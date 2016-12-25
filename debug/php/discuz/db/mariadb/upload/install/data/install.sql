@@ -935,7 +935,7 @@ CREATE TABLE pre_common_member_secwhite (
   uid int(10) NOT NULL,
   dateline int(10) NOT NULL,
   PRIMARY KEY (uid)
-) TYPE=HEAP;
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS pre_common_member_stat_field;
 CREATE TABLE pre_common_member_stat_field (
@@ -1155,7 +1155,7 @@ CREATE TABLE pre_common_process (
   extra int(10) DEFAULT NULL,
   PRIMARY KEY (processid),
   KEY expiry (expiry)
-) TYPE=HEAP;
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS pre_common_regip;
 CREATE TABLE pre_common_regip (
@@ -1231,7 +1231,7 @@ CREATE TABLE pre_common_seccheck (
   KEY dateline (dateline),
   KEY succeed (succeed),
   KEY verified (verified)
-) TYPE=HEAP;
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS pre_common_secquestion;
 CREATE TABLE pre_common_secquestion (
@@ -1260,7 +1260,7 @@ CREATE TABLE pre_common_session (
   tid mediumint(8) unsigned NOT NULL DEFAULT '0',
   UNIQUE KEY sid (sid),
   KEY uid (uid)
-) TYPE=HEAP;
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS pre_common_setting;
 CREATE TABLE pre_common_setting (
@@ -1603,7 +1603,7 @@ CREATE TABLE pre_common_visit (
   `view` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (ip),
   KEY ip (ip,`view`)
-) TYPE=HEAP;
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS pre_common_word;
 CREATE TABLE pre_common_word (
@@ -2930,7 +2930,7 @@ DROP TABLE IF EXISTS pre_forum_threaddisablepos;
 CREATE TABLE pre_forum_threaddisablepos (
   tid mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (tid)
-) TYPE=HEAP;
+) ENGINE=INNODB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS pre_forum_threadhidelog;
 CREATE TABLE pre_forum_threadhidelog (
