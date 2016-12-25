@@ -4,11 +4,8 @@ FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx-php:5
 MAINTAINER sharkseven <shark@dodora.cn>
 ENV DBUSER=docker
 ENV DBPASS=docker
-
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys CBCB082A1BB943DB && \
-	echo "deb http://ftp.osuosl.org/pub/mariadb/repo/10.1/debian/ jessie main" > /etc/apt/sources.list.d/mariadb.list && \
-	apt-get update && \
-	apt-get install -y mariadb-server && \
+RUN apt-get update && \
+	apt-get DEBIAN_FRONTEND=nointeractive  install -y mariadb-server && \
 	apt-get clean && \
 	echo -n > /var/lib/apt/extended_states && \
 	rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*

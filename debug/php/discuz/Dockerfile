@@ -5,7 +5,7 @@ MAINTAINER sharkseven 'shark@dodora.cn'
 #disuz version
 
 ENV DZ_URL http://download.comsenz.com/DiscuzX/3.2/Discuz_X3.2_SC_UTF8.zip
-ENV DZ_WWW_ROOT /root/workspace
+ENV DZ_WWW_ROOT /root/temp
 
 RUN apt-get update
 RUN apt-get install zip -y
