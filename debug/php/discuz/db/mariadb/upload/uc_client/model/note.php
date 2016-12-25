@@ -1,10 +1,10 @@
 <?php
 
 /*
-	[UCenter] (C)2001-2009 Comsenz Inc.
+	[UCenter] (C)2001-2099 Comsenz Inc.
 	This is NOT a freeware, use is subject to license terms
 
-	$Id: note.php 916 2009-01-19 05:56:07Z monkey $
+	$Id: note.php 1059 2011-03-01 07:25:09Z monkey $
 */
 
 !defined('IN_UC') && exit('Access Denied');
@@ -135,7 +135,7 @@ class notemodel {
 
 		$returnsucceed = $response != '' && ($response == 1 || is_array(xml_unserialize($response)));
 
-		$closedsqladd = $this->_close_note($note, $this->apps, $returnsucceed, $appid) ? ",closed='1'" : '';//
+		$closedsqladd = $this->_close_note($note, $this->apps, $returnsucceed, $appid) ? ",closed='1'" : '';
 
 		if($returnsucceed) {
 			if($this->operations[$note['operation']][2]) {
@@ -173,7 +173,6 @@ class notemodel {
 		}
 		if($appcount < 1) {
 			return TRUE;
-			//$closedsqladd = ",closed='1'";
 		}
 	}
 

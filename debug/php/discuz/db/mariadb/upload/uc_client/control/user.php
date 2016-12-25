@@ -1,10 +1,10 @@
 <?php
 
 /*
-	[UCenter] (C)2001-2009 Comsenz Inc.
+	[UCenter] (C)2001-2099 Comsenz Inc.
 	This is NOT a freeware, use is subject to license terms
 
-	$Id: user.php 916 2009-01-19 05:56:07Z monkey $
+	$Id: user.php 1174 2014-11-03 04:38:12Z hypowang $
 */
 
 !defined('IN_UC') && exit('Access Denied');
@@ -29,7 +29,6 @@ class usercontrol extends base {
 		$this->app = $this->cache['apps'][UC_APPID];
 	}
 
-	// -1 Î´¿ªÆô
 	function onsynlogin() {
 		$this->init_input();
 		$uid = $this->input('uid');
@@ -68,6 +67,7 @@ class usercontrol extends base {
 		$email = $this->input('email');
 		$questionid = $this->input('questionid');
 		$answer = $this->input('answer');
+		$regip = $this->input('regip');
 
 		if(($status = $this->_check_username($username)) < 0) {
 			return $status;
@@ -75,7 +75,7 @@ class usercontrol extends base {
 		if(($status = $this->_check_email($email)) < 0) {
 			return $status;
 		}
-		$uid = $_ENV['user']->add_user($username, $password, $email, 0, $questionid, $answer);
+		$uid = $_ENV['user']->add_user($username, $password, $email, 0, $questionid, $answer, $regip);
 		return $uid;
 	}
 
@@ -110,8 +110,19 @@ class usercontrol extends base {
 		$checkques = $this->input('checkques');
 		$questionid = $this->input('questionid');
 		$answer = $this->input('answer');
-		if($isuid) {
+		$ip = $this->input('ip');
+
+		$this->settings['login_failedtime'] = is_null($this->settings['login_failedtime']) ? 5 : $this->settings['login_failedtime'];
+
+		if($ip && $this->settings['login_failedtime'] && !$loginperm = $_ENV['user']->can_do_login($username, $ip)) {
+			$status = -4;
+			return array($status, '', $password, '', 0);
+		}
+
+		if($isuid == 1) {
 			$user = $_ENV['user']->get_user_by_uid($username);
+		} elseif($isuid == 2) {
+			$user = $_ENV['user']->get_user_by_email($username);
 		} else {
 			$user = $_ENV['user']->get_user_by_username($username);
 		}
@@ -121,13 +132,23 @@ class usercontrol extends base {
 			$status = -1;
 		} elseif($user['password'] != md5($passwordmd5.$user['salt'])) {
 			$status = -2;
-		} elseif($checkques && $user['secques'] != '' && $user['secques'] != $_ENV['user']->quescrypt($questionid, $answer)) {
+		} elseif($checkques && $user['secques'] != $_ENV['user']->quescrypt($questionid, $answer)) {
 			$status = -3;
 		} else {
 			$status = $user['uid'];
 		}
+		if($ip && $this->settings['login_failedtime'] && $status <= 0) {
+			$_ENV['user']->loginfailed($username, $ip);
+		}
 		$merge = $status != -1 && !$isuid && $_ENV['user']->check_mergeuser($username) ? 1 : 0;
 		return array($status, $user['username'], $password, $user['email'], $merge);
+	}
+
+	function onlogincheck() {
+		$this->init_input();
+		$username = $this->input('username');
+		$ip = $this->input('ip');
+		return $_ENV['user']->can_do_login($username, $ip);
 	}
 
 	function oncheck_email() {
@@ -163,6 +184,7 @@ class usercontrol extends base {
 
 
 	function ongetprotected() {
+		$this->init_input();
 		$protectedmembers = $this->db->fetch_all("SELECT uid,username FROM ".UC_DBTABLEPRE."protectedmembers GROUP BY username");
 		return $protectedmembers;
 	}
@@ -209,7 +231,6 @@ class usercontrol extends base {
 			return $status;
 		}
 		$uid = $_ENV['user']->add_user($newusername, $password, $email, $uid);
-		$this->db->query("UPDATE ".UC_DBTABLEPRE."pms SET msgfrom='$newusername' WHERE msgfromid='$uid' AND msgfrom='$oldusername'");
 		$this->db->query("DELETE FROM ".UC_DBTABLEPRE."mergemembers WHERE appid='".$this->app['appid']."' AND username='$oldusername'");
 		return $uid;
 	}

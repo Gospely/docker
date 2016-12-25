@@ -1,41 +1,49 @@
-<?
+<?php
 
-/*
-	[Discuz!] (C)2001-2009 Comsenz Inc.
-	This is NOT a freeware, use is subject to license terms
+/**
+ *      [Discuz!] (C)2001-2099 Comsenz Inc.
+ *      This is NOT a freeware, use is subject to license terms
+ *
+ *      $Id: plugin.php 27335 2012-01-16 10:15:37Z monkey $
+ */
 
-	$Id: plugin.php 20440 2009-09-28 01:13:19Z monkey $
-*/
-
+define('APPTYPEID', 127);
 define('CURSCRIPT', 'plugin');
 
-require_once './include/common.inc.php';
 
-if(!empty($id)) {
-	list($identifier, $module) = explode(':', $id);
+require './source/class/class_core.php';
+
+$discuz = C::app();
+
+$cachelist = array('plugin', 'diytemplatename');
+
+$discuz->cachelist = $cachelist;
+$discuz->init();
+
+if(!empty($_GET['id'])) {
+	list($identifier, $module) = explode(':', $_GET['id']);
 	$module = $module !== NULL ? $module : $identifier;
+} else {
+	showmessage('plugin_nonexistence');
 }
 $mnid = 'plugin_'.$identifier.'_'.$module;
+$pluginmodule = isset($_G['setting']['pluginlinks'][$identifier][$module]) ? $_G['setting']['pluginlinks'][$identifier][$module] : (isset($_G['setting']['plugins']['script'][$identifier][$module]) ? $_G['setting']['plugins']['script'][$identifier][$module] : array('adminid' => 0, 'directory' => preg_match("/^[a-z]+[a-z0-9_]*$/i", $identifier) ? $identifier.'/' : ''));
 
-$pluginmodule = isset($pluginlinks[$identifier][$module]) ? $pluginlinks[$identifier][$module] : (isset($plugins['script'][$identifier][$module]) ? $plugins['script'][$identifier][$module] : array('adminid' => 0, 'directory' => preg_match("/^[a-z]+[a-z0-9_]*$/i", $identifier) ? $identifier.'/' : ''));
+if(!preg_match('/^[\w\_]+$/', $identifier)) {
+	showmessage('plugin_nonexistence');
+}
 
-if(empty($identifier) || !preg_match("/^[a-z0-9_\-]+$/i", $module) || !in_array($identifier, $plugins['available'])) {
-	showmessage('undefined_action');
-} elseif($pluginmodule['adminid'] && ($adminid < 1 || ($adminid > 0 && $pluginmodule['adminid'] < $adminid))) {
+if(empty($identifier) || !preg_match("/^[a-z0-9_\-]+$/i", $module) || !in_array($identifier, $_G['setting']['plugins']['available'])) {
+	showmessage('plugin_nonexistence');
+} elseif($pluginmodule['adminid'] && ($_G['adminid'] < 1 || ($_G['adminid'] > 0 && $pluginmodule['adminid'] < $_G['adminid']))) {
 	showmessage('plugin_nopermission');
-} elseif(@!file_exists(DISCUZ_ROOT.($modfile = './plugins/'.$pluginmodule['directory'].$module.'.inc.php'))) {
-	showmessage('plugin_module_nonexistence');
+} elseif(@!file_exists(DISCUZ_ROOT.($modfile = './source/plugin/'.$pluginmodule['directory'].$module.'.inc.php'))) {
+	showmessage('plugin_module_nonexistence', '', array('mod' => $modfile));
 }
 
-if(@in_array($identifier, $pluginlangs)) {
-	@include_once DISCUZ_ROOT.'./forumdata/cache/cache_scriptlang.php';
-}
+define('CURMODULE', $identifier);
+runhooks();
 
 include DISCUZ_ROOT.$modfile;
-
-function plugintemplate($file) {
-	global $identifier, $pluginmodule;
-	return template($file, $identifier, './plugins/'.$pluginmodule['directory'].'templates');
-}
 
 ?>

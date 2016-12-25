@@ -1,35 +1,35 @@
 <?php
 
-/*
-[Discuz!] (C)2001-2009 Comsenz Inc.
-This is NOT a freeware, use is subject to license terms
-
-$Id: index.php 21089 2009-11-11 10:02:57Z liulanbo $
-*/
+/**
+ *      [Discuz!] (C)2001-2099 Comsenz Inc.
+ *      This is NOT a freeware, use is subject to license terms
+ *
+ *      $Id: index.php 22348 2011-05-04 01:16:02Z monkey $
+ */
 
 error_reporting(E_ERROR | E_WARNING | E_PARSE);
 @set_time_limit(1000);
-set_magic_quotes_runtime(0);
+@set_magic_quotes_runtime(0);
 
+define('IN_DISCUZ', TRUE);
 define('IN_COMSENZ', TRUE);
 define('ROOT_PATH', dirname(__FILE__).'/../');
 
-require ROOT_PATH.'./install/var.inc.php';
-require ROOT_PATH.'./install/lang.inc.php';
-require ROOT_PATH.'./install/db.class.php';
-require ROOT_PATH.'./install/func.inc.php';
-
-file_exists(ROOT_PATH.'./install/extvar.inc.php') && require ROOT_PATH.'./install/extvar.inc.php';
+require ROOT_PATH.'./source/discuz_version.php';
+require ROOT_PATH.'./install/include/install_var.php';
+if(function_exists('mysql_connect')) {
+	require ROOT_PATH.'./install/include/install_mysql.php';
+} else {
+	require ROOT_PATH.'./install/include/install_mysqli.php';
+}
+require ROOT_PATH.'./install/include/install_function.php';
+require ROOT_PATH.'./install/include/install_lang.php';
 
 $view_off = getgpc('view_off');
 
 define('VIEW_OFF', $view_off ? TRUE : FALSE);
 
 $allow_method = array('show_license', 'env_check', 'app_reg', 'db_init', 'ext_info', 'install_check', 'tablepre_check');
-
-if(DZUCFULL) {
-	$allow_method = array('show_license', 'env_check', 'db_init', 'ext_info', 'install_check', 'tablepre_check');
-}
 
 $step = intval(getgpc('step', 'R')) ? intval(getgpc('step', 'R')) : 0;
 $method = getgpc('method');
@@ -42,15 +42,23 @@ if(empty($method)) {
 	show_msg('method_undefined', $method, 0);
 }
 
-if(!ini_get('short_open_tag')) {
-	show_msg('short_open_tag_invalid', '', 0);
-} elseif(file_exists($lockfile) && $method != 'ext_info') {
+if(file_exists($lockfile) && $method != 'ext_info') {
 	show_msg('install_locked', '', 0);
 } elseif(!class_exists('dbstuff')) {
 	show_msg('database_nonexistence', '', 0);
 }
 
+timezone_set();
+
 $uchidden = getgpc('uchidden');
+
+if(in_array($method, array('app_reg', 'ext_info'))) {
+	$isHTTPS = ($_SERVER['HTTPS'] && strtolower($_SERVER['HTTPS']) != 'off') ? true : false;
+	$PHP_SELF = $_SERVER['PHP_SELF'] ? $_SERVER['PHP_SELF'] : $_SERVER['SCRIPT_NAME'];
+	$bbserver = 'http'.($isHTTPS ? 's' : '').'://'.preg_replace("/\:\d+/", '', $_SERVER['HTTP_HOST']).($_SERVER['SERVER_PORT'] && $_SERVER['SERVER_PORT'] != 80 && $_SERVER['SERVER_PORT'] != 443 ? ':'.$_SERVER['SERVER_PORT'] : '');
+	$default_ucapi = $bbserver.'/ucenter';
+	$default_appurl = $bbserver.substr($PHP_SELF, 0, strrpos($PHP_SELF, '/') - 8);
+}
 
 if($method == 'show_license') {
 
@@ -65,13 +73,18 @@ if($method == 'show_license') {
 
 	dirfile_check($dirfile_items);
 
-	show_env_result($env_items, $dirfile_items, $func_items);
+	show_env_result($env_items, $dirfile_items, $func_items, $filesock_items);
 
 } elseif($method == 'app_reg') {
 
-	@include CONFIG;
+	@include ROOT_PATH.CONFIG;
+	@include ROOT_PATH.CONFIG_UC;
 	if(!defined('UC_API')) {
 		define('UC_API', '');
+	}
+	if(getgpc('install_ucenter') == 'yes') {
+		header("Location: index.php?step=3&install_ucenter=yes");
+		die;
 	}
 	$submit = true;
 	$error_msg = array();
@@ -98,15 +111,11 @@ if($method == 'show_license') {
 		$submit = false;
 	}
 
-	$PHP_SELF = $_SERVER['PHP_SELF'] ? $_SERVER['PHP_SELF'] : $_SERVER['SCRIPT_NAME'];
-	$bbserver = 'http://'.preg_replace("/\:\d+/", '', $_SERVER['HTTP_HOST']).($_SERVER['SERVER_PORT'] && $_SERVER['SERVER_PORT'] != 80 ? ':'.$_SERVER['SERVER_PORT'] : '');
-	$default_ucapi = $bbserver.'/ucenter';
-	$default_appurl = $bbserver.substr($PHP_SELF, 0, strpos($PHP_SELF, 'install/') - 1);
  	$ucapi = defined('UC_API') && UC_API ? UC_API : $default_ucapi;
 
 	if($submit) {
 
-		$app_type = 'DISCUZ'; // Only For Discuz!
+		$app_type = 'DISCUZX'; // Only For Discuz!
 
 		$app_name = $sitename ? $sitename : SOFT_NAME;
 		$app_url = $siteurl ? $siteurl : $default_appurl;
@@ -156,9 +165,12 @@ if($method == 'show_license') {
 				show_msg('uc_admin_invalid', '', 0);
 			} else {
 				list($appauthkey, $appid) = explode('|', $ucconfig);
+				$ucconfig_array = explode('|', $ucconfig);
+				$ucconfig_array[] = $ucapi;
+				$ucconfig_array[] = $ucip;
 				if(empty($appauthkey) || empty($appid)) {
 					show_msg('uc_data_invalid', '', 0);
-				} elseif($succeed = save_uc_config($ucconfig."|$ucapi|$ucip", CONFIG)) {
+				} elseif($succeed = save_uc_config($ucconfig_array, ROOT_PATH.CONFIG_UC)) {
 					if(VIEW_OFF) {
 						show_msg('app_reg_success');
 					} else {
@@ -185,8 +197,38 @@ if($method == 'show_license') {
 
 } elseif($method == 'db_init') {
 
-	@include CONFIG;
+	if(getgpc('install_ucenter') == 'yes') {
+		define('DZUCFULL', true);
+	} else {
+		define('DZUCFULL', false);
+	}
+
 	$submit = true;
+
+	$default_config = $_config = array();
+	$default_configfile = './config/config_global_default.php';
+
+	if(!file_exists(ROOT_PATH.$default_configfile)) {
+		exit('config_global_default.php was lost, please reupload this  file.');
+	} else {
+		include ROOT_PATH.$default_configfile;
+		$default_config = $_config;
+	}
+
+	if(file_exists(ROOT_PATH.CONFIG)) {
+		include ROOT_PATH.CONFIG;
+	} else {
+		$_config = $default_config;
+	}
+
+	$dbhost = $_config['db'][1]['dbhost'];
+	$dbname = $_config['db'][1]['dbname'];
+	$dbpw = $_config['db'][1]['dbpw'];
+	$dbuser = $_config['db'][1]['dbuser'];
+	$tablepre = $_config['db'][1]['tablepre'];
+
+	$adminemail = 'admin@admin.com';
+
 	$error_msg = array();
 	if(isset($form_db_init_items) && is_array($form_db_init_items)) {
 		foreach($form_db_init_items as $key => $items) {
@@ -235,9 +277,11 @@ if($method == 'show_license') {
 		if(empty($dbname)) {
 			show_msg('dbname_invalid', $dbname, 0);
 		} else {
-			if(!$link = @mysql_connect($dbhost, $dbuser, $dbpw)) {
-				$errno = mysql_errno($link);
-				$error = mysql_error($link);
+			$mysqlmode = function_exists("mysql_connect") ? 'mysql' : 'mysqli';
+			$link = ($mysqlmode == 'mysql') ? @mysql_connect($dbhost, $dbuser, $dbpw) : new mysqli($dbhost, $dbuser, $dbpw);
+			if(!$link) {
+				$errno = ($mysqlmode == 'mysql') ? mysql_errno($link) : $link->errno;
+				$error = ($mysqlmode == 'mysql') ? mysql_error($link) : $link->error;
 				if($errno == 1045) {
 					show_msg('database_errno_1045', $error, 0);
 				} elseif($errno == 2003) {
@@ -246,26 +290,39 @@ if($method == 'show_license') {
 					show_msg('database_connect_error', $error, 0);
 				}
 			}
-			if(mysql_get_server_info() > '4.1') {
-				mysql_query("CREATE DATABASE IF NOT EXISTS `$dbname` DEFAULT CHARACTER SET ".DBCHARSET, $link);
+			$mysql_version = ($mysqlmode == 'mysql') ? mysql_get_server_info() : $link->server_info;
+			if($mysql_version > '4.1') {
+				if($mysqlmode == 'mysql') {
+					mysql_query("CREATE DATABASE IF NOT EXISTS `$dbname` DEFAULT CHARACTER SET ".DBCHARSET, $link);
+				} else {
+					$link->query("CREATE DATABASE IF NOT EXISTS `$dbname` DEFAULT CHARACTER SET ".DBCHARSET);
+				}
 			} else {
-				mysql_query("CREATE DATABASE IF NOT EXISTS `$dbname`", $link);
+				if($mysqlmode == 'mysql') {
+					mysql_query("CREATE DATABASE IF NOT EXISTS `$dbname`", $link);
+				} else {
+					$link->query("CREATE DATABASE IF NOT EXISTS `$dbname`");
+				}
 			}
 
-			if(mysql_errno()) {
-				show_msg('database_errno_1044', mysql_error(), 0);
+			if(($mysqlmode == 'mysql') ? mysql_errno($link) : $link->errno) {
+				show_msg('database_errno_1044', ($mysqlmode == 'mysql') ? mysql_error($link) : $link->error, 0);
 			}
-			mysql_close($link);
+			if($mysqlmode == 'mysql') {
+				mysql_close($link);
+			} else {
+				$link->close();
+			}
 		}
 
-		if(strpos($tablepre, '.') !== false) {
+		if(strpos($tablepre, '.') !== false || intval($tablepre{0})) {
 			show_msg('tablepre_invalid', $tablepre, 0);
 		}
 
 		if($username && $email && $password) {
-			if(strlen($username) > 15 || preg_match("/^$|^c:\\con\\con$|¡¡|[,\"\s\t\<\>&]|^Guest/is", $username)) {
+			if(strlen($username) > 15 || preg_match("/^$|^c:\\con\\con$|ã€€|[,\"\s\t\<\>&]|^Guest/is", $username)) {
 				show_msg('admin_username_invalid', $username, 0);
-			} elseif(!strstr($email, '@') || $email != stripslashes($email) || $email != htmlspecialchars($email)) {
+			} elseif(!strstr($email, '@') || $email != stripslashes($email) || $email != dhtmlspecialchars($email)) {
 				show_msg('admin_email_invalid', $email, 0);
 			} else {
 				if(!DZUCFULL) {
@@ -279,11 +336,23 @@ if($method == 'show_license') {
 			show_msg('admininfo_invalid', '', 0);
 		}
 
-		config_edit();
 
 		$uid = DZUCFULL ? 1 : $adminuser['uid'];
+		$authkey = substr(md5($_SERVER['SERVER_ADDR'].$_SERVER['HTTP_USER_AGENT'].$dbhost.$dbuser.$dbpw.$dbname.$username.$password.$pconnect.substr($timestamp, 0, 6)), 8, 6).random(10);
+		$_config['db'][1]['dbhost'] = $dbhost;
+		$_config['db'][1]['dbname'] = $dbname;
+		$_config['db'][1]['dbpw'] = $dbpw;
+		$_config['db'][1]['dbuser'] = $dbuser;
+		$_config['db'][1]['tablepre'] = $tablepre;
+		$_config['admincp']['founder'] = (string)$uid;
+		$_config['security']['authkey'] = $authkey;
+		$_config['cookie']['cookiepre'] = random(4).'_';
+		$_config['memory']['prefix'] = random(6).'_';
+
+		save_config_file(ROOT_PATH.CONFIG, $_config, $default_config);
 
 		$db = new dbstuff;
+
 		$db->connect($dbhost, $dbuser, $dbpw, $dbname, DBCHARSET);
 
 		if(!VIEW_OFF) {
@@ -301,72 +370,64 @@ if($method == 'show_license') {
 		runquery($sql);
 		runquery($extrasql);
 
-		$onlineip = '';
+		$sql = file_get_contents(ROOT_PATH.'./install/data/install_data.sql');
+		$sql = str_replace("\r\n", "\n", $sql);
+		runquery($sql);
+
+		$onlineip = $_SERVER['REMOTE_ADDR'];
 		$timestamp = time();
 		$backupdir = substr(md5($_SERVER['SERVER_ADDR'].$_SERVER['HTTP_USER_AGENT'].substr($timestamp, 0, 4)), 8, 6);
-		@mkdir(ROOT_PATH.'forumdata/backup_'.$backupdir, 0777);
-
-		$authkey = substr(md5($_SERVER['SERVER_ADDR'].$_SERVER['HTTP_USER_AGENT'].$dbhost.$dbuser.$dbpw.$dbname.$username.$password.$pconnect.substr($timestamp, 0, 6)), 8, 6).random(10);
-
+		$ret = false;
+		if(is_dir(ROOT_PATH.'data/backup')) {
+			$ret = @rename(ROOT_PATH.'data/backup', ROOT_PATH.'data/backup_'.$backupdir);
+		}
+		if(!$ret) {
+			@mkdir(ROOT_PATH.'data/backup_'.$backupdir, 0777);
+		}
+		if(is_dir(ROOT_PATH.'data/backup_'.$backupdir)) {
+			$db->query("REPLACE INTO {$tablepre}common_setting (skey, svalue) VALUES ('backupdir', '$backupdir')");
+		}
 		$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz';
-		$siteuniqueid = $chars[date('y')%60].$chars[date('n')].$chars[date('j')].$chars[date('G')].$chars[date('i')].$chars[date('s')].substr(md5($onlineip.$timestamp), 0, 4).random(6);
+		$siteuniqueid = 'DX'.$chars[date('y')%60].$chars[date('n')].$chars[date('j')].$chars[date('G')].$chars[date('i')].$chars[date('s')].substr(md5($onlineip.$timestamp), 0, 4).random(4);
 
-		$db->query("REPLACE INTO {$tablepre}settings (variable, value) VALUES ('authkey', '$authkey')");
-		$db->query("REPLACE INTO {$tablepre}settings (variable, value) VALUES ('siteuniqueid', '$siteuniqueid')");
+		$db->query("REPLACE INTO {$tablepre}common_setting (skey, svalue) VALUES ('authkey', '$authkey')");
+		$db->query("REPLACE INTO {$tablepre}common_setting (skey, svalue) VALUES ('siteuniqueid', '$siteuniqueid')");
+		$db->query("REPLACE INTO {$tablepre}common_setting (skey, svalue) VALUES ('adminemail', '$email')");
 
-		$db->query("REPLACE INTO {$tablepre}settings (variable, value) VALUES ('backupdir', '".$backupdir."')");
-		$db->query("REPLACE INTO {$tablepre}settings (variable, value) VALUES ('extcredits', '".addslashes(serialize($extcredits))."')");
-		$db->query("REPLACE INTO {$tablepre}settings (variable, value) VALUES ('attachdir', '$attachdir')");
-		$db->query("REPLACE INTO {$tablepre}settings (variable, value) VALUES ('attachurl', '$attachurl')");
+		install_extra_setting();
 
-		$db->query("REPLACE INTO {$tablepre}settings (variable, value) VALUES ('tasktypes', '".addslashes(serialize($tasktypes))."')");
-
-		$db->query("DELETE FROM {$tablepre}members");
-		$db->query("DELETE FROM {$tablepre}memberfields");
+		$db->query("REPLACE INTO {$tablepre}common_setting (skey, svalue) VALUES ('backupdir', '".$backupdir."')");
 
 		$password = md5(random(10));
-		$db->query("INSERT INTO {$tablepre}members (uid, username, password, secques, adminid, groupid, regip, regdate, lastvisit, lastpost, email, dateformat, timeformat, showemail, newsletter, timeoffset) VALUES ('$uid', '$username', '$password', '', '1', '1', 'hidden', '".time()."', '".time()."', '".time()."', '$email', '', '0', '1', '1', '9999');");
-		$db->query("INSERT INTO {$tablepre}memberfields (uid) VALUES ('$uid')");
-		$db->query("UPDATE {$tablepre}crons SET lastrun='0', nextrun='".($timestamp + 3600)."'");
+
+		$db->query("REPLACE INTO {$tablepre}common_member (uid, username, password, adminid, groupid, email, regdate) VALUES ('$uid', '$username', '$password', '1', '1', '$email', '".time()."');");
+
+		$notifyusers = addslashes('a:1:{i:1;a:2:{s:8:"username";s:'.strlen($username).':"'.$username.'";s:5:"types";s:20:"11111111111111111111";}}');
+		$db->query("REPLACE INTO {$tablepre}common_setting (skey, svalue) VALUES ('notifyusers', '$notifyusers')");
+
+		$db->query("UPDATE {$tablepre}common_cron SET lastrun='0', nextrun='".($timestamp + 3600)."'");
+
+		install_data($username, $uid);
+
+		$testdata = $portalstatus = 1;
+		$groupstatus = $homestatus = 0;
 
 		if($testdata) {
 			install_testdata($username, $uid);
 		}
 
-		foreach($request_data as $k => $v) {
-			$variable = addslashes($k);
-			$type = $v['type'];
-			if(isset($v['parameter']['settings'])) {
-				$v_settings = rawurlencode(serialize($v['parameter']['settings']));
-				$v['url'] = preg_replace('/&settings=.+?([&|$])/', '&settings='.$v_settings.'\1', $v['url'].'&');
-			}
-			if(isset($v['parameter']['jstemplate'])) {
-				$v_jstemplate = rawurlencode($v['parameter']['jstemplate']);
-				$v['url'] = preg_replace('/&jstemplate=.+?([&|$])/', '&jstemplate='.$v_jstemplate.'\1', $v['url'].'&');
-			}
-
-			$value = addslashes(serialize($v));
-			$db->query("REPLACE INTO {$tablepre}request (variable, value, type) VALUES ('$variable', '$value', '$type')");
+		if(!$portalstatus) {
+			$db->query("REPLACE INTO {$tablepre}common_setting (skey, svalue) VALUES ('portalstatus', '0')");
 		}
 
-		if(is_writeable(ROOT_PATH.'./config.inc.php')) {
-			$configfile = @file_get_contents(ROOT_PATH.'./config.inc.php');
-			$configfile = trim($configfile);
-			$configfile = substr($configfile, -2) == '?>' ? substr($configfile, 0, -2) : $configfile;
-			$configfile = preg_replace("/[$]forumfounders\s*\=\s*[\"'].*?[\"'];/is", "\$forumfounders = '$uid';", $configfile);
-			@file_put_contents(ROOT_PATH.'./config.inc.php', $configfile);
+		if(!$groupstatus) {
+			$db->query("REPLACE INTO {$tablepre}common_setting (skey, svalue) VALUES ('groupstatus', '0')");
 		}
 
-		foreach($optionlist as $optionid => $option) {
-			$db->query("INSERT INTO {$tablepre}typeoptions VALUES ('$optionid', '$option[classid]', '$option[displayorder]', '$option[title]', '', '$option[identifier]', '$option[type]', '', '".addslashes(serialize($option['rules']))."');");
+		if(!$homestatus) {
+			$db->query("REPLACE INTO {$tablepre}common_setting (skey, svalue) VALUES ('homestatus', '0')");
 		}
-
-		$db->query("ALTER TABLE {$tablepre}typeoptions AUTO_INCREMENT=3001");
-
-		upg_newbietask();
-
 		$yearmonth = date('Ym_', time());
-
 		loginit($yearmonth.'ratelog');
 		loginit($yearmonth.'illegallog');
 		loginit($yearmonth.'modslog');
@@ -374,17 +435,29 @@ if($method == 'show_license') {
 		loginit($yearmonth.'errorlog');
 		loginit($yearmonth.'banlog');
 
-		dir_clear(ROOT_PATH.'./forumdata/templates');
-		dir_clear(ROOT_PATH.'./forumdata/cache');
-		dir_clear(ROOT_PATH.'./forumdata/threadcaches');
+		dir_clear(ROOT_PATH.'./data/template');
+		dir_clear(ROOT_PATH.'./data/cache');
+		dir_clear(ROOT_PATH.'./data/threadcache');
 		dir_clear(ROOT_PATH.'./uc_client/data');
 		dir_clear(ROOT_PATH.'./uc_client/data/cache');
+
+		foreach($serialize_sql_setting as $k => $v) {
+			$v = addslashes(serialize($v));
+			$db->query("REPLACE INTO {$tablepre}common_setting VALUES ('$k', '$v')");
+		}
+
+		$query = $db->query("SELECT COUNT(*) FROM {$tablepre}common_member");
+		$totalmembers = $db->result($query, 0);
+		$userstats = array('totalmembers' => $totalmembers, 'newsetuser' => $username);
+		$ctype = 1;
+		$data = addslashes(serialize($userstats));
+		$db->query("REPLACE INTO {$tablepre}common_syscache (cname, ctype, dateline, data) VALUES ('userstats', '$ctype', '".time()."', '$data')");
 
 		touch($lockfile);
 		VIEW_OFF && show_msg('initdbresult_succ');
 
 		if(!VIEW_OFF) {
-			echo '<script type="text/javascript">document.getElementById("laststep").disabled=false;document.getElementById("laststep").value = \''.lang('install_founder_contact').'\';</script><script type="text/javascript">setTimeout(function(){window.location=\'index.php?method=ext_info\'}, 2000);</script><iframe src="../" style="display:none"></iframe>'."\r\n";
+			echo '<script type="text/javascript">function setlaststep() {document.getElementById("laststep").disabled=false;window.location=\'index.php?method=ext_info\';}</script><script type="text/javascript">setTimeout(function(){window.location=\'index.php?method=ext_info\'}, 30000);</script><iframe src="../misc.php?mod=initsys" style="display:none;" onload="setlaststep()"></iframe>'."\r\n";
 			show_footer();
 		}
 
@@ -394,28 +467,20 @@ if($method == 'show_license') {
 		show_msg('missing_parameter', '', 0);
 
 	} else {
-
 		show_form($form_db_init_items, $error_msg);
 
 	}
 
 } elseif($method == 'ext_info') {
-	@include CONFIG;
-	$db = new dbstuff;
-	$db->connect($dbhost, $dbuser, $dbpw, $dbname, DBCHARSET);
-	$skip = getgpc('skip');
-	if(empty($skip)) {
-		upg_comsenz_stats();
-	}
 	@touch($lockfile);
 	if(VIEW_OFF) {
 		show_msg('ext_info_succ');
 	} else {
 		show_header();
-		echo '</div><div class="main" style="margin-top: -123px;"><ul style="line-height: 200%; margin-left: 30px;">';
-		echo '<li><a href="../">'.lang('install_succeed').'</a><br>';
-		echo '<script>setTimeout(function(){window.location=\'../\'}, 2000);</script>'.lang('auto_redirect').'</li>';
-		echo '</ul></div>';
+		echo '</div><div class="main" style="margin-top: -123px;padding-left:30px"><span id="platformIntro"></span>';
+		echo '<iframe frameborder="0" width="700" height="550" allowTransparency="true" src="http://addon.discuz.com/api/outer.php?id=installed&siteurl='.urlencode($default_appurl).'&version='.DISCUZ_VERSION.'"></iframe>';
+		echo '<p align="right"><a href="'.$default_appurl.'">'.$lang['install_finish'].'</a></p><br />';
+		echo '</div>';
 		show_footer();
 	}
 

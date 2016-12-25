@@ -1,10 +1,10 @@
 <?php
 
 /*
-	[UCenter] (C)2001-2009 Comsenz Inc.
+	[UCenter] (C)2001-2099 Comsenz Inc.
 	This is NOT a freeware, use is subject to license terms
 
-	$Id: feed.php 883 2008-12-16 00:51:21Z zhaoxiongfei $
+	$Id: feed.php 1139 2012-05-08 09:02:11Z liulanbo $
 */
 
 !defined('IN_UC') && exit('Access Denied');
@@ -94,7 +94,7 @@ class feedcontrol extends base {
 		$template = str_replace(array('</b>', '</B>'), '[/B]', $template);
 		$template = str_replace(array('</i>', '</I>'), '[/I]', $template);
 		$template = str_replace(array('</u>', '</U>'), '[/U]', $template);
-		$template = htmlspecialchars($template);
+		$template = dhtmlspecialchars($template);
 		$template = nl2br($template);
 		$template = str_replace(array('[B]', '[I]', '[U]', '[/B]', '[/I]', '[/U]'), array('<b>', '<i>', '<u>', '</b>', '</i>', '</u>'), $template);
 		return $template;

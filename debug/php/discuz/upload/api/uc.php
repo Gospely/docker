@@ -1,9 +1,16 @@
 <?php
 
-define('IN_DISCUZ', TRUE);
+/**
+ *      [Discuz!] (C)2001-2099 Comsenz Inc.
+ *      This is NOT a freeware, use is subject to license terms
+ *
+ *      $Id: uc.php 35199 2015-02-04 03:48:10Z hypowang $
+ */
 
-define('UC_CLIENT_VERSION', '1.5.1');
-define('UC_CLIENT_RELEASE', '20091001');
+error_reporting(0);
+
+define('UC_CLIENT_VERSION', '1.6.0');
+define('UC_CLIENT_RELEASE', '20110501');
 
 define('API_DELETEUSER', 1);
 define('API_RENAMEUSER', 1);
@@ -16,70 +23,55 @@ define('API_UPDATEHOSTS', 1);
 define('API_UPDATEAPPS', 1);
 define('API_UPDATECLIENT', 1);
 define('API_UPDATECREDIT', 1);
-define('API_GETCREDITSETTINGS', 1);
 define('API_GETCREDIT', 1);
+define('API_GETCREDITSETTINGS', 1);
 define('API_UPDATECREDITSETTINGS', 1);
-
+define('API_ADDFEED', 1);
 define('API_RETURN_SUCCEED', '1');
 define('API_RETURN_FAILED', '-1');
-define('API_RETURN_FORBIDDEN', '-2');
+define('API_RETURN_FORBIDDEN', '1');
 
-define('DISCUZ_ROOT', substr(dirname(__FILE__), 0, -3));
+define('IN_API', true);
+define('CURSCRIPT', 'api');
+
 
 if(!defined('IN_UC')) {
+	require_once '../source/class/class_core.php';
 
-	error_reporting(0);
-	set_magic_quotes_runtime(0);
+	$discuz = C::app();
+	$discuz->init();
 
-	defined('MAGIC_QUOTES_GPC') || define('MAGIC_QUOTES_GPC', get_magic_quotes_gpc());
-	include_once DISCUZ_ROOT.'./config.inc.php';
+	require DISCUZ_ROOT.'./config/config_ucenter.php';
 
-	$_DCACHE = $get = $post = array();
+	$get = $post = array();
 
 	$code = @$_GET['code'];
-	parse_str(_authcode($code, 'DECODE', UC_KEY), $get);
-	if(MAGIC_QUOTES_GPC) {
-		$get = _stripslashes($get);
-	}
+	parse_str(authcode($code, 'DECODE', UC_KEY), $get);
 
-	$timestamp = time();
-	if(empty($get)) {
-		exit('Invalid Request');
-	} elseif($timestamp - $get['time'] > 3600) {
+	if(time() - $get['time'] > 3600) {
 		exit('Authracation has expiried');
 	}
-	$action = $get['action'];
+	if(empty($get)) {
+		exit('Invalid Request');
+	}
 
-	require_once DISCUZ_ROOT.'./uc_client/lib/xml.class.php';
+	include_once DISCUZ_ROOT.'./uc_client/lib/xml.class.php';
 	$post = xml_unserialize(file_get_contents('php://input'));
 
-	if(in_array($get['action'], array('test', 'deleteuser', 'renameuser', 'gettag', 'synlogin', 'synlogout', 'updatepw', 'updatebadwords', 'updatehosts', 'updateapps', 'updateclient', 'updatecredit', 'getcredit', 'getcreditsettings', 'updatecreditsettings'))) {
-		require_once DISCUZ_ROOT.'./include/db_'.$database.'.class.php';
-		$GLOBALS['db'] = new dbstuff;
-		$GLOBALS['db']->connect($dbhost, $dbuser, $dbpw, $dbname, $pconnect, true, $dbcharset);
-		$GLOBALS['tablepre'] = $tablepre;
-		unset($dbhost, $dbuser, $dbpw, $dbname, $pconnect);
+	if(in_array($get['action'], array('test', 'deleteuser', 'renameuser', 'gettag', 'synlogin', 'synlogout', 'updatepw', 'updatebadwords', 'updatehosts', 'updateapps', 'updateclient', 'updatecredit', 'getcredit', 'getcreditsettings', 'updatecreditsettings', 'addfeed'))) {
 		$uc_note = new uc_note();
-		exit($uc_note->$get['action']($get, $post));
+		echo $uc_note->$get['action']($get, $post);
+		exit();
 	} else {
 		exit(API_RETURN_FAILED);
 	}
-
 } else {
-
-	/*$uc_note = new uc_note('../', '../config.inc.php');
-	$uc_note->deleteuser('3');*/
-	define('DISCUZ_ROOT', $app['extra']['apppath']);
-	include DISCUZ_ROOT.'./config.inc.php';
-	require_once DISCUZ_ROOT.'./include/db_'.$database.'.class.php';
-	$GLOBALS['db'] = new dbstuff;
-	$GLOBALS['db']->connect($dbhost, $dbuser, $dbpw, $dbname, $pconnect, true, $dbcharset);
-	$GLOBALS['tablepre'] = $tablepre;
-	unset($dbhost, $dbuser, $dbpw, $dbname, $pconnect);
+	exit;
 }
 
 class uc_note {
 
+	var $dbconfig = '';
 	var $db = '';
 	var $tablepre = '';
 	var $appdir = '';
@@ -92,9 +84,7 @@ class uc_note {
 	}
 
 	function uc_note() {
-		$this->appdir = DISCUZ_ROOT;
-		$this->db = $GLOBALS['db'];
-		$this->tablepre = $GLOBALS['tablepre'];
+
 	}
 
 	function test($get, $post) {
@@ -102,328 +92,307 @@ class uc_note {
 	}
 
 	function deleteuser($get, $post) {
-		$uids = $get['ids'];
-		!API_DELETEUSER && exit(API_RETURN_FORBIDDEN);
-
-		$threads = array();
-
-		$query = $this->db->query("SELECT f.fid, t.tid FROM ".$this->tablepre."threads t LEFT JOIN ".$this->tablepre."forums f ON t.fid=f.fid WHERE t.authorid IN ($uids) ORDER BY f.fid");
-		while($thread = $this->db->fetch_array($query)) {
-			$threads[$thread['fid']] .= ($threads[$thread['fid']] ? ',' : '').$thread['tid'];
+		global $_G;
+		if(!API_DELETEUSER) {
+			return API_RETURN_FORBIDDEN;
 		}
-
-		if($threads) {
-			require_once $this->appdir.'./forumdata/cache/cache_settings.php';
-			foreach($threads as $fid => $tids) {
-				$query = $this->db->query("SELECT attachment, thumb, remote FROM ".$this->tablepre."attachments WHERE tid IN ($tids)");
-				while($attach = $this->db->fetch_array($query)) {
-					@unlink($_DCACHE['settings']['attachdir'].'/'.$attach['attachment']);
-					$attach['thumb'] && @unlink($_DCACHE['settings']['attachdir'].'/'.$attach['attachment'].'.thumb.jpg');
-				}
-
-				foreach(array('threads', 'threadsmod', 'relatedthreads', 'posts', 'polls', 'polloptions', 'trades', 'activities', 'activityapplies', 'debates', 'debateposts', 'attachments', 'favorites', 'typeoptionvars', 'forumrecommend') as $value) {
-					$this->db->query("DELETE FROM ".$this->tablepre."$value WHERE tid IN ($tids)", 'UNBUFFERED');
-				}
-
-				require_once $this->appdir.'./include/post.func.php';
-				updateforumcount($fid);
-			}
-			if($globalstick && $stickmodify) {
-				require_once $this->appdir.'./include/cache.func.php';
-				updatecache('globalstick');
-			}
-		}
-
-		$query = $this->db->query("DELETE FROM ".$this->tablepre."members WHERE uid IN ($uids)");
-		$this->db->query("DELETE FROM ".$this->tablepre."access WHERE uid IN ($uids)", 'UNBUFFERED');
-		$this->db->query("DELETE FROM ".$this->tablepre."memberfields WHERE uid IN ($uids)", 'UNBUFFERED');
-		$this->db->query("DELETE FROM ".$this->tablepre."favorites WHERE uid IN ($uids)", 'UNBUFFERED');
-		$this->db->query("DELETE FROM ".$this->tablepre."moderators WHERE uid IN ($uids)", 'UNBUFFERED');
-		$this->db->query("DELETE FROM ".$this->tablepre."validating WHERE uid IN ($uids)", 'UNBUFFERED');
-
-		$query = $this->db->query("SELECT uid, attachment, thumb, remote FROM ".$this->tablepre."attachments WHERE uid IN ($uids)");
-		while($attach = $this->db->fetch_array($query)) {
-			@unlink($_DCACHE['settings']['attachdir'].'/'.$attach['attachment']);
-			$attach['thumb'] && @unlink($_DCACHE['settings']['attachdir'].'/'.$attach['attachment'].'.thumb.jpg');
-		}
-		$this->db->query("DELETE FROM ".$this->tablepre."attachments WHERE uid IN ($uids)");
-
-		$this->db->query("DELETE FROM ".$this->tablepre."posts WHERE authorid IN ($uids)");
-		$this->db->query("DELETE FROM ".$this->tablepre."trades WHERE sellerid IN ($uids)");
+		$uids = str_replace("'", '', stripslashes($get['ids']));
+		$ids = array();
+		$ids = array_keys(C::t('common_member')->fetch_all($uids));
+		require_once DISCUZ_ROOT.'./source/function/function_delete.php';
+		$ids && deletemember($ids);
 
 		return API_RETURN_SUCCEED;
 	}
 
 	function renameuser($get, $post) {
-		$uid = $get['uid'];
-		$usernameold = $get['oldusername'];
-		$usernamenew = $get['newusername'];
+		global $_G;
+
 		if(!API_RENAMEUSER) {
 			return API_RETURN_FORBIDDEN;
 		}
 
-		$this->db->query("UPDATE ".$this->tablepre."announcements SET author='$usernamenew' WHERE author='$usernameold'");
-		$this->db->query("UPDATE ".$this->tablepre."banned SET admin='$usernamenew' WHERE admin='$usernameold'");
-		$this->db->query("UPDATE ".$this->tablepre."forums SET lastpost=REPLACE(lastpost, '\t$usernameold', '\t$usernamenew')");
-		$this->db->query("UPDATE ".$this->tablepre."members SET username='$usernamenew' WHERE uid='$uid'");
-		$this->db->query("UPDATE ".$this->tablepre."posts SET author='$usernamenew' WHERE authorid='$uid'");
-		$this->db->query("UPDATE ".$this->tablepre."threads SET author='$usernamenew' WHERE authorid='$uid'");
-		$this->db->query("UPDATE ".$this->tablepre."threads SET lastposter='$usernamenew' WHERE lastposter='$usernameold'");
-		$this->db->query("UPDATE ".$this->tablepre."threadsmod SET username='$usernamenew' WHERE uid='$uid'");
+
+
+		$tables = array(
+			'common_block' => array('id' => 'uid', 'name' => 'username'),
+			'common_invite' => array('id' => 'fuid', 'name' => 'fusername'),
+			'common_member_verify_info' => array('id' => 'uid', 'name' => 'username'),
+			'common_mytask' => array('id' => 'uid', 'name' => 'username'),
+			'common_report' => array('id' => 'uid', 'name' => 'username'),
+
+			'forum_thread' => array('id' => 'authorid', 'name' => 'author'),
+			'forum_activityapply' => array('id' => 'uid', 'name' => 'username'),
+			'forum_groupuser' => array('id' => 'uid', 'name' => 'username'),
+			'forum_pollvoter' => array('id' => 'uid', 'name' => 'username'),
+			'forum_post' => array('id' => 'authorid', 'name' => 'author'),
+			'forum_postcomment' => array('id' => 'authorid', 'name' => 'author'),
+			'forum_ratelog' => array('id' => 'uid', 'name' => 'username'),
+
+			'home_album' => array('id' => 'uid', 'name' => 'username'),
+			'home_blog' => array('id' => 'uid', 'name' => 'username'),
+			'home_clickuser' => array('id' => 'uid', 'name' => 'username'),
+			'home_docomment' => array('id' => 'uid', 'name' => 'username'),
+			'home_doing' => array('id' => 'uid', 'name' => 'username'),
+			'home_feed' => array('id' => 'uid', 'name' => 'username'),
+			'home_feed_app' => array('id' => 'uid', 'name' => 'username'),
+			'home_friend' => array('id' => 'fuid', 'name' => 'fusername'),
+			'home_friend_request' => array('id' => 'fuid', 'name' => 'fusername'),
+			'home_notification' => array('id' => 'authorid', 'name' => 'author'),
+			'home_pic' => array('id' => 'uid', 'name' => 'username'),
+			'home_poke' => array('id' => 'fromuid', 'name' => 'fromusername'),
+			'home_share' => array('id' => 'uid', 'name' => 'username'),
+			'home_show' => array('id' => 'uid', 'name' => 'username'),
+			'home_specialuser' => array('id' => 'uid', 'name' => 'username'),
+			'home_visitor' => array('id' => 'vuid', 'name' => 'vusername'),
+
+			'portal_article_title' => array('id' => 'uid', 'name' => 'username'),
+			'portal_comment' => array('id' => 'uid', 'name' => 'username'),
+			'portal_topic' => array('id' => 'uid', 'name' => 'username'),
+			'portal_topic_pic' => array('id' => 'uid', 'name' => 'username'),
+		);
+
+		if(!C::t('common_member')->update($get['uid'], array('username' => $get[newusername])) && isset($_G['setting']['membersplit'])){
+			C::t('common_member_archive')->update($get['uid'], array('username' => $get[newusername]));
+		}
+
+		loadcache("posttableids");
+		if($_G['cache']['posttableids']) {
+			foreach($_G['cache']['posttableids'] AS $tableid) {
+				$tables[getposttable($tableid)] = array('id' => 'authorid', 'name' => 'author');
+			}
+		}
+
+		foreach($tables as $table => $conf) {
+			DB::query("UPDATE ".DB::table($table)." SET `$conf[name]`='$get[newusername]' WHERE `$conf[id]`='$get[uid]'");
+		}
 		return API_RETURN_SUCCEED;
 	}
 
 	function gettag($get, $post) {
-		$name = $get['id'];
+		global $_G;
 		if(!API_GETTAG) {
 			return API_RETURN_FORBIDDEN;
 		}
-
-		$name = trim($name);
-		if(empty($name) || !preg_match('/^([\x7f-\xff_-]|\w|\s)+$/', $name) || strlen($name) > 20) {
-			return API_RETURN_FAILED;
-		}
-
-		require_once $this->appdir.'./include/misc.func.php';
-
-		$tag = $this->db->fetch_first("SELECT * FROM ".$this->tablepre."tags WHERE tagname='$name'");
-		if($tag['closed']) {
-			return API_RETURN_FAILED;
-		}
-
-		$tpp = 10;
-		$PHP_SELF = $_SERVER['PHP_SELF'] ? $_SERVER['PHP_SELF'] : $_SERVER['SCRIPT_NAME'];
-		$boardurl = 'http://'.$_SERVER['HTTP_HOST'].preg_replace("/\/+(api)?\/*$/i", '', substr($PHP_SELF, 0, strrpos($PHP_SELF, '/'))).'/';
-		$query = $this->db->query("SELECT t.* FROM ".$this->tablepre."threadtags tt LEFT JOIN ".$this->tablepre."threads t ON t.tid=tt.tid AND t.displayorder>='0' WHERE tt.tagname='$name' ORDER BY tt.tid DESC LIMIT $tpp");
-		$threadlist = array();
-		while($tagthread = $this->db->fetch_array($query)) {
-			if($tagthread['tid']) {
-				$threadlist[] = array(
-					'subject' => $tagthread['subject'],
-					'uid' => $tagthread['authorid'],
-					'username' => $tagthread['author'],
-					'dateline' => $tagthread['dateline'],
-					'url' => $boardurl.'viewthread.php?tid='.$tagthread['tid'],
-				);
-			}
-		}
-
-		$return = array($name, $threadlist);
-		return $this->_serialize($return, 1);
+		return $this->_serialize(array($get['id'], array()), 1);
 	}
 
 	function synlogin($get, $post) {
-		$uid = $get['uid'];
-		$username = $get['username'];
+		global $_G;
+
 		if(!API_SYNLOGIN) {
 			return API_RETURN_FORBIDDEN;
 		}
 
-		require_once $this->appdir.'./forumdata/cache/cache_settings.php';
-
-		$cookietime = 2592000;
-		$discuz_auth_key = md5($_DCACHE['settings']['authkey'].$_SERVER['HTTP_USER_AGENT']);
 		header('P3P: CP="CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR"');
-		$uid = intval($uid);
-		$query = $this->db->query("SELECT username, uid, password, secques FROM ".$this->tablepre."members WHERE uid='$uid'");
-		if($member = $this->db->fetch_array($query)) {
-			_setcookie('sid', '', -86400 * 365);
-			_setcookie('cookietime', $cookietime, 31536000);
-			_setcookie('auth', _authcode("$member[password]\t$member[secques]\t$member[uid]", 'ENCODE', $discuz_auth_key), $cookietime);
-		} else {
-			_setcookie('cookietime', $cookietime, 31536000);
-			_setcookie('loginuser', $username, $cookietime);
-			_setcookie('activationauth', _authcode($username, 'ENCODE', $discuz_auth_key), $cookietime);
+
+		$cookietime = 31536000;
+		$uid = intval($get['uid']);
+		if(($member = getuserbyuid($uid, 1))) {
+			dsetcookie('auth', authcode("$member[password]\t$member[uid]", 'ENCODE'), $cookietime);
 		}
 	}
 
 	function synlogout($get, $post) {
+		global $_G;
+
 		if(!API_SYNLOGOUT) {
 			return API_RETURN_FORBIDDEN;
 		}
 
 		header('P3P: CP="CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR"');
-		_setcookie('auth', '', -86400 * 365);
-		_setcookie('sid', '', -86400 * 365);
-		_setcookie('loginuser', '', -86400 * 365);
-		_setcookie('activationauth', '', -86400 * 365);
+
+		dsetcookie('auth', '', -31536000);
 	}
 
 	function updatepw($get, $post) {
+		global $_G;
+
 		if(!API_UPDATEPW) {
 			return API_RETURN_FORBIDDEN;
 		}
-		$username = $get['username'];
-		$password = $get['password'];
 
+		$username = $get['username'];
 		$newpw = md5(time().rand(100000, 999999));
-		$this->db->query("UPDATE ".$this->tablepre."members SET password='$newpw' WHERE username='$username'");
+		$uid = 0;
+		if(($uid = C::t('common_member')->fetch_uid_by_username($username))) {
+			$ext = '';
+		} elseif(($uid = C::t('common_member_archive')->fetch_uid_by_username($username))) {
+			$ext = '_archive';
+		}
+		if($uid) {
+			C::t('common_member'.$ext)->update($uid, array('password' => $newpw));
+		}
+
 		return API_RETURN_SUCCEED;
 	}
 
 	function updatebadwords($get, $post) {
+		global $_G;
+
 		if(!API_UPDATEBADWORDS) {
 			return API_RETURN_FORBIDDEN;
 		}
-		$cachefile = $this->appdir.'./uc_client/data/cache/badwords.php';
-		$fp = fopen($cachefile, 'w');
+
 		$data = array();
 		if(is_array($post)) {
 			foreach($post as $k => $v) {
+				if(substr($v['findpattern'], 0, 1) != '/' || substr($v['findpattern'], -3) != '/is') {
+					$v['findpattern'] = '/' . preg_quote($v['findpattern'], '/') . '/is';
+				}
 				$data['findpattern'][$k] = $v['findpattern'];
 				$data['replace'][$k] = $v['replacement'];
 			}
 		}
+		$cachefile = DISCUZ_ROOT.'./uc_client/data/cache/badwords.php';
+		$fp = fopen($cachefile, 'w');
 		$s = "<?php\r\n";
 		$s .= '$_CACHE[\'badwords\'] = '.var_export($data, TRUE).";\r\n";
 		fwrite($fp, $s);
 		fclose($fp);
+
 		return API_RETURN_SUCCEED;
 	}
 
 	function updatehosts($get, $post) {
+		global $_G;
+
 		if(!API_UPDATEHOSTS) {
 			return API_RETURN_FORBIDDEN;
 		}
-		$cachefile = $this->appdir.'./uc_client/data/cache/hosts.php';
+
+		$cachefile = DISCUZ_ROOT.'./uc_client/data/cache/hosts.php';
 		$fp = fopen($cachefile, 'w');
 		$s = "<?php\r\n";
 		$s .= '$_CACHE[\'hosts\'] = '.var_export($post, TRUE).";\r\n";
 		fwrite($fp, $s);
 		fclose($fp);
+
 		return API_RETURN_SUCCEED;
 	}
 
 	function updateapps($get, $post) {
-		global $_DCACHE;
+		global $_G;
+
 		if(!API_UPDATEAPPS) {
 			return API_RETURN_FORBIDDEN;
 		}
-		$UC_API = $post['UC_API'];
 
-		if(empty($post) || empty($UC_API)) {
-			return API_RETURN_SUCCEED;
+		$UC_API = '';
+		if($post['UC_API']) {
+			$UC_API = str_replace(array('\'', '"', '\\', "\0", "\n", "\r"), '', $post['UC_API']);
+			unset($post['UC_API']);
 		}
 
-		$cachefile = $this->appdir.'./uc_client/data/cache/apps.php';
+		$cachefile = DISCUZ_ROOT.'./uc_client/data/cache/apps.php';
 		$fp = fopen($cachefile, 'w');
 		$s = "<?php\r\n";
 		$s .= '$_CACHE[\'apps\'] = '.var_export($post, TRUE).";\r\n";
 		fwrite($fp, $s);
 		fclose($fp);
 
-		if(is_writeable($this->appdir.'./config.inc.php')) {
-			$configfile = trim(file_get_contents($this->appdir.'./config.inc.php'));
-			$configfile = substr($configfile, -2) == '?>' ? substr($configfile, 0, -2) : $configfile;
-			$configfile = preg_replace("/define\('UC_API',\s*'.*?'\);/i", "define('UC_API', '$UC_API');", $configfile);
-			if($fp = @fopen($this->appdir.'./config.inc.php', 'w')) {
-				@fwrite($fp, trim($configfile));
-				@fclose($fp);
+		if($UC_API && is_writeable(DISCUZ_ROOT.'./config/config_ucenter.php')) {
+			if(preg_match('/^https?:\/\//is', $UC_API)) {
+				$configfile = trim(file_get_contents(DISCUZ_ROOT.'./config/config_ucenter.php'));
+				$configfile = substr($configfile, -2) == '?>' ? substr($configfile, 0, -2) : $configfile;
+				$configfile = preg_replace("/define\('UC_API',\s*'.*?'\);/i", "define('UC_API', '".addslashes($UC_API)."');", $configfile);
+				if($fp = @fopen(DISCUZ_ROOT.'./config/config_ucenter.php', 'w')) {
+					@fwrite($fp, trim($configfile));
+					@fclose($fp);
+				}
 			}
 		}
-
-		global $_DCACHE;
-		require_once $this->appdir.'./forumdata/cache/cache_settings.php';
-		require_once $this->appdir.'./include/cache.func.php';
-		foreach($post as $appid => $app) {
-			if(!empty($app['viewprourl'])) {
-				$_DCACHE['settings']['ucapp'][$appid]['viewprourl'] = $app['url'].$app['viewprourl'];
-			}
-		}
-		updatesettings();
-
 		return API_RETURN_SUCCEED;
 	}
 
 	function updateclient($get, $post) {
+		global $_G;
+
 		if(!API_UPDATECLIENT) {
 			return API_RETURN_FORBIDDEN;
 		}
-		$cachefile = $this->appdir.'./uc_client/data/cache/settings.php';
+
+		$cachefile = DISCUZ_ROOT.'./uc_client/data/cache/settings.php';
 		$fp = fopen($cachefile, 'w');
 		$s = "<?php\r\n";
 		$s .= '$_CACHE[\'settings\'] = '.var_export($post, TRUE).";\r\n";
 		fwrite($fp, $s);
 		fclose($fp);
+
 		return API_RETURN_SUCCEED;
 	}
 
 	function updatecredit($get, $post) {
+		global $_G;
+
 		if(!API_UPDATECREDIT) {
 			return API_RETURN_FORBIDDEN;
 		}
+
 		$credit = $get['credit'];
 		$amount = $get['amount'];
 		$uid = $get['uid'];
-
-		if(!$this->db->result_first("SELECT count(*) FROM ".$this->tablepre."members WHERE uid='$uid'")) {
-			return 0;
+		if(!getuserbyuid($uid)) {
+			return API_RETURN_SUCCEED;
 		}
 
-		require_once $this->appdir.'./forumdata/cache/cache_settings.php';
+		updatemembercount($uid, array($credit => $amount));
+		C::t('common_credit_log')->insert(array('uid' => $uid, 'operation' => 'ECU', 'relatedid' => $uid, 'dateline' => time(), 'extcredits'.$credit => $amount));
 
-		$this->db->query("UPDATE ".$this->tablepre."members SET extcredits$credit=extcredits$credit+'$amount' WHERE uid='$uid'");
-
-		$discuz_user = $this->db->result_first("SELECT username FROM ".$this->tablepre."members WHERE uid='$uid'");
-
-		$this->db->query("INSERT INTO ".$this->tablepre."creditslog (uid, fromto, sendcredits, receivecredits, send, receive, dateline, operation)
-				VALUES ('$uid', '$discuz_user', '0', '$credit', '0', '$amount', '$timestamp', 'EXC')");
 		return API_RETURN_SUCCEED;
 	}
 
 	function getcredit($get, $post) {
+		global $_G;
+
 		if(!API_GETCREDIT) {
 			return API_RETURN_FORBIDDEN;
 		}
-
 		$uid = intval($get['uid']);
 		$credit = intval($get['credit']);
-		return $credit >= 1 && $credit <= 8 ? $this->db->result_first("SELECT extcredits$credit FROM ".$this->tablepre."members WHERE uid='$uid'") : 0;
+		$_G['uid'] = $_G['member']['uid'] = $uid;
+		return getuserprofile('extcredits'.$credit);
 	}
 
 	function getcreditsettings($get, $post) {
+		global $_G;
+
 		if(!API_GETCREDITSETTINGS) {
 			return API_RETURN_FORBIDDEN;
 		}
-		require_once $this->appdir.'./forumdata/cache/cache_settings.php';
+
 		$credits = array();
-		foreach($_DCACHE['settings']['extcredits'] as $id => $extcredits) {
+		foreach($_G['setting']['extcredits'] as $id => $extcredits) {
 			$credits[$id] = array(strip_tags($extcredits['title']), $extcredits['unit']);
 		}
+
 		return $this->_serialize($credits);
 	}
 
 	function updatecreditsettings($get, $post) {
-		global $_DCACHE;
+		global $_G;
+
 		if(!API_UPDATECREDITSETTINGS) {
 			return API_RETURN_FORBIDDEN;
 		}
-		$credit = $get['credit'];
+
 		$outextcredits = array();
-		if($credit) {
-			foreach($credit as $appid => $credititems) {
-				if($appid == UC_APPID) {
-					foreach($credititems as $value) {
-						$outextcredits[] = array(
-							'appiddesc' => $value['appiddesc'],
-							'creditdesc' => $value['creditdesc'],
-							'creditsrc' => $value['creditsrc'],
-							'title' => $value['title'],
-							'unit' => $value['unit'],
-							'ratiosrc' => $value['ratiosrc'],
-							'ratiodesc' => $value['ratiodesc'],
-							'ratio' => $value['ratio']
-						);
-					}
+		foreach($get['credit'] as $appid => $credititems) {
+			if($appid == UC_APPID) {
+				foreach($credititems as $value) {
+					$outextcredits[$value['appiddesc'].'|'.$value['creditdesc']] = array(
+						'appiddesc' => $value['appiddesc'],
+						'creditdesc' => $value['creditdesc'],
+						'creditsrc' => $value['creditsrc'],
+						'title' => $value['title'],
+						'unit' => $value['unit'],
+						'ratiosrc' => $value['ratiosrc'],
+						'ratiodesc' => $value['ratiodesc'],
+						'ratio' => $value['ratio']
+					);
 				}
 			}
 		}
-
-		require_once $this->appdir.'./forumdata/cache/cache_settings.php';
-		require_once $this->appdir.'./include/cache.func.php';
-
-		$this->db->query("REPLACE INTO ".$this->tablepre."settings (variable, value) VALUES ('outextcredits', '".addslashes(serialize($outextcredits))."');", 'UNBUFFERED');
-
 		$tmp = array();
 		foreach($outextcredits as $value) {
 			$key = $value['appiddesc'].'|'.$value['creditdesc'];
@@ -434,78 +403,24 @@ class uc_note {
 			$tmp[$key]['ratiodesc'][$value['creditsrc']] = $value['ratiodesc'];
 			$tmp[$key]['creditsrc'][$value['creditsrc']] = $value['ratio'];
 		}
-		$_DCACHE['settings']['outextcredits'] = $tmp;
-		updatesettings();
+		$outextcredits = $tmp;
+
+		$cachefile = DISCUZ_ROOT.'./uc_client/data/cache/creditsettings.php';
+		$fp = fopen($cachefile, 'w');
+		$s = "<?php\r\n";
+		$s .= '$_CACHE[\'creditsettings\'] = '.var_export($outextcredits, TRUE).";\r\n";
+		fwrite($fp, $s);
+		fclose($fp);
 
 		return API_RETURN_SUCCEED;
-
-	}
-}
-
-function _setcookie($var, $value, $life = 0, $prefix = 1) {
-	global $cookiepre, $cookiedomain, $cookiepath, $timestamp, $_SERVER;
-	setcookie(($prefix ? $cookiepre : '').$var, $value,
-		$life ? $timestamp + $life : 0, $cookiepath,
-		$cookiedomain, $_SERVER['SERVER_PORT'] == 443 ? 1 : 0);
-}
-
-function _authcode($string, $operation = 'DECODE', $key = '', $expiry = 0) {
-	$ckey_length = 4;
-
-	$key = md5($key ? $key : UC_KEY);
-	$keya = md5(substr($key, 0, 16));
-	$keyb = md5(substr($key, 16, 16));
-	$keyc = $ckey_length ? ($operation == 'DECODE' ? substr($string, 0, $ckey_length): substr(md5(microtime()), -$ckey_length)) : '';
-
-	$cryptkey = $keya.md5($keya.$keyc);
-	$key_length = strlen($cryptkey);
-
-	$string = $operation == 'DECODE' ? base64_decode(substr($string, $ckey_length)) : sprintf('%010d', $expiry ? $expiry + time() : 0).substr(md5($string.$keyb), 0, 16).$string;
-	$string_length = strlen($string);
-
-	$result = '';
-	$box = range(0, 255);
-
-	$rndkey = array();
-	for($i = 0; $i <= 255; $i++) {
-		$rndkey[$i] = ord($cryptkey[$i % $key_length]);
 	}
 
-	for($j = $i = 0; $i < 256; $i++) {
-		$j = ($j + $box[$i] + $rndkey[$i]) % 256;
-		$tmp = $box[$i];
-		$box[$i] = $box[$j];
-		$box[$j] = $tmp;
-	}
+	function addfeed($get, $post) {
+		global $_G;
 
-	for($a = $j = $i = 0; $i < $string_length; $i++) {
-		$a = ($a + 1) % 256;
-		$j = ($j + $box[$a]) % 256;
-		$tmp = $box[$a];
-		$box[$a] = $box[$j];
-		$box[$j] = $tmp;
-		$result .= chr(ord($string[$i]) ^ ($box[($box[$a] + $box[$j]) % 256]));
-	}
-
-	if($operation == 'DECODE') {
-		if((substr($result, 0, 10) == 0 || substr($result, 0, 10) - time() > 0) && substr($result, 10, 16) == substr(md5(substr($result, 26).$keyb), 0, 16)) {
-			return substr($result, 26);
-		} else {
-				return '';
-			}
-	} else {
-		return $keyc.str_replace('=', '', base64_encode($result));
-	}
-
-}
-
-function _stripslashes($string) {
-	if(is_array($string)) {
-		foreach($string as $key => $val) {
-			$string[$key] = _stripslashes($val);
+		if(!API_ADDFEED) {
+			return API_RETURN_FORBIDDEN;
 		}
-	} else {
-		$string = stripslashes($string);
+		return API_RETURN_SUCCEED;
 	}
-	return $string;
 }

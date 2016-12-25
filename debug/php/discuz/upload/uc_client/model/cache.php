@@ -1,10 +1,10 @@
 <?php
 
 /*
-	[UCenter] (C)2001-2009 Comsenz Inc.
+	[UCenter] (C)2001-2099 Comsenz Inc.
 	This is NOT a freeware, use is subject to license terms
 
-	$Id: cache.php 846 2008-12-08 05:37:05Z zhaoxiongfei $
+	$Id: cache.php 1059 2011-03-01 07:25:09Z monkey $
 */
 
 !defined('IN_UC') && exit('Access Denied');
@@ -37,7 +37,6 @@ class cachemodel {
 		);
 	}
 
-	//public
 	function updatedata($cachefile = '') {
 		if($cachefile) {
 			foreach((array)$this->map[$cachefile] as $modules) {
@@ -66,7 +65,6 @@ class cachemodel {
 
 	}
 
-	//private
 	function _get_badwords() {
 		$data = $this->db->fetch_all("SELECT * FROM ".UC_DBTABLEPRE."badwords");
 		$return = array();
@@ -79,7 +77,6 @@ class cachemodel {
 		return $return;
 	}
 
-	//private
 	function _get_apps() {
 		$this->base->load('app');
 		$apps = $_ENV['app']->get_apps();
