@@ -2,8 +2,6 @@ FROM ubuntu:14.04
 
 MAINTAINER sharkseven <shark@dodora.cn>
 
-ADD etc /etc
-
 RUN apt-get update -y && \
 	apt-get install -y \
 	nginx \
@@ -35,7 +33,7 @@ RUN apt-get update -y && \
 	rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 
 
-
+ADD etc /etc
 # ssh密码登录
 RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 # 设置初始密码
