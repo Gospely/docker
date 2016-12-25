@@ -2,7 +2,6 @@ FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx-php:5
 MAINTAINER sharkseven 'shark@dodora.cn'
 
 
-#disuz version
 
 ADD upload /root/temp
 EXPOSE 80
