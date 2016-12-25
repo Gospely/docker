@@ -1,0 +1,198 @@
+<!--<?php print <<<EOT
+-->
+<style type="text/css">
+.faq_menu h4{border-bottom:1px solid $tablecolor;margin-bottom:5px;padding:0 5px 5px;background:url($imgpath/faq/faq_down.gif) right 8px no-repeat;}
+.faq_menu dt{line-height:30px;height:30px;padding:0 5px;overflow:hidden;}
+.faq_menu dt a{display:block;}
+.faq_menu dt a:hover{ text-decoration:none;}
+.faq_menu dd{display:none; background:url($imgpath/faq/faq_in.gif) 15px center no-repeat;padding-left:25px;}
+.faq_menu dl.current dd{display:block;line-height:20px;height:20px;overflow:hidden;}
+.faq_menu dl.current{padding-bottom:5px;}
+.faq_menu dl.current dt a{ background-position:right -12px;}
+.faq_list li{float:left;width:120px;height:25px;line-height:25px;overflow:hidden;}
+.faq_search{border:1px solid $tablecolor;background:#fff;}
+.faq_search input{float:left;border:0 none;background:#fff;width:320px;padding:4px 3px 3px;border-right:1px solid $tablecolor;height:16px;margin:0;}
+.faq_search button{border:0 none;background:url($imgpath/faq/faq_btn.gif) repeat-x;height:23px;line-height:23px;margin:0;float:left;}
+</style>
+<div id="breadCrumb">
+	<img src="$imgpath/$stylepath/thread/home-old.gif" align="absmiddle" class="breadHome" /><em class="breadEm"></em><a href="$db_bfn" title="$db_bbsname">$db_bbsname</a><em>&gt;</em><a href="faq.php" rel="nofollow">站点帮助</a>
+<!--
+EOT;
+foreach($helpNav as $value){print <<<EOT
+-->
+<em>&gt;</em>$value
+<!--
+EOT;
+}print <<<EOT
+-->
+</div>
+<div id="pw_content">
+	<div class="readTop">
+		<table width="100%">
+			<tr>
+				<td class="floot_left">
+					<div class="f16 b" style="padding:8px 20px;">帮助中心</div>
+				</td>
+				<td>
+					<div class="pd15">
+						<span class="fl s6 f14 mr10" style="line-height:26px;">帮助搜索</span>
+							<div class="faq_search fl">
+<script>
+function processSearch(obj) {
+	ajax.send('faq.php', obj, function(){
+		var rText = ajax.request.responseText.split('\t');
+		if (rText[1] == 'error') {
+			showDialog("error", rText[0]);
+		} else if(rText[1] == 'ok') {
+			getObj('maincontent').innerHTML = rText[0];
+		}
+	});
+}
+</script>
+								<form action="faq.php" method="post" name="helpsearch" id="helpsearch" onSubmit="processSearch(this);">
+									<input type="hidden" name="action" value="dosch" />
+									<input name="keyword" type="text" />
+									<input type="hidden" name="ajax" value="1" />
+									<button type="submit" class="cp">搜 索</button>
+								</form>
+							</div>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<table width="100%" class="flootbg">
+		<tr>
+			<td>
+			</td>
+		</tr>
+	</table>
+	<table width="100%" class="floot">
+		<tr>
+			<td class="floot_left" style="vertical-align:top;">
+				<div class="floot_leftdiv faq_menu" id="faq_menu">
+<!--
+EOT;
+foreach($firstLevel as $key => $value){
+print <<<EOT
+-->
+					<div class="mb20">
+						<h4 class="b cp s4" onclick="whetherDisplay('left_{$value[hid]}')">$value[title]</h4>
+						<div id="left_$value[hid]">
+						<dl>
+<!--
+EOT;
+foreach($secondLevel[$key] as $v) {
+$currentCate = '';
+$hid == $v['hid'] && $currentCate = 'class="current"';
+print <<<EOT
+-->
+							<dt $currentCate style="background:url($imgpath/faq/faq_in.gif) 15px center no-repeat;padding-left:25px;"><a href="{$v[url]}">$v[title]</a></dt>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+						</dl>
+						</div>
+					</div>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+				</div>
+			</td>
+			<td style="vertical-align:top;height:300px;">
+				<div class="p15" id="maincontent">
+<!--
+EOT;
+if ($hid != '') {
+if (!empty($result['content'])) {
+print <<<EOT
+-->
+					<div class="mb10" style="border:1px dotted #ccc;background:#f7f7f7;">
+						<div class="tpc_content f14" style="padding:10px;">
+							{$result[content]}
+						</div>
+					</div>
+<!--
+EOT;
+}
+if ($result['ifchild']) {
+foreach ($hasChildArray[$result['hid']] as $value) {
+if ($_HELP[$value]['ifchild']){
+print <<<EOT
+-->
+					<h5 class="h b" onclick="whetherDisplay('right_{$value}')" style="cursor:pointer;background:#f7f7f7 url($imgpath/faq/faq_down.gif) right 12px no-repeat;"><a href="{$_HELP[$value][url]}">{$_HELP[$value][title]}</a></h5>
+					<br/>
+					<div id="right_{$value}">
+					<ul class="cc faq_list p10" style="margin-top:-15px;">
+<!--
+EOT;
+foreach ($hasChildArray[$value] as $v) {
+print <<<EOT
+-->
+						<li><a href="{$_HELP[$v][url]}" style="text-decoration:underline;">{$_HELP[$v][title]}</a></li>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+					</ul>
+					</div>
+<!--
+EOT;
+} else {
+print <<<EOT
+-->
+					<!--内容显示部分-->
+					<h5 class="h b" onclick="whetherDisplay('right_{$value}')" style="cursor:pointer;background:#f7f7f7 url($imgpath/faq/faq_down.gif) right 12px no-repeat;"><a href="{$_HELP[$value][url]}">{$_HELP[$value][title]}</a></h5>
+					<br/>
+					<div class="tpc_content f14" style="padding:10px;margin-top:-15px;" id="right_{$value}">
+						{$lowerContent[$value][content]}
+					</div>
+					<!--内容结束-->
+<!--
+EOT;
+}}}} elseif (!$catedb) {
+foreach ($hasChildArray[0] as $value) {
+print <<<EOT
+-->
+					<h5 class="h b" onclick="whetherDisplay('right_{$value}')" style="cursor:pointer;background:url($imgpath/faq/faq_down.gif) right 12px no-repeat;"><a href="{$_HELP[$value][url]}">{$_HELP[$value][title]}</a></h5>
+					<br/>
+					<div id="right_{$value}">
+					<ul class="cc faq_list p10" style="margin-top:-15px;">
+<!--
+EOT;
+foreach ($hasChildArray[$value] as $v) {
+print <<<EOT
+-->
+						<li><a href="{$_HELP[$v][url]}" style="text-decoration:underline;">{$_HELP[$v][title]}</a></li>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+					</ul>
+					</div>
+<!--
+EOT;
+}}
+print <<<EOT
+-->
+				</div>
+			</td>
+		</tr>
+	</table>
+</div>
+<script type="text/javascript">
+function whetherDisplay(id) {
+	if (event.srcElement.tagName.toLowerCase() != 'a') {
+		getObj(id).style.display = getObj(id).style.display == 'none' ? '' : 'none';
+	}
+}
+</script>
+<!--
+EOT;
+?>-->

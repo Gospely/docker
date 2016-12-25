@@ -1,0 +1,106 @@
+<!--<?php
+$imgpath || $imgpath = 'images';
+$db_bbsname || $db_bbsname = 'Hi,phpwind!';print <<<EOT
+-->
+<!doctype html>
+<html>
+<head>
+<meta charset="$db_charset" />
+<title>{$db_bbsname} - powered by phpwind</title>
+<style type="text/css">
+body{padding:0;margin:0px;font-size:12px;color:#555;font-family:Verdana;}
+*{padding:0;margin:0}
+input,button,select,textarea{outline:none}
+input{font-size:12px;}
+select{vertical-align:middle;border:1px solid #b4cceb;height:22px;font-size:12px;}
+.c{clear:both;font:0px/0px Arial;overflow:hidden;height:0;width:0;}
+.cp{cursor:pointer;}
+/*logo*/
+.logo{background:url($imgpath/admin/login/logo.png) center top no-repeat;height:64px;width:210px;overflow:hidden;text-indent:-2000em;}
+/*layout*/
+.wrap{width:800px;height:580px;margin-left:auto;margin-right:auto;background:url($imgpath/admin/login/bg.jpg) center 0 no-repeat;}
+.head{padding:100px 0 0 200px;}
+.bottom{text-align:center;margin:auto;color:#888;}
+/*login*/
+.login{padding:60px 0 0 170px;}
+.login th{height:35px;line-height:31px;list-style:none;text-align:right;font-weight:normal;width:190px;font-size:12px;padding-right:5px;}
+.login td{text-align:left;font-size:12px;}
+.input{display:inline-block;border: 1px solid; border-color: #8cb7e1 #e3f0fc #e3f0fc #8cb7e1;font-size:12px;vertical-align:middle;color:#666;padding:4px 4px 5px 23px;background:#fff url($imgpath/admin/login/login-icon.gif?110714) no-repeat}
+.input input{border:0 none;background:none;padding:0;margin:0;}
+.admin_pwd{ background-position:0 -50px;}
+.lg_num{ background-position:0 -100px;}
+.customquest{ background-position:0 -150px;}
+.admin_btn{margin-top:1em;width:80px;height:30px;}
+</style>
+<script type="text/javascript" src="js/core/core.js"></script>
+</head>
+<body>
+<div class="wrap">
+	<div class="head">
+		<div class="logo">{$db_bbsname}</div>
+	</div>
+	<div class="login">
+<!--
+EOT;
+$REQUEST_URI = trim($REQUEST_URI,'?');
+$verifyurl = EncodeUrl($REQUEST_URI,true);print <<<EOT
+-->
+	<form method="post" name="login" action ="$REQUEST_URI">
+	<input TYPE="hidden" name="Login_f" value=1>
+	<input TYPE="hidden" name="verify" value="$verifyurl">
+		<table cellpadding="0" cellspacing="0">
+			<tr>
+				<th><label for="admin_name">管理员账号：</label></th>
+				<td><span class="input"><input id="admin_name" style="width:9em;" name="admin_name" type="text" /></span></td>
+			</tr>
+			<tr>
+				<th><label for="admin_pwd">密码：</label></th>
+				<td><span class="input admin_pwd"><input type="password" id="admin_pwd" name="admin_pwd" /></span></td>
+			</tr>
+<!--
+EOT;
+if($db_ifsafecv){print <<<EOT
+-->
+			<tr>
+				<th><label for="question">安全问题：</label></th>
+				<td><select id="question" name="question" onChange="showcustomquest(this.value)" style="width:128px"><option value="0">无安全问题</option><option value="1">我爸爸的出生地</option><option value="2">我妈妈的出生地</option><option value="3">我的小学校名</option><option value="4">我的中学校名</option><option value="5">我最喜欢的运动</option><option value="6">我最喜欢的歌曲</option><option value="7">我最喜欢的电影</option><option value="8" >我最喜欢的颜色</option><option value="-1">自定义问题</option></select></td>
+			</tr>
+			<tr id="customquest" style="display:none;">
+				<th>&nbsp;</th>
+				<td><span class="input customquest"><input type="text" style="width:100px;" name="customquest"></span></td>
+			</tr>
+			<tr>
+				<th><label for="answer">请输入答案：</label></th>
+				<td><span class="input customquest"><input id="answer" style="width:100px;" name="answer" type="text" /></span></td>
+			</tr>
+<!--
+EOT;
+}if($db_gdcheck & 32){
+$checkCode = L::loadClass('checkcode', 'site');
+$checkCodeString = $checkCode->getCheckCodeTemplate(true);
+print <<<EOT
+-->
+			<tr valign="top">
+				<th><label for="lg_num">验证码：</label></th>
+				<td style="padding-top:4px;"><span class="input lg_num"><input name="lg_num" style="width:40px;" onFocus="showgd('menu_gd');" id="lg_num" /></span><span id="menu_gd" style="display:none;margin:0 0 0 5px;"></span>{$checkCodeString}</td>
+			</tr>
+<!--
+EOT;
+}print <<<EOT
+-->
+			<tr>
+				<th>&nbsp;</th>
+				<td><input name="submit" class="admin_btn" type="image" src="$imgpath/admin/login/login.gif" /></td>
+			</tr>
+		</table>
+	</form>
+	</div>
+</div>
+<div class="bottom">phpwind <span style="color:#ff6600">v$wind_version</span></div>
+<script type="text/javascript">
+document.login.admin_name.focus();
+</script>
+</body></html>
+<!--
+EOT;
+?>-->

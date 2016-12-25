@@ -1,0 +1,333 @@
+<!--<?php print <<<EOT
+-->
+<link rel="stylesheet" href="$pwModeImg/style.css?{$GLOBALS['wind_repair']}" />
+<script type="text/javascript" src="js/date.js"></script>
+<form method="post" id="mainForm" name="FORM" action="{$basename}q=post" enctype = "multipart/form-data" onsubmit="return checkpost(document.FORM);">
+<input type="hidden" name="verify" value="$verifyhash" />
+<input type="hidden" name="step" value="2" />
+<input type="hidden" name="action" value="$action" />
+<input type="hidden" name="id" value="$id" />
+<input type="hidden" name="page" value="$page" />
+<input type="hidden" name="ajax" value="1" />
+<input type="hidden" name="iscontinue" value="0" />
+<!--
+EOT;
+if (!$hasSource) {
+print <<<EOT
+-->
+<input type="hidden" name="cms_sourcetype" value="$articleModule->sourceType" />
+<input type="hidden" name="cms_sourceid" value="$articleModule->sourceId" />
+<!--
+EOT;
+}
+$postTitle = $action == 'edit' ? '编辑文章' : '发表文章';
+$_sourceTitle = $action == 'edit' ? '内容关联' : '内容获取';
+$_sourceTip = $action == 'edit' ? '(关联ID后，可以引导用户进入原帖子或日志)' : '(输入帖子ID或者日志ID后，可以自动获取内容)';
+print <<<EOT
+-->
+<div id="breadCrumb">
+	<img align="absmiddle" src="images/wind/thread/home.gif" alt="forumlist" class="breadHome" /><em class="breadEm"></em>$pagePosition<em>&gt;</em>{$postTitle}
+</div>
+<div class="t">
+	<div class="h b" style="border-top:0;">$postTitle</div>
+	<div class="p20">
+<!--
+EOT;
+if ($hasSource) {print <<<EOT
+-->
+		<div class="mb15">
+			<span class="f12 fn"><!--{$_sourceTitle}：-->
+					<select id="sourcetype" name="cms_sourcetype" class="mr10" style="width:120px;">
+<!--
+EOT;
+foreach ($articleModule->getSourceTypeConfig() as $key=>$value) {
+$selected = $articleModule->sourceType == $key ? 'selected="selected"' : '';
+print <<<EOT
+-->
+						<option value="$key" $selected>$value</option>
+<!--
+EOT;
+}print <<<EOT
+-->
+					</select>
+<!--
+EOT;
+if (!$action) {print <<<EOT
+-->
+<input name="cms_sourceid" class="input" type="text" onfocus="resetFormOnSubmit(true)"   onkeydown="getSourceDataByEnter(event,this.value)" onBlur="getSourceData(this.value)" value="{$articleModule->sourceId}">
+<!--
+EOT;
+}else{print <<<EOT
+-->
+					<input name="cms_sourceid" class="input input_wa" type="text" value="{$articleModule->sourceId}">
+<!--
+EOT;
+}print <<<EOT
+-->
+					<span class="bt2"><span><button type="button">{$_sourceTitle}</button></span></span></span>
+		</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+		<div class="mb15"><select name="cid" style="width:120px;" class="mr10">
+						<option value="0">请选择栏目</option>
+<!--
+EOT;
+foreach ($columns as $key=>$value) {
+$value[name] = $value[level] ? ($value[level]==1 ? '&nbsp;|-'.$value[name]:'&nbsp;&nbsp;|-'.$value[name]) : $value[name];
+$selected = $value['column_id'] == $articleModule->columnId ? 'selected="selected"' : '';
+print <<<EOT
+-->
+						<option value="$value[column_id]" $selected>$value[name]</option>
+<!--
+EOT;
+}print <<<EOT
+-->
+					</select>
+					<input name="cms_subject" value="{$articleModule->subject}" class="input input_wb" type="text">
+		</div>
+<!--
+EOT;
+if ($action=='edit') {print <<<EOT
+-->
+			<div class="mb15 cc"><span class="mr20 fl">$pages</span><span class="fl mr10">操作：</span>
+					<a href="{$cmsBaseUrl}q=post&action=edit&id=$id&page=add" class="s4 mr10">添加分页</a>
+					<a href="{$cmsBaseUrl}q=post&action=edit&id=$id&page=all" class="s4 mr10">编辑全部</a><!--
+EOT;
+if ($page && $pages && $page!='add' && $page!='all') {print <<<EOT
+--><span class="mr10 gray">|</span><a href="javascript:;" onclick="showDialog('confirm','删除后不可恢复，是否确认删除','5',deletePage);return false;" class="s4 mr5">删除本页</a>
+<!--
+EOT;
+}print <<<EOT
+-->
+			</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+		<!--编辑器开始-->
+		<div class="mb10">
+<!--
+EOT;
+require cmsTemplate::printEot('wysiwyg_editor_cms');
+print <<<EOT
+-->
+		</div>
+		<!--编辑器结束-->
+		<div>
+			<ul class="postInfo mb10 cc">
+				<li><em>原作者</em><input name="cms_author" value="{$articleModule->author}" type="text" class="input input_wb"></li>	
+				<li><em>来源网址</em><input name="cms_fromurl" value="{$articleModule->fromUrl}" type="text" class="input input_wb"></li>
+				<li><em>信息来源</em><input name="cms_frominfo" value="{$articleModule->fromInfo}" type="text" class="input input_wb"></li>
+<!--
+EOT;
+if(checkEditPurview($windid)){
+print <<<EOT
+-->
+				<li class="cc"><em class="fl">跳转链接</em><input name="cms_jumpurl" value="{$articleModule->jumpUrl}" type="text" class="input input_wb fl mr10"><a class="wy_tips" href="javascript:;"><img src="u/images/help_a.png" /><i style="margin-left:-230px;">添加后，点击文章标题将跳转到这个链接。</i></a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--
+EOT;
+if(checkEditPurview($windid)){
+print <<<EOT
+-->
+				<li><em>发布时间</em><input class="input input_wb" value="$postdate" type="text" name="cms_timelimit" size="16" id="cms_timelimit" onclick="ShowCalendar(this.id,1);" /></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+				<li><em>文章摘要</em><textarea name="cms_descrip" class="textareaA">{$articleModule->descrip}</textarea></li>
+				<li class="cc"><em class="fl" style="padding-top:3px;">相关阅读</em>
+				<table width="770" class="fl">
+					<tbody id="mode" style="display:none"><tr>
+						<td><input name="cms_relate[subject][]" type="text" class="input"></td>
+						<td><input name="cms_relate[url][]" type="text" class="input input_wb" value="http://"></td>
+						<td><a href="#" onclick="removecols(this);return false;" class="s4">[删除]</a></td>
+					</tr>
+					</tbody>
+					<tr>
+						<td width="140">标题</td>
+						<td width="350">链接</td>
+						<td><a href="javascript:;" onclick="addcols('mode','relate');return false;" class="s2 mr5">[添加]</a></td>
+					</tr>
+					<tbody id="relate">
+<!--
+EOT;
+foreach ($articleModule->relate as $value) {print <<<EOT
+-->
+					<tr>
+						<td><input name="cms_relate[subject][]" value="$value[subject]" type="text" class="input"></td>
+						<td><input name="cms_relate[url][]" value="$value[url]" type="text" class="input input_wb"></td>
+						<td><a href="javascript:;" onclick="removecols(this);return false;" class="s4">[删除]</a></td>
+					</tr>
+<!--
+EOT;
+}print <<<EOT
+-->
+					<tr>
+						<td><input name="cms_relate[subject][]" type="text" class="input"></td>
+						<td><input name="cms_relate[url][]" type="text" class="input input_wb" value="http://"></td>
+						<td><a href="javascript:;" onclick="removecols(this);return false;" class="s4">[删除]</a></td>
+					</tr>
+					</tbody>
+				</table>
+				</li>
+			</ul>
+		</div>
+		<div class="mb20"><span class="mr20"><span class="btn"><span><button name="Submit" type="submit">发布</button></span></span></span><label><input name="addnewpage" type="checkbox" value="1">&nbsp;保存后继续编辑新分页内容</label></div>
+		<div class="c" >&nbsp;</div>
+		<div id="divload"></div>
+</div>
+</div>
+</form>
+
+
+<script type="text/javascript" src="js/lang/zh_cn.js"></script>
+<script type="text/javascript" src="js/post.js"></script>
+<script type="text/javascript">
+var maxLength=200;
+function wordlength(target)
+{
+	var val = target.value;
+	var n = 2*val.length-val.replace(/[\u4e00-\u9fa5]/g,'').length;
+	var val=target.value;
+	while(n>maxLength)
+	{
+		var key = val.substr(-1);
+		target.value=val.substr(0,val.length-1);
+		val = target.value;
+		n -= /[\u4e00-\u9fa5]/.test(key)?2:1;
+	}
+	str='('+n+'/'+maxLength+')';
+	var next = target.nextSibling;
+	next.innerHTML=str;
+	if(n==maxLength){
+		next.className='s3';
+		target.maxLength = val.length;
+	}else{
+		next.className="s6";
+		target.maxLength = maxLength;
+	}
+}
+document.FORM.Submit.disabled = false;
+var cnt = 0;
+function checkpost(obj) {
+	var subjectTemp = obj.cms_subject.value.replace( /^\s*/, '');
+	var atc_contentTemp = obj.atc_content.value.replace( /^\s*/, '');
+	if (obj.cms_subject.value == "" || subjectTemp == "") {
+		showDialog("error","文章<span class='s1'>标题</span>不能为空",2);
+		obj.cms_subject.focus();
+		return false;
+	} else if (strlen(obj.cms_subject.value) > 80) {
+		showDialog("error","文章<span class='s1'>标题</span>不能大于长度 <span class='s1'>80 </span>个字节",2);
+		obj.cms_subject.focus();
+		return false;
+	}
+	if (strlen(obj.atc_content.value) < 0 || atc_contentTemp == "") {
+		showDialog({
+			type: "error",
+			message: "文章<span class='s1'>内容</span>不能为空",
+			autoHide:2,
+			onClose : function(){
+				editor.focus();
+			}
+		});
+		return false;
+	} else if (strlen(obj.atc_content.value) > 50000) {
+		showDialog("error","文章<span class='s1'>内容</span>不能大于 50000 个字节",2);
+		editor.focus();
+		return false;
+	}
+	var pattern = /\[url=(\d+)\]/gmi;
+	var str = obj.atc_content.value;
+	var res;
+	while( (res = pattern.exec(str))!=null )
+	{
+		if(getObj('attachment_'+a[1]).value==''){
+			str=str.replace(new RegExp('\\\\[url='+a[i]+'\]','gm'),'');
+		}
+	}
+	obj.atc_content.value = str;
+	SubmitAjax(obj);
+	return false;
+}
+//ajax提交数据 
+function SubmitAjax(obj) {
+	document.FORM.Submit.disabled = true;
+	getObj('divload').innerHTML = showLoading();
+	cnt++;
+	ajax.send("{$cmsBaseUrl}q=post", obj, function(){
+		
+		if(undefined == ajax.request.responseText || ajax.request.responseText.length > 500){
+			showDialog({
+				type: 'error',
+				message: '<span class=\'s1\'>附件</span> 太大或网络原因，请求超时，请稍后再试!'
+			});
+			document.FORM.Submit.disabled = false;
+			getObj('divload').innerHTML = "";
+			return false;
+		}
+		var rText = ajax.request.responseText.split('\t');
+		if (rText[0] == 'success') {
+			window.onbeforeunload = function(){};
+			window.location =  rText[1];
+		} else {
+			showDialog('error', rText[0]);
+		}
+		cnt = 0;
+		document.FORM.Submit.disabled = false;
+		getObj('divload').innerHTML = "";
+		return false;
+	});
+}
+function showLoading(){
+	return "<div id=\"loading\" style=\"padding:20px;width:80%;text-align:center\"><img src=\""+imgpath+"/loading.gif\" align=\"absbottom\" alt=\"loading\" /> 正在加载数据...</div>";
+}
+function addcols(mode,ft){
+	var s = getObj(mode).firstChild.cloneNode(true);
+	getObj(ft).appendChild(s);
+}
+function removecols(obj){
+	var o = obj.parentNode.parentNode;
+	o.parentNode.removeChild(o);
+}
+
+function deletePage() {
+	var url = "{$basename}q=post&action=deletepage&id=$id&page=$page";
+	window.location.href = url;
+}
+
+function getSourceData(id) {
+	id = parseInt(id) - 0;
+	if (!id || id == "NaN") {
+		resetFormOnSubmit(false);
+		return false;
+	}
+	var sourceType = getObj('sourcetype').value;
+	window.location.href = "{$basename}q=post&sourcetype="+sourceType+"&sourceid="+id+"&cid={$cid}";
+}
+
+function resetFormOnSubmit(status){
+	var aform = document.FORM;
+	if(aform == null) return false;
+	if(status==true) {
+		aform.onsubmit = function(){return false};
+	}else{
+		aform.onsubmit = function() {return checkpost(document.FORM);};
+	}
+}
+
+function getSourceDataByEnter(event,id){
+	event = event ? event : (window.event ? window.event : null);
+	if(event.keyCode == '13'){
+		getSourceData(id);
+	}
+}
+</script>
+<!--
+EOT;
+?>-->

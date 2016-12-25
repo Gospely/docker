@@ -1,0 +1,185 @@
+<!--<?php
+print <<<EOT
+-->
+<script type="text/javascript">
+	var stylepath = '{$skin}';
+	var totalmsg = $totalMessage;
+	var maxmsg = $max;
+	var mSubmit = function(form) {
+		scrollTo(0,246);
+		var unames = document.getElementsByName('_usernames[]');
+		if(maxmsg > 0 && totalmsg >= maxmsg){
+			MC.showFailTips("消息已满,发送失败.请及时<a href=\"message.php?type=clear\">清理</a>");
+			return false;
+		}
+		if(!unames || !unames.length){
+			MC.showFailTips("收件人不能为空");
+			return false;
+		}
+		var atc_title = MC.$("atc_title").value;
+		var atc_content = editor.getUBB();;
+		
+		if("" == atc_title){
+			MC.showFailTips("标题不能为空");
+			return false;
+		}
+		if(atc_content==''){
+			MC.showFailTips("内容不能为空");
+			return false;
+		}
+		var formele = document.FORM;
+		var newuname = [];
+		for(var i=unames.length-1;i>=0;i--){
+			var item = unames[i].cloneNode(true);
+			formele.appendChild(item);
+			newuname.push(item);
+		}
+		MC.post("{$baseUrl}?type=ajax&action=post",form,function(){
+				MC.showFailTips(ajax.request.responseText,'showmessage');
+			},function(){
+			//清除用户
+			for(var i=newuname.length-1;i>=0;i--){
+				formele.removeChild(newuname[i]);
+			}
+			var friends = MC.$("get_friend");
+			var spans=friends.getElementsByTagName('span');
+			for(var i=spans.length-1;i>=0;i--){
+				friends.removeChild(spans[i]);
+			}
+			MC.$("usernames").value = "";
+			var gdinput = MC.$("gdinput");
+			if(gdinput){
+				gdinput.value = "";
+			}
+			//清除标题
+			MC.$("atc_title").value = "";
+			wordlength(MC.$("atc_title"));
+			//清除内容
+			editor.reset();
+			totalmsg++;
+			//锚点
+			try{
+				var gdcodes = getObj('changeGdCode');
+				if (typeof gdcodes.onclick == 'function') gdcodes.onclick();
+			}catch(e){}
+		},function(){
+			//清除用户
+			for(var i=newuname.length-1;i>=0;i--){
+				formele.removeChild(newuname[i]);
+			}
+			try{
+				var gdcodes = getObj('changeGdCode');
+				if (typeof gdcodes.onclick == 'function') gdcodes.onclick();
+			}catch(e){}
+		});
+		return false;
+	}
+</script>
+<div class="contUser">
+	<div class="p15">
+        <h4 class="site bdA mb10"><span>写新消息</span></h4>
+        <div id="showmessage" class="wrongTip" style="display:none">隐藏</div>
+        <table width="700"><tbody>
+            <tr class="tr5 vt">
+                <td width="80" class="lh_22">收件人： </td>
+                <td>
+                    <div class="input_img mb5 cc" onclick="getObj('usernames').focus();">
+                        <em class="input_down" onclick="pwSearch.selectInit(event,'popout','message.php?type=ajax','action=friend',0)">选择好友</em>
+                        <div id="get_friend">
+<!-- 
+EOT;
+if($username){
+print <<<EOT
+-->
+                        <span><a href="javascript://"><i>$username<input type="hidden" value="$username" id="_usernames[]" name="_usernames[]"><del class="x">删除</del></i></a></span>
+<!-- 
+EOT;
+}
+print <<<EOT
+-->
+                        <input type="text" max="20" id="usernames" name="usernames" value="" onblur="pwSearch.blur()" onfocus="pwSearch.init('message.php?type=ajax','action=friend','resultd')" onkeydown="pwSearch.move(event)" onkeyup="pwSearch.searchResult(event,200);" autocomplete=off disableautocomplete></div>
+                    </div>
+                    <p class="s6">请输入收件人名称（好友名称支持拼音首字母）</p>
+                </td>
+            </tr></tbody></table>
+        <form method="post" id="mainForm" name="FORM" action="$baseUrl?type=ajax&action=post" enctype = "multipart/form-data" onsubmit="return mSubmit(document.FORM);">
+        <input type="hidden" name="step" value="2" /><input type="hidden" name="verify" value="$verifyhash" /><table width="700"><tbody>
+            <tr class="tr5 vt">
+                <td width="80" class="lh_22">标题： </td>
+                <td><input class="input mr5 input_wb" type="text" name="atc_title" id="atc_title" onkeyup="wordlength(this)" maxlength="200"  autocomplete=off disableautocomplete /><span class="s6">(0/200)</span></td>
+            </tr>
+            <tr class="tr5 vt">
+                <td class="lh_22">内容： </td>
+                <td>
+<!--
+EOT;
+require_once PrintEot('wysiwyg_editor_message');
+print <<<EOT
+-->
+                </td>
+            </tr>
+<!--
+EOT;
+if($db_gdcheck & 8){
+$checkCode = L::loadClass('checkcode', 'site');
+$checkCodeString = $checkCode->getCheckCodeTemplate();
+print <<<EOT
+-->            
+            <tr class="tr5 vt">
+                <td>验证码：</td>
+                <td><input class="input" type="text" name="gdcode" id="gdinput" size="5" onfocus="showgd();" />
+				<span id="ckcode" style="display:none;"></span>
+$checkCodeString
+				</td>
+            </tr>
+<!--
+EOT;
+}
+print <<<EOT
+-->              
+            <tr class="tr5 vt">
+                <td>&nbsp;</td>
+                <td><span class="btn" style="margin:0 10px 0 0;"><span><button type="submit" name="Submit">发送</button></span></span><span class="s3">Ctrl + Enter 快速发布</span></td>
+            </tr></tbody>
+        </table>
+                </form>
+            </div>
+        </div>
+
+<div id="menu_face" class="menu" style="display:none;"></div>
+<div id="menu_generalface" class="menu" style="display:none;"></div>
+<script type="text/javascript" src="js/desktop/plugin.js"></script>
+<script type="text/javascript" src="js/pw_search.js"></script>
+<script type="text/javascript" src="js/lang/zh_cn.js"></script>
+<script type="text/javascript" src="js/post.js"></script>
+<script type="text/javascript">
+var maxLength=200;
+function wordlength(target)
+{
+	var val = target.value;
+	var n = 2*val.length-val.replace(/[\u4e00-\u9fa5]/g,'').length;
+	var val=target.value;
+	while(n>maxLength)
+	{
+		var key = val.substr(-1);
+		target.value=val.substr(0,val.length-1);
+		val = target.value;
+		n -= /[\u4e00-\u9fa5]/.test(key)?2:1;
+	}
+	str='('+n+'/'+maxLength+')';
+	var next = target.nextSibling;
+	next.innerHTML=str;
+	if(n==maxLength){
+		next.className='s3';
+		target.maxLength = val.length;
+	}else{
+		next.className="s6";
+		target.maxLength = maxLength;
+	}
+}
+
+</script>
+<!--
+EOT;
+require_once(uTemplate::printEot('footer'));
+?>-->

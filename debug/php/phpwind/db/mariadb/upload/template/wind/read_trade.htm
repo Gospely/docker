@@ -1,0 +1,55 @@
+<!--<?php
+$tradeDegree = $tradedb['degree'] ? '二手' : '全新';
+$tradeIcon = $tradedb['icon'] ? $tradedb['icon'] : 'images/imgdel_h200.jpg';
+print <<<EOT
+-->
+<!--商品开始-->
+		<div class="goodsPost f12">
+			<h5><span class="s4 mr5">[{$tradeDegree}]</span>{$tradedb[name]}</h5>
+			<table width="100%" class="vt mb10">
+				<tr>
+					<th width="212"><div class="goodsPost_player" style="background:#fff url({$tradeIcon}) center center no-repeat;"></div></th>
+					<td>
+						<ul>
+							<li class="r_two"><em>一&nbsp;&nbsp;口&nbsp;&nbsp;价：</em><strong class="f16 s2">￥{$tradedb[costprice]}</strong></li>
+							<li><em>市&nbsp;&nbsp;场&nbsp;&nbsp;价：</em><del>￥{$tradedb[price]}</del></li>
+							<li class="r_two"><em>运　　费：</em><!--
+EOT;
+if ($tradedb['transport']) {print <<<EOT
+-->
+			<span class="mr20">平邮: $tradedb[mailfee]元<span>&nbsp;</span>快递:$tradedb[expressfee]元<span>&nbsp;</span>EMS:$tradedb[emsfee]元</span>
+<!--
+EOT;
+} else {print <<<EOT
+-->
+			<span class="mr20">卖家承担</span>
+<!--
+EOT;
+}print <<<EOT
+--><em>所&nbsp;&nbsp;在&nbsp;&nbsp;地：</em>{$tradedb[locus]}</li>
+							<li><em>付款方式：</em><!--
+EOT;
+if ($tradedb['paymethod'] & 1) {print <<<EOT
+-->
+			线下交易<!--
+EOT;
+}if ($tradedb['paymethod'] & 2) {print <<<EOT
+-->
+			支付宝交易<!--
+EOT;
+}
+!$tradedb[salenum2] && $tradedb[salenum2] = 0;
+print <<<EOT
+-->
+							</li>
+							<li class="r_two"><em>商品数量：</em>$tradedb[num] 件</li>
+							<li><em>累计售出：</em><span class="b">$tradedb[salenum2]</span>&nbsp;件</li>
+						</ul>
+					</td>
+				</tr>
+			</table>
+			<div class="tac"><span class="btn"><span><button onclick="location.href='trade.php?action=buy&tid=$tid';return false;">我要购买</button></span></span></div>
+		</div>
+<!--
+EOT;
+?>

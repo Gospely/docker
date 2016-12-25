@@ -1,0 +1,65 @@
+<!--<?php print <<<EOT
+-->
+<section class="section">
+<!--
+EOT;
+if ($_WIND == 'upto' && $step){
+if ($step == 'finish'){
+	$currentProcessClass = ' class="current"';
+}else{
+}
+print <<<EOT
+-->
+<div class="step">
+	<ul>
+		<li class="on"><em>1</em>升级提醒</li>
+		<li class="current"><em>2</em>升级数据</li>
+		<li><em>3</em>升级完成</li>
+	</ul>
+</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+	<div class="main cc">
+		<div class="success_tip error_tip" style="margin-bottom: 30px;">
+			<p>$msg</p>
+		</div>
+<!--
+EOT;
+if($gojs || $jump){print <<<EOT
+-->
+<script type="text/javascript">
+setTimeout(function(){{$url}},500);
+</script>
+<!--
+EOT;
+}print <<<EOT
+-->
+		<form id="install" action="$basename?" method="post">
+			<input type="hidden" name="step" value="$tostep">
+			<input type="hidden" name="action" value="$toaction">
+			<input type="hidden" name="from" value="prompt">$input
+		</form>
+		<div class="bottom tac">
+<!--
+EOT;
+if(!$jump){
+if($toaction){print <<<EOT
+-->
+	<a href="javascript:;" onclick='window.location.href="javascript:history.go(-1)";return false;' title="$stepleft" class="btn">$lang[step_pre]</a>
+<!--
+EOT;
+}print <<<EOT
+-->
+	<a href="javascript:;" onclick="{$url}return false;" class="btn">$lang[last]</a>
+<!--
+EOT;
+}print <<<EOT
+-->
+	</div>
+	</div>
+</section>
+<!--
+EOT;
+?>-->

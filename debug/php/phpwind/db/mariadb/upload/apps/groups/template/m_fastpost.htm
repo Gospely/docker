@@ -1,0 +1,320 @@
+<!--<?php
+$posturl = "apps.php?q=group&a=reply&tid=$tid&cyid=$cyid";
+$fastDo = $psot_sta ? '回复' : '发帖';
+$tmpVerify = GetVerify($onlineip.$GLOBALS['winddb']['regdate'].$fid.$tid);
+if(strlen($readdb[0][subject])>77) $readdb[0][subject] = substr($readdb[0][subject],0,77);
+print <<<EOT
+-->
+<link rel="stylesheet" href="$imgpath/post/fast_editor.css" />
+<link rel="stylesheet" href="js/breeze/editor/style/style.css" />
+<form name="FORM" method="post" action="{$basename}a=reply&cyid=$cyid" enctype="multipart/form-data" onsubmit="return checkpost(document.FORM);" id="anchor">
+<input type="hidden" name="step" value="3" />
+<input type="hidden" name="tid" value="$tid" />
+<input type="hidden" name="verify" value="$verifyhash" />
+<input type="hidden" name="ajax" value="1" />
+<input type="hidden" name="iscontinue" value="1" />
+<div class="g_bgB">
+<table width="100%" style="table-layout:fixed">
+    <tr class="vt">
+        <td class="floot_left">
+            <div class="p10">
+<!--
+EOT;
+if ($winduid) {print<<<EOT
+-->
+                <p class="gName mb5 cc">
+<!--
+EOT;
+if($db_showonline){
+$gender = getDefaultGender($read['gender']);
+if(checkOnline($read['thisvisit'])){print <<<EOT
+-->
+					<span class="{$gender}_ol mr5" title="在线" alt="在线">在线</span>
+<!--
+EOT;
+}else{print <<<EOT
+-->
+					<span class="{$gender}_unol mr5" title="离线" alt="离线">离线</span>
+<!--
+EOT;
+}}print <<<EOT
+-->
+					<a href="{$db_userurl}$winduid" target="_blank" class="mr5">$windid</a>
+				</p>
+<!--
+EOT;
+}
+list($fp_face) = showfacedesign($winddb['icon'], 1, 'm');
+print <<<EOT
+-->
+                <p class="mb10">
+					<a href="{$db_userurl}$winduid"  class="gFace" target="_blank">
+					<img src="$fp_face" width="80" height="80" /></a>
+				</p>
+            </div>
+        </td>
+        <td class="p10" style="background:#fff;">
+			<div class="cc mb5">
+				<input type="text" class="input mr10" id="atc_title" name="atc_title" value="$titletop1" size="40" /><span id="atc_title_warn">限{$db_titlemax} 字节</span>
+			</div>
+			<div class="B_editor B_editor_fp cc" id="fp_editor" onclick="loadEditor(event);">
+<!--
+EOT;
+$_G['uploadtype'] && $db_uploadfiletype = $_G['uploadtype'];
+$db_uploadfiletype = (is_array($db_uploadfiletype) ? $db_uploadfiletype : unserialize($db_uploadfiletype));
+$attachAllow = pwJsonEncode($db_uploadfiletype);
+$imageAllow = pwJsonEncode(getAllowKeysFromArray($db_uploadfiletype, array('jpg','jpeg','gif','png','bmp')));
+print <<<EOT
+-->
+				<div class="B_editor_toolbar B_editor_minitoolbar">
+					<div class="B_tar">
+						<a href="javascript:gotoEditor();" class="fr" hidefocus="true" id="gotoedit">进入高级模式</a>
+					</div>
+					<ul><li class="edit_toolbar">
+						<a href="javascript:;" class="B_ico" title="加粗" data-type="wy_boldIcon" hidefocus="true" style="display:block"><div class="B_boldIcon B_do"></div></a>
+						<div class="B_icoDown" style="display: block;" data-type="wy_foreColor"><a href="javascript://" class="B_ico"><div class="B_foreColor B_do1" title="文字颜色"><span style="background-color: rgb(255, 0, 0);"></span>文字颜色</div></a><em class="B_do1"></em></div>
+						<a href="javascript:;" class="B_ico" title="插入链接" data-type="wy_linkIcon" hidefocus="true" style="display:block"><div class="B_linkIcon B_do"></div></a>
+						<a href="javascript:;" class="B_icoBig" title="图片" data-type="wy_photoBtn" hidefocus="true" style="display:block"><div class="B_photoIcon B_do"></div></a>
+						<a href="javascript:;" class="B_icoBig" title="附件" data-type="wy_fileBtn" hidefocus="true" style="display:block"><div class="B_fileIcon B_do"></div></a>
+					</li></ul>
+				</div>
+				<textarea id="textarea" name="atc_content" style="width:100%;height:140px;padding:0;margin:0;border:0 none;overflow:auto;"></textarea>
+			</div>
+			<div class="mb10">
+<!--
+EOT;
+if ($o_groups_p_gdcheck) {
+$checkCode = L::loadClass('checkcode', 'site');
+$checkCodeString = $checkCode->getCheckCodeTemplate();
+print <<<EOT
+-->
+				<dl class="cc">
+					<dt class="dtA">验证码: </dt>
+					<dd>
+						<input class="input" type="text" name="gdcode" size="5" tabindex="6" onfocus="showgd();" id="fs_gdcode"/>
+						<div id="ckcode" style="display:none"></div>
+$checkCodeString
+					</dd>
+				</dl>
+<!--
+EOT;
+}
+list($postq,$showq)=explode("\t",$db_qcheck);
+empty($winddb[postnum]) && $winddb[postnum]=0;
+if ($o_groups_p_qcheck && $db_question) {
+	$qkey = array_rand($db_question);
+	if ($db_imagequestion) {
+		$question = '<img id="ckquestion" src="ckquestion.php?q='.$qkey.'&t='.$timestamp.'" align="top">';
+	} else {
+		$question = $qkey<0 ? getMachineQuestion_1() :  $db_question[$qkey];
+	}
+	$q_a = $question.($showq && $qkey>0?" （答案：".$db_answer[$qkey] . '）' : '');
+print <<<EOT
+-->
+<style type="text/css">
+.dtA{width:75px;margin-right:5px;}
+.fpbtn{margin-left:80px;}
+</style>
+				<dl class="cc">
+					<dt class="dtA">验证问题：</dt><dd><span class="fl mr10">$q_a</span><input class="input fl" size="5" type="text" name="qanswer" /><input type="hidden" name="qkey" value="$qkey" /></dd>
+				</dl>
+<!--
+EOT;
+}print <<<EOT
+-->
+			</div>
+			<p><span class="mr10"><span class="btn"><span><button name="Submit" type="submit">写好了，发布</button></span></span></span><span class="s3">Ctrl + Enter 快速发布</span></p>
+			<div id="divload"></div>
+		</td>
+        <td class="floot_right" width="250">
+            <div id="fp_face" class="fp_show">
+                <div class="fp_show_tab">
+                    <b class="tab_left fl" onclick="PwFace.showTab(-1)" title="上一个">上一个</b>
+                    <b class="tab_right fr" onclick="PwFace.showTab(1)" title="下一个">下一个</b>
+                    <ul id="face_tab"></ul>
+                </div>
+                <div class="fp_show_cont">
+                    <div class="fp_show_height">
+                    <ul class="cc" id="face_main"></ul>
+                    </div>
+                    <div id="face_page" class="fp_show_pages cc"></div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+</div>
+</form>
+<!--
+EOT;
+$imageConfigTabs = array();
+($db_allowupload && $_G['allowupload'] && (!$_G['allownum'] || $winddb['uploadnum'] < $_G['allownum'])) && $imageConfigTabs[] = 'local';
+($db_phopen && $winduid) && $imageConfigTabs[] = 'album';
+$imageConfigTabs[] = 'network';
+$imageConfigTabs = "'" . implode("','", $imageConfigTabs) . "'";
+//max attachnum
+$uploadedNum = $winddb['uploadtime'] < $tdtime ? 0 : $winddb['uploadnum'];
+if ($_G['allownum'] > 0 && $_G['allownum'] - $uploadedNum<$db_attachnum){
+	$maxAttachnum = $_G['allownum'] - $uploadedNum;
+} else {
+	$maxAttachnum = $db_attachnum;
+}
+print <<<EOT
+-->
+<script type="text/javascript">
+var titlemax = '$db_titlemax';
+initCheckTextNum('atc_title','atc_title_warn',titlemax);
+
+var charset='$db_charset';
+var bbsurl ="{$B_url}";
+var BREEZE_BASE_PATH = getBaseUrl() + 'js/breeze/';
+var editor = null;
+var attachConfig = {
+		'attachnum' : parseInt('$maxAttachnum'),
+		'list' : {},
+		'postData' : {fid : '$fid'},
+		'filetype' : $attachAllow
+	},
+	imageConfig = {
+		tabs : [$imageConfigTabs],
+		url : 'pweditor.php?action=image',
+		filetype : $imageAllow
+	};
+function loadEditor(e) {
+	var e = is_ie ? event : e;
+	var o = e.srcElement || e.target;
+	if (o.id == 'gotoedit') return;
+
+	getObj('fp_editor').onclick = '';
+	loadjs('js/breeze/core/base.js', '', '', function() {
+		B.require('editor.editor', 'editor.ubb', function(B){
+			editor = B.editor(B.$('#textarea'), 'edit_toolbar', 'boldIcon foreColor linkIcon photoBtn fileBtn',{'currentMode' : 'UBB'});
+			var s = B.hasClass(o, 'B_do') ? o.parentNode : (B.hasClass(o, 'B_do1') ? o : null);
+			if (s && s.events && s.events['mousedown']){
+				var handlers = s.events['mousedown'],evt = {};
+				evt.preventDefault = function(){};
+				for (var i in handlers) {
+					handlers[i](evt);
+				}
+			}
+		});
+	});
+}
+
+var dataStorage = {
+	save : function() {
+		if (PwStorage.save('msg', document.FORM.atc_content.value)) {
+			PwStorage.save('title', document.FORM.atc_title.value, 1);
+			SetCookie('ds', 1);
+			return true;
+		}
+		return false;
+	},
+	load : function() {
+		document.FORM.atc_title.value = PwStorage.load('title') || '';
+		var msg = PwStorage.load('msg');
+		if (msg) {
+			document.FORM.atc_content.value = msg;
+			document.FORM.atc_content.focus();
+		}
+		SetCookie('ds', 0);
+	}
+}
+function gotoEditor() {
+	dataStorage.save();
+	location.href = '$posturl';
+}
+</script>
+</div>
+<script src="$db_htmdir/js/face.js"></script>
+<script type="text/javascript" src="js/post.js"></script>
+<script type="text/javascript">
+document.FORM.Submit.disabled = false;
+var charset = '$db_charset';
+var stylepath = '$stylepath';
+var cate = '$db_forcetype';
+var cnt = 0;
+
+PwFace.init('face_tab', 'face_main', 3, 16);
+/* window.onload = function (){
+ PwFace.init('face_tab', 'face_main', 3, 16);
+ }*/
+function checkpost(obj){
+	if(obj.atc_title.value==""){
+		showDialog("error","话题回复<span class='s1'>标题</span>不能为空",2);
+		obj.atc_title.focus();
+		return false;
+	} else if(strlen(obj.atc_title.value)>$db_titlemax){
+		showDialog("error","话题回复<span class='s1'>标题</span>不能超过 <span class='s1'>$db_titlemax</span> 个字节",2);
+		obj.atc_title.focus();
+		return false;
+	}
+	if(strlen(obj.atc_content.value)<$db_postmin){
+		showDialog("error","话题回复<span class='s1'>内容</span>不能少于 <span class='s1'>$db_postmin </span>个字节",2);
+		obj.atc_content.focus();
+		return false;
+	} else if(strlen(obj.atc_content.value)>$db_postmax){
+		showDialog("error","话题回复<span class='s1'>内容</span>不能大于 <span class='s1'>$db_postmax </span>个字节",2);
+		obj.atc_content.focus();
+		return false;
+	}
+	SubmitAjax(obj)
+	return false;
+}
+//ajax提交数据 
+function SubmitAjax(obj) {
+	document.FORM.Submit.disabled = true;
+	getObj('divload').innerHTML = showLoading();
+	cnt++;
+	ajax.send("{$basename}a=reply&cyid=$cyid", obj, function(){
+		if (undefined == ajax.request.responseText) {
+			showDialog({
+				type: 'error',
+				message: '请求超时!'
+			});
+			document.FORM.Submit.disabled = false;
+			getObj('divload').innerHTML = "";
+			return false;
+		}
+		var rText = ajax.request.responseText.split('\t');
+		if (rText[0] == 'success') {
+			window.onbeforeunload = function(){};
+			window.location =  rText[1];
+	    }else if(rText[0] == 'continue'){ //敏感词
+			 showDialog({type:'confirm',message:rText[1],okText:'继续',onOk:function(){
+				obj.iscontinue.value = 1;
+				SubmitAjax(obj);
+			 }});
+		} else {
+			showDialog('error', rText[0]);
+		}
+		cnt = 0;
+		document.FORM.Submit.disabled = false;
+		getObj('divload').innerHTML = "";
+		return false;
+	});
+}
+function showLoading(){
+	return "<div id=\"loading\" style=\"padding:20px;width:80%;text-align:center\"><img src=\""+imgpath+"/loading.gif\" align=\"absbottom\" alt=\"loading\" /> 正在加载数据...</div>";
+}
+function checklength(theform,postmaxchars){
+	if(postmaxchars != 0){
+		message = '<br />系统限制最大字节数:'+postmaxchars+' 字节';
+	} else{
+		message = '';
+	}
+	showDialog("warning",'您的信息已有字节数: '+strlen(theform.atc_content.value)+' 字节'+message);
+}
+function addsmile(NewCode){
+    getObj('textarea').value += ' [s:'+NewCode+'] ';
+}
+window.onbeforeunload = function() {
+	saveData('msg', document.FORM.atc_content.value);
+}
+if (FetchCookie('ds') == 1) {
+	try{dataStorage.load();}catch(e){}
+}
+</script>
+<!--
+EOT;
+?>

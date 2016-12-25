@@ -1,0 +1,37 @@
+<!--<?php print <<<EOT
+-->
+	<div class="forum_main main_min cc">
+<!--
+EOT;
+foreach($groups as $group){
+print <<<EOT
+-->
+		<dl class="cc" style="height:85px;">
+			<dt><a href="apps.php?q=group&cyid={$group[id]}" target="_blank"><img class="img" src="$group[cnimg]" width="60" height="60"></a></dt>
+			<dd>
+				<div class="name"><a href="apps.php?q=group&cyid={$group[id]}" target="_blank" class="f16 b">$group[cname]</a></div>
+				<div class="seahr"></div>
+				<div class="text">$group[descrip]</div>
+				<div class="info">分类：{$group[sname]}，成员：{$group[members]}，积分：$group[credit]，更新：$group[createtime]</div>
+			</dd>
+		</dl>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+	</div>
+	<div class="c">&nbsp;</div>
+	<div style="padding:10px 0 20px 20px;" class="cc">
+	$pager
+	</div>
+	<div class="p10 cc" style="width:555px;margin-left:auto;margin-right:auto;">
+<!--
+EOT;
+require printEOT('searcher_searchinput');
+print <<<EOT
+-->
+	</div>
+<!--
+EOT;
+?>-->

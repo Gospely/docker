@@ -1,0 +1,716 @@
+<!--<?php
+list($webPageTitle, $metaDescription, $metaKeywords) = getUSeo($USCR);
+print<<<EOT
+--><!doctype html>
+<html>
+<head>
+<meta charset="$db_charset" />
+<title>$webPageTitle - Powered by phpwind</title>
+<meta name="generator" content="phpwind $wind_version" />
+<meta name="description" content="$metaDescription" />
+<meta name="keywords" content="$metaKeywords" />
+<base id="headbase" href="$db_bbsurl/" />
+<link rel="stylesheet" href="images/pw_core.css?{$GLOBALS['wind_repair']}" />
+<link rel="stylesheet" href="u/images/style.css?{$GLOBALS['wind_repair']}" />
+<link rel="stylesheet" href="images/post/minieitor/minieitor.css?{$GLOBALS['wind_repair']}" />
+<!--
+EOT;
+require_once(uTemplate::printEot('css'));
+if ($USCR == 'space_index') {print <<<EOT
+-->
+<link rel="stylesheet" href="u/images/usercenter.css?{$GLOBALS['wind_repair']}" />
+<!--
+EOT;
+}print <<<EOT
+-->
+<script type="text/javascript" src="js/core/core.js"></script>
+<script type="text/javascript" src="js/pw_ajax.js"></script>
+<script type="text/javascript" src="js/core/tab.js"></script>
+<script>
+var imgpath = '$imgpath';
+var verifyhash = '$verifyhash';
+var winduid = '$winduid';
+var windid	= '$windid';
+var groupid	= '$groupid';
+var charset = '$db_charset';
+var basename = '$basename';
+var temp_basename = '$temp_basename';
+var modeimg = '$pwModeImg';
+function resizeImg(ele){
+	var a=ele;
+	if(a.width<30||a.height<30){
+		setTimeout(function(){
+			resizeImg(a);
+		},10)
+		return false;
+	}
+	if(a.width>100){
+		
+			a.width = 100;
+			
+		} else if(a.height>100){
+			a.height=100;
+		}
+}
+</script>
+<!--
+EOT;
+if ($winddb['bubble']) {
+$userBubbleInfo = pwJsonEncode(unserialize($winddb['bubble']));
+print <<<EOT
+-->
+<script type="text/javascript">
+var userBubbleInfo = $userBubbleInfo;
+</script>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--[if IE 9 ]>
+<meta name="msapplication-task" content="name=网站首页; action-uri=$db_bbsurl; icon-uri=favicon.ico" />
+<meta name="msapplication-task" content="name=个人中心; action-uri=u.php; icon-uri=images/ico/home.ico" />
+<meta name="msapplication-task" content="name=我的帖子; action-uri=apps.php?q=article; icon-uri=images/ico/post.ico" />
+<meta name="msapplication-task" content="name=消息中心; action-uri=message.php; icon-uri=images/ico/mail.ico" />
+<meta name="msapplication-task" content="name=我的设置; action-uri=profile.php; icon-uri=images/ico/edit.ico" />
+<![endif]-->
+</head>
+<body>
+<!--
+EOT;
+$tmpMsgNum = 0;
+($winddb['newpm']>0 && $_G['maxmsg']>=0) && $tmpMsgNum += $winddb['newpm'];
+$winddb['newnotice']>0 && $tmpMsgNum += $winddb['newnotice'];
+$winddb['newrequest']>0 && $tmpMsgNum += $winddb['newrequest'];
+$tmpMsgNums = $tmpMsgNum > 0 ? '('.$tmpMsgNum.')' : '';
+
+$hasNewMessage = $winddb['newpm'] || $winddb['newreferto'] || $winddb['newnotice'] || $winddb['newrequest'] || $winddb['newfans'];
+if($winduid && $hasNewMessage && (!GetCookie('clearm_'.$winduid) || GetCookie('clearm_'.$winduid) < $tmpMsgNum)){print <<<EOT
+-->
+<div id="pw_all_tip" style="display:none;" data-msg='[{"num":{$winddb['newpm']},"name":"站内信","url":"message.php?type=sms"},{"num":{$winddb['newreferto']},"name":"提到我","url":"apps.php?q=weibo&do=refer"},{"num":{$winddb['newnotice']},"name":"新通知","url":"message.php?type=notice"},{"num":{$winddb['newfans']},"name":"新关注","url":"u.php?a=friend&type=attentioned"},{"num":{$winddb['newrequest']},"name":"新请求","url":"message.php?type=request"}]'>
+<table><tr><td>
+<div class="pw_all_tip">
+	<a href="javascript:void(0)" class="adel" id="pw_all_tclose" data-num="{$tmpMsgNum}">关闭</a>
+<!--
+EOT;
+	if($winddb['newpm']){print <<<EOT
+-->
+	<p>{$winddb['newpm']}条新站内信，<a href="message.php?type=sms">查看站内信</a></p>
+<!--
+EOT;
+}if($winddb['newreferto']){print <<<EOT
+-->
+	<p>{$winddb['newreferto']}条信息提到我，<a href="apps.php?q=weibo&do=refer">查看@我</a></p>
+<!--
+EOT;
+}if($winddb['newnotice']){print <<<EOT
+-->
+	<p>{$winddb['newnotice']}个新通知，<a href="message.php?type=notice">查看新通知</a></p>
+<!--
+EOT;
+}if($winddb['newfans']){print <<<EOT
+-->
+	<p>{$winddb['newfans']}个新关注，<a href="u.php?a=friend&type=attentioned">查看新关注</a></p>
+<!--
+EOT;
+}if($winddb['newrequest']){print <<<EOT
+-->
+	<p>{$winddb['newrequest']}个新请求，<a href="message.php?type=request">查看新请求</a></p>
+<!--
+EOT;
+}print <<<EOT
+-->
+</div></td></tr></table></div>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+<div class="warp">
+	<div class="header">
+	<div class="topbar">
+		<div class="topwarp cc">
+			<a href="index.php" class="logo"><img src="u/images/logo.png" width="116" height="31" title="$o_sitename" /></a>
+			<div class="fl mr10">
+<!--
+EOT;
+if ($homenavigation['linkup']) {
+	foreach($homenavigation['linkup'] as $key => $value) {
+	$currentClass = $value['data']['iscurrent'] ? 'class="current"' : '';
+	$html = buildNavLinkHtml($value['data']);
+	//$crossEvent = (!$value['data']['iscurrent'] && 'cross' == $value['data']['floattype'] && $value['subs']) ? " onmouseover=\"ctrlSubMenu('nav_key_up_$key', 'nav_key_sub_$key');\" " : '';
+
+	//$verticalEvent = (!$value['data']['iscurrent'] && 'vertical' == $value['data']['floattype'] && $value['subs']) ? " onmouseover=\"tmpHideAllCross('nav_key_sub_$key'); read.open('nav_key_sub_$key', 'nav_key_up_$key', null, 0, window['nav_key_up_$key']); \" " : '';
+
+	//$currentEvent = $value['data']['iscurrent'] ? " onmouseover=\"tmpHideAllCross('nav_key_sub_$key'); \" " : '';
+print <<<EOT
+-->
+				<span $currentClass $crossEvent $verticalEvent $currentEvent>$html</span>
+<!--
+EOT;
+} if ($o_browseopen) {print <<<EOT
+-->
+				<a href="mode.php?m=o">广场</a>
+<!--
+EOT;
+} $db_menuinit .= ",'td_omainNav' : 'menu_omainNav'";
+ if (count($homenavigation['linkdown'])) {
+print <<<EOT
+-->
+				<a id="td_omainNav" class="link_down"><span id="td_omainNav" class="link_down">更多</span></a>
+<!--
+EOT;
+}
+}print <<<EOT
+-->
+			</div>
+			<div class="search">
+			<form id="searchForm" action="searcher.php" method="post" target="_blank">
+				<input type="hidden" name="verify" value="$verifyhash">
+				<input type="hidden" name="step" value="2">
+				<input id="searchType" type="hidden" name="type" value="user">
+				<span id="submitSearch" class="adown fl cp">用户</span>
+				<div id="searchTypeSelect" class="fl" style="display:none;">
+					<ul>
+<!--
+EOT;
+if ($db_search_type) {
+	foreach ($db_search_type as $key=>$value) {
+		$currentType = $key == 'thread' ? 'class="current"' : '';
+print <<<EOT
+-->	
+				<li id="searchType_{$key}" $currentType>{$value}</li>
+<!--
+EOT;
+	}
+} else {
+print <<<EOT
+-->
+				<li id="searchType_thread" class="current">帖子</li>
+				<li id="searchType_diary">日志</li>
+				<li id="searchType_user">用户</li>
+				<li id="searchType_forum">版块</li>
+				<li id="searchType_group">群组</li>
+<!--
+EOT;
+}print <<<EOT
+-->
+					</ul>
+				</div>
+				<input id="searchKeyword" class="sip" name="keyword" type="text">
+				<button type="submit">搜索</button>
+			</form>
+			</div>
+<script type="text/javascript">
+var timeoutSpecifier = null;
+function hideSubMenu(subMenuId) {
+	timeoutSpecifier = setTimeout(function() {
+		getObj(subMenuId).style.display = 'none';
+	}, 100);
+}
+function ctrlSubMenu(parentId, subMenuId) {
+	clearTimeout(timeoutSpecifier);
+	getObj(subMenuId).style.display = '';
+	getObj(parentId).onmouseout = function() {
+		hideSubMenu(subMenuId);
+		getObj(parentId).onmouseout = '';
+	};
+	getObj(subMenuId).onmouseout = function() {
+		hideSubMenu(subMenuId);
+	};
+	getObj(subMenuId).onmouseover = function() {
+		clearTimeout(timeoutSpecifier);
+		getObj(subMenuId).style.display = '';
+	};
+}
+function bindSearchTypes() {
+	var elements = getObj('searchTypeSelect').getElementsByTagName('li');
+	for (i=0; i<elements.length; i++) {
+		elements[i].onclick = function() {
+			currentType = this.id.substr(11);
+			getObj('searchType').value = currentType;			
+			selectSearchType();
+
+			getObj('submitSearch').innerHTML = this.innerHTML.replace(/(\s*$)/g, "");
+			if (getObj('searchKeyword').value != '') {
+				//getObj('searchForm').submit();
+			} else {
+				getObj('searchKeyword').focus();
+			}
+			displayElement('searchTypeSelect', false);
+		}
+	}
+}
+function selectSearchType() {
+	var elements = getObj('searchTypeSelect').getElementsByTagName('li');
+	currentType = getObj('searchType').value;
+	for (i=0; i<elements.length; i++) {
+		elements[i].className = (elements[i].id.substr(11) == currentType ? 'current' : '');
+	}
+}
+
+
+onReady(function(){
+		if(is_webkit && getObj('bookmarkExplore')){
+			getObj('bookmarkExplore').parentNode.removeChild(getObj('bookmarkExplore'));
+		}
+		bindSearchTypes();
+		getObj('submitSearch').onmouseover = function() {
+			selectSearchType();
+			ctrlSubMenu('submitSearch', 'searchTypeSelect');
+		};
+})
+//getObj('submitSearch').onclick = function() {getObj('searchForm').submit();};
+</script>
+			<div class="fr">
+<!--
+EOT;
+if ($winduid) {
+$db_menuinit .= ",'td_userinfomore' : 'menu_userinfomore'";
+print <<<EOT
+-->
+				<a id="td_userinfomore" href="u.php" class="b link_down"><span>$windid</span></a>
+<script>
+var td_userinfomore = {
+	pz : 21,
+	open : function() {
+		if (typeof userBinding == 'object') {
+			userBinding.append();
+		}
+	},
+	close : function () {
+
+	}
+}
+</script>
+				<a href="$loginouturl" class="mr10">退出</a><i>&nbsp;</i>
+<!--
+EOT;
+print <<<EOT
+-->
+				<a href="message.php">消息{$tmpMsgNums}</a>
+<!--
+EOT;
+$db_menuinit .= ",'td_profile' : 'menu_profile'";
+print <<<EOT
+-->
+				<a id="td_profile" href="profile.php" class="mr10 link_down"><span>设置</span></a><i>&nbsp;</i>
+<!--
+EOT;
+	if (CkInArray($windid, $manager) || $SYSTEM['allowadmincp']) {print <<<EOT
+-->
+				<a href="$db_adminfile" target="_blank">系统设置</a>
+<!--
+EOT;
+}
+if ($space['uid'] == $winduid) {
+	$db_menuinit .= ",'td_setskin' : 'menu_setskin'";
+}
+print <<<EOT
+-->
+				<a href="u.php?a=set&tab=skin" id="td_setskin"><img src="images/pwicon/style.gif" title="个人中心风格切换" alt="个人中心风格切换" align="top" /></a>
+<!--
+EOT;
+} else {print <<<EOT
+-->
+				<a href="$loginurl">登录</a>
+				<a href="$regurl" class="mr10" rel="nofollow">注册</a>
+<!--
+EOT;
+}print <<<EOT
+-->
+			</div>
+		</div>
+	</div>
+<!--head begin-->
+<!--
+EOT;
+if (isset($isSpace) && $isSpace) {
+$style_banner = $space['banner_s'] ? " style=\"background:url({$space[banner_s]}) repeat;\"" : '';
+$favortitle = str_replace(array("&#39;","'","\"","\\"),array("‘","\\'","\\\"","\\\\"), $space['name']);
+print <<<EOT
+-->
+	<div class="head"{$style_banner}>
+		<div class="spBan">
+			<div class="site">
+				<h2 id="spaceName">
+					{$space['name']}
+					<a id="showNameEditLink" style="display:none;" class="s7 f12" href="u.php?a=set&tab=basic">[编辑]</a>
+				</h2>
+				<p>$space[descript]</p>
+				<p>{$db_bbsurl}/{$db_userurl}$space[uid] &nbsp;<a href="javascript:;" id="bookmarkExplore" onClick="Addtoie('{$db_bbsurl}/{$db_userurl}$space[uid]','{$favortitle}');" class="s7">[收藏]</a>&nbsp;<a href="javascript:;" onClick="CopyCode('{$db_bbsurl}/{$db_userurl}$space[uid]')" class="s7">[复制]</a></p>
+			</div>
+			<div class="bannerBg"></div>
+		</div>
+		<div class="cc">
+		<div class="fr">
+				<span class="btn4 fl"><span><button onClick="location.href='{$db_bbsurl}/u.php?a=set'">空间装扮</button></span></span><span class="btn4 fl"><span><button onClick="location.href='{$db_bbsurl}/u.php'">个人中心</button></span></span>
+		</div>
+		<div class="navA">
+			<ul>
+				<li class="current"><a href="{$db_userurl}$space[uid]">首页</a></li>
+				<li><a href="apps.php?q=weibo&uid=$space[uid]">新鲜事</a></li>
+<!--
+EOT;
+if($GLOBALS['db_dopen']){print <<<EOT
+-->
+				<li><a href="apps.php?q=diary&uid=$space[uid]">日志</a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--
+EOT;
+if($GLOBALS['db_phopen']){print <<<EOT
+-->
+				<li><a href="apps.php?q=photos&uid=$space[uid]">相册</a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+				<li><a href="apps.php?q=article&uid=$space[uid]">帖子</a></li>
+				<li class="none"><a href="u.php?a=info&uid=$space[uid]">个人资料</a></li>
+				<!-- <li><a href="apps.php?q=diary" class="down">更多</a></li> -->
+			</ul>
+		</div>
+		</div>
+	</div>
+<script>
+/*
+EOT;
+if ($space['uid'] == $winduid) {print <<<EOT
+*/
+getObj('spaceName').onmousemove = function() {
+	displayElement('showNameEditLink', true);
+}
+getObj('spaceName').onmouseout = function() {
+	displayElement('showNameEditLink', false);
+}
+/*
+EOT;
+}
+print <<<EOT
+*/
+</script>
+<!--
+EOT;
+} else {
+$s_lang = array('user' => array('个人中心','u.php','visit.png'), 'set' => array('设置','u.php','visit.png'), 'msg' => array('消息','message.php','visit.png'));
+list($uKey,$uValue) = explode('_', $USCR);
+$uKey = (isset($s_lang[$uKey])) ? $uKey : 'user';
+print <<<EOT
+-->
+	<div class="headB cc">
+<!--
+EOT;
+print <<<EOT
+-->
+		<a class="fr appMenu" href="{$db_userurl}$space[uid]">我的空间</a>	
+<!--
+EOT;
+if($GLOBALS['db_phopen']){print <<<EOT
+-->
+		<a class="fr aUpload" href="apps.php?q=photos&a=upload&job=flash">传照片</a>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--
+EOT;
+if($GLOBALS['db_dopen']){print <<<EOT
+-->
+		<a class="fr aWrite" href="apps.php?q=diary&a=write">写日志</a>
+<!--
+EOT;
+}print <<<EOT
+-->
+		<div class="place fl">
+<!--
+EOT;
+$headtitle = '';
+switch($uValue){
+	default:
+				 $headtitle   = "<div><a href=\"{$s_lang[$uKey][1]}\"><img src='u/images/p_logo.png' width=\"146\" height=\"39\" title=\"{$s_lang[$uKey][0]}\" /></a></div>";
+				 break;
+	case 'message':
+	 			$headtitle   = "<div class=\"one\"><img src='u/images/module/message.png' width=\"32\" height=\"32\" /><h2><a href=\"message.php\" class='s5'>{$s_lang[$uKey][0]}</a></h2><a href='u.php' class='s7'>返回个人中心</a></div>";
+				break;
+	case 'profile':
+	 			$headtitle   = "<div class=\"one\"><img src='u/images/module/{$s_lang[$uKey][2]}' width=\"32\" height=\"32\" /><h2><a href=\"profile.php\" class='s5'>{$s_lang[$uKey][0]}</a></h2><a href='u.php' class='s7'>返回个人中心</a></div>";
+				break;
+}
+
+print <<<EOT
+-->
+				$headtitle
+		</div>
+	</div>
+<!--
+EOT;
+}if ($winduid) {print <<<EOT
+-->
+	<div id="menu_profile" style="display:none;">
+		<div style="margin-right:-6px;">
+		<div class="pw_menu" style="width:45px; position:relative;">
+			<h6 style="left:-1px;"><a href="profile.php" class="link_down"><span>设置</span></a></h6>
+			<ul class="menuList" style="width:43px;">
+				<li><a href="profile.php?action=modify">帐号</a></li>
+<!--
+EOT;
+if ($db_authstate) {print <<<EOT
+-->
+		<li><a href="profile.php?action=auth" target="_blank">认证</a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+				<li><a href="profile.php?action=privacy">隐私</a></li>
+				<li><a href="userpay.php">积分</a></li>
+				<li><a href="profile.php?action=permission">权限</a></li>
+			</ul>
+		</div>
+		</div>
+	</div>
+<!--
+EOT;
+if (getstatus($winddb['userstatus'],12)) {print <<<EOT
+-->
+	<script type="text/javascript" src="js/userbinding.js"></script>
+<!--
+EOT;
+} print <<<EOT
+-->
+	<div id="menu_userinfomore" style="display:none;">
+<!--[if IE 6]>
+<iframe frameborder='0' style='position:absolute;top:0;left:-10px;width:100%;height:300px;filter:Alpha(opacity=0);_filter:Alpha(opacity=0);opacity:.0;'></iframe>
+<![endif]-->
+	<div style="margin-left:-7px;margin-top:-1px; position:relative;width:320px;">
+	<div class="cc pw_menu">
+		<h6 style="left:0px;right:auto;"><a href="u.php" class="b link_down"><span>{$windid}</span></a></h6>
+		<ul class="menu-half cc" style="width:26em;">
+<!--
+EOT;
+if ($gp_gptype == 'member') {print <<<EOT
+-->
+		<li>等级: $gp_grouptitle</li>
+<!--
+EOT;
+} else {print <<<EOT
+-->
+		<li>身份: $gp_grouptitle</li>
+<!--
+EOT;
+}if ($_G['allowhide']) {print <<<EOT
+-->
+		<li>状态:
+<span style="cursor:pointer;" onClick="ajax.send('pw_ajax.php?action=changestate','',changeState)" id="online_state"><!--
+EOT;
+if (GetCookie('hideid') == 1) {print <<<EOT
+--><img src="$imgpath/stealth.png" align="absmiddle" alt="隐身" />隐身<!--
+EOT;
+} else {print <<<EOT
+--><img src="$imgpath/online.png" align="absmiddle" alt="在线" />在线<!--
+EOT;
+}print <<<EOT
+--></span>
+<script>
+function changeState() {
+	var msg = ajax.request.responseText;
+	if (msg == 1){
+		getObj('online_state').innerHTML = '<img src="$imgpath/stealth.png" align="absmiddle" alt="隐身" />隐身';
+	}else{
+		getObj('online_state').innerHTML = '<img src="$imgpath/online.png" align="absmiddle" alt="在线" />在线';
+	}
+}
+</script>
+			</li>
+<!--
+EOT;
+}
+$_LoginInfo['lastlogdate'] = get_date($winddb['lastvisit'], 'Y-m-d');
+print <<<EOT
+-->
+			<li>帖子: $winddb[postnum]</li>
+			<li>今日: $winddb[todaypost]</li>
+			<li>$db_rvrcname: $userrvrc $db_rvrcunit</li>
+			<li>$db_moneyname: $winddb[money] $db_moneyunit</li>
+			<li>$db_creditname: $winddb[credit] $db_creditunit</li>
+			<li>最后登录: <span class="f10">{$_LoginInfo['lastlogdate']}</span></li>
+			<li style="width:90%">登录IP: <span class="f10">{$onlineip}</span></li>
+		</ul>
+		<div class="userbindingMenu"></div>
+	</div>
+	</div>
+	</div>
+<!--
+EOT;
+}if ($homenavigation['linkdown']) {
+print<<<EOT
+-->
+	<div id="menu_omainNav" style="display:none;">
+		<div style="margin-left:-7px;">
+		<div class="pw_menu" style="width:93px; position:relative;">
+			<h6 style="left:-1px;" class="link_down"><span>更多</span></h6>
+			<ul class="menuList" style="width:91px;">
+<!--
+EOT;
+foreach($homenavigation['linkdown'] as $key => $value) {
+print<<<EOT
+-->
+				<li><a href="{$value[data][link]}"><span>{$value[data][title]}</span></a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+			</ul>
+		</div>
+		</div>
+	</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+	</div>
+	<div id="menu_setskin" style="display:none;">
+		<div class="pw_menu" style="position:absolute;margin:-2px 0 0 -431px;height:270px;width:435px;">
+		<div class="pw_menuBg">
+			<h6><img src="images/pwicon/style.gif" align="absmiddle" alt="个人中心风格切换" /></h6>
+			<div class="c mb10">&nbsp;</div>
+<!--
+EOT;
+$o_uskin_per = 6;
+$o_uskin_num = count($o_uskin);
+$o_uskin_pages = ceil($o_uskin_num/$o_uskin_per);
+$o_uskin_i = $o_uskin_p = 1;
+print <<<EOT
+-->
+				<ul class="cc menuSkin" style="height:210px;">
+<!--
+EOT;
+foreach ($o_uskin as $key => $value) {
+	if (!$value) continue;
+	if($o_uskin_i>($o_uskin_per*$o_uskin_p)) $o_uskin_p++;
+	$style = ($key == $space['skin']) ? 'current' : '';
+	$ifcheck = ($key == $space['skin']) ? ' checked' : '';
+    $li_menu_skin_display = ($o_uskin_p == 1) ? "style='display:block;'" : "style='display:none;'";
+print <<<EOT
+-->
+					<li class="li_menu_skin li_menu_skin{$o_uskin_p} {$style}" {$li_menu_skin_display}>
+						<a href="javascript:;" onClick="Change_Skin('{$key}');">
+							<i style="background:url(u/themes/$key/images/preview.jpg) no-repeat">&nbsp;</i>
+							<span><label for="skin{$key}"><input type="radio" name="spaceskin" value="$key" id="skin{$key}" class="mr5" {$ifcheck} />{$value}</label></span>
+						</a>
+					</li>
+<!--
+EOT;
+	$o_uskin_i++;
+}print <<<EOT
+-->
+			</ul>
+<!--
+EOT;
+if($o_uskin_p>1){
+print <<<EOT
+-->
+			<div class="cc" style="padding-left:12px;padding-bottom:5px;">
+			 <input type="hidden" name="skin_now_page" id="skin_now_page" value="1">
+			 <input type="hidden" name="skin_total_page" id="skin_total_page" value="{$o_uskin_p}">
+			 <div class="pages o_useskin_pages" style="position:absolute;">
+<!--
+EOT;
+for($o_p=1;$o_p<=$o_uskin_p;$o_p++){
+$aclass =($o_p==1)  ? "class='current'"  : '';
+print <<<EOT
+-->
+				<a name="o_useskin_pages_name_{$o_p}" {$aclass} id="o_useskin_pages_{$o_p}" href="javascript:;" onClick="show_o_useskin_page({$o_p});change_link_bg({$o_p});">{$o_p}</a>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+  			<a href="javascript:;" onClick="show_o_useskin_nextpage();change_link_bg_nextpage();">&raquo;</a></div>
+			</div>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+		</div>
+		</div>
+	</div>
+<script>
+/*
+EOT;
+if ($space['uid'] == $winduid) {print <<<EOT
+*/
+function show_o_useskin_page(id){
+	var pre_skin = getElementsByClassName("li_menu_skin","menuSkin");
+	var currect_skin = getElementsByClassName("li_menu_skin"+id,"menuSkin");
+	for(i in pre_skin){
+		pre_skin[i].style.display="none";
+	}
+	for(i in currect_skin){
+		currect_skin[i].style.display="block";
+	}
+	var nowPage = document.getElementsByName('skin_now_page');
+	for (var x=0;x<nowPage.length;x++) {
+		nowPage[x].value = id;
+	}
+	//getObj("skin_now_page").value=id;
+}
+function show_o_useskin_nextpage(){
+	var nowpage = getObj("skin_now_page").value;
+	var totalpage = getObj("skin_total_page").value;
+	if(nowpage<1){
+		nextpage=1;
+	}else if(nowpage>=totalpage){
+		nextpage=totalpage;
+	}else{
+		nextpage = Number(nowpage)+1;
+	}
+	show_o_useskin_page(nextpage);
+}
+function Change_Skin(v){
+	ajax.send('pw_ajax.php?action=changeuskin', 'skin='+v, function() {
+		window.location.reload();
+	});
+	return false;
+}
+function change_link_bg(i){
+	var totalpage = getObj("skin_total_page").value;
+	for(a=1;a<=totalpage;a++){
+		if(i==a) {
+			var names = document.getElementsByName('o_useskin_pages_name_'+i);
+			for (var y=0;y<names.length;y++) {
+				names[y].className="current";
+			}
+			//getObj("o_useskin_pages_"+a).className="current";
+		} else {
+			var otherNames = document.getElementsByName('o_useskin_pages_name_'+a);
+			for (var x=0;x<otherNames.length;x++) {
+				otherNames[x].className='';
+			}
+			//getObj("o_useskin_pages_"+a).className="";
+		}
+	}
+}
+function change_link_bg_nextpage(){
+	var nowpage = getObj("skin_now_page").value;
+	var totalpage = getObj("skin_total_page").value;
+	if(nowpage<1){
+		nextpage=1;
+	}else if(nowpage>=totalpage){
+		nextpage=totalpage;
+	}else{
+		nextpage = Number(nowpage);
+	}
+	change_link_bg(nextpage);
+}
+/*
+EOT;
+}print <<<EOT
+*/
+</script>
+	<div class="main">
+<!--
+EOT;
+?>-->

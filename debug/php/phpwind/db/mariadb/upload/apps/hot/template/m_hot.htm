@@ -1,0 +1,102 @@
+<!--<?php
+require_once(uTemplate::printEot('header'));
+require_once(uTemplate::printEot('user_appleft'));
+$randnum = rand(1, 9999);
+print <<<EOT
+-->
+<div class="contUser">
+<table width="100%"><tr><td valign="top" height="500">
+<div class="p15">	
+	<h4 class="site"><img src="u/images/module/hot.png" align="absmiddle" class="mr10" /><span>热榜</span></h4>
+<!-- 热榜 tabs start -->
+<!--
+EOT;
+if($tabs){
+print <<<EOT
+-->
+<div class="navC">
+<ul>
+ <li id="a_own"><a href="{$basename}action=center">排行中心</a></li>
+<!--
+EOT;
+foreach($tabs as $key => $value){
+print <<<EOT
+-->
+ <li id="a_$value[tag]"><a href="{$basename}action=$value[tag]">$value[name]</a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+<script>
+setCurrent('a_$action','a_own','current');
+</script>
+<script src="js/core/utils/changeView.js" type="text/javascript"></script>
+</ul>
+</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!-- 热榜 tabs end -->
+
+<div>
+<!-- submenu -->
+<!--
+EOT;
+require_once PrintEot('m_hot_center');
+if ($subMenu) {print <<<EOT
+-->
+<div class="tips">
+	<div class="navD">
+	<ul class="cc">
+<!--
+EOT;
+foreach($subMenu as $key => $value){
+print <<<EOT
+-->
+		<li id="current_$value[tag]"><a href="{$basename}action=$action&sub=$value[tag]">$value[type_name]</a></li>
+<!--
+EOT;
+}
+$cid = "current_".$sub;
+print <<<EOT
+-->
+	</ul>
+	</div>
+</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!-- submenu end -->
+<script>
+function setCurrentMenu(id,cname){
+	var cNode = document.getElementById(id);
+	if(cNode != null){
+		cNode.className = "current";
+	}
+}
+setCurrentMenu('$cid','');
+</script>
+<!--
+EOT;
+if($action=='memberHot'){
+	require_once PrintEot('m_hot_user');
+}elseif($action=='threadHot'){
+	require_once PrintEot('m_hot_threads');
+}elseif($action=='diaryHot'){
+	require_once PrintEot('m_hot_diary');
+}elseif($action=='picHot'){
+	require_once PrintEot('m_hot_photo');
+}elseif($action=='forumHot'){
+	require_once PrintEot('m_hot_forums');
+}print <<<EOT
+-->
+</div></div>
+<script type="text/javascript" src="apps/$appdir/js/hot.js"></script>
+</td></tr></table>
+</div>
+<!--
+EOT;
+require_once(uTemplate::printEot('footer'));
+?>-->

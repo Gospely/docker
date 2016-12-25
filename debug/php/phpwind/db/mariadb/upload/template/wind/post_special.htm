@@ -1,0 +1,542 @@
+<!--<?php
+if (in_array($special,array(1,3,4,5))){
+	//8.7新发帖页28th Jun. 2011
+	if ($special == '1') {print <<<EOT
+-->
+<!-- 投票 -->
+<div class="cc mb10 post_type">
+	<div class="post_left">
+		<h4 class="mb5 b">投票选项：</h4>
+		<ul class="post_list" id="voteoptions">
+<!--
+EOT;
+if ($action == 'modify') {
+foreach ($set['votearray'] as $key => $votes) {print <<<EOT
+-->
+			<li><a href="javascript:;" onclick="deleteVoteOption(this);return false;" class="adel">删除</a><input name="vt_selarray[$key]" value="$votes[0]" type="text" maxLength="60" class="input input_330" /></li>
+<!--
+EOT;
+}
+} else {
+$db_selcount = (int) $db_selcount;
+for ($i=0;$i<$db_selcount && $i <3;$i++) {
+$tabindex = 10+$i;
+print <<<EOT
+-->
+			<li><a href="javascript:;" onclick="deleteVoteOption(this);return false;" class="adel">删除</a><input name="vt_select[]" type="text" class="input input_330" tabindex="$tabindex" /></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+			<li id="addVoteButton" style="display:none"></li>
+			<li id="basevoteoption" style="display:none"><a href="javascript:;" onclick="deleteVoteOption(this);return false;" class="adel">删除</a><input name="vt_select[]" type="text" class="input input_330" /></li>
+			<li><a href="javascript:;" onclick="addVoteOption();return false;" class="post_list_add s4">增加一项</a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+		</ul>
+	</div>
+	<div class="post_right">
+		<h4 class="mb5 b">&nbsp;</h4>
+		<ul class="post_list">
+			<li><em>有效天数：</em><input name="timelimit" value="$set[timelimit]" $set[voteable] type="text" class="input mr5" size="4" />天</li>
+			<li><em>最多可选：</em><input name="mostvotes" type="text" class="input mr5" size="4" value="$set[mostvotes]" $set[voteable] />项</li>
+			<li><input id="modifiable" name="modifiable" $set[ifmodify] $set[voteable] type="checkbox" class="checkbox" value="1" /><label for="modifiable">允许修改投票结果</label></li>
+			<li><input id="previewable" name="previewable" $set[ifpreview] $set[voteable] type="checkbox" class="checkbox" value="1" /><label for="previewable">投票后结果才可见</label></li>
+			<li><a href="javascript:void(0)" class="link_down s4" id="voteAdHd"><span>高级选项</span></a></li>
+		</ul>
+		<ul class="post_list" style="display:none;" id="voteAdBd">
+			<li><em>注册时间：</em><span class="mr5">注册于</span><input id="regdatelimit" name="regdatelimit" value="$set[regdatelimit]" $set[voteable] onClick="javascript:ShowCalendar(this.id)" type="text" class="input mr5" style="width:76px;" />之前方可投票</li>
+			<li><em>积分限制：</em><span class="mr5"><select name="creditlimitname" style="width:55px;" $set[voteable]>
+<!--
+EOT;
+foreach ($credit->cType as $key => $value) {print <<<EOT
+-->
+				<option value="$key">$value</option>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+				</select></span><input name="creditlimitvalue" type="text" class="input mr5" style="width:58px;" value="{$set[ifcreditlimit]}" />之上方可投票
+			</li>
+			<li><em>帖数限制：</em><span class="mr5">发帖数在</span><input name="postnumlimit" value="$set[postnumlimit]" $set[voteable] type="text" class="input mr5" style="width:65px;" />之上方可投票</li>
+		</ul>
+	</div>
+</div>
+<script type="text/javascript">
+window.onReady(function(){
+	//投票高级选项显示隐藏切换
+	var voteAdHd=getObj("voteAdHd");
+	var voteAdBd=getObj("voteAdBd")
+	toggleDisplay(voteAdHd,voteAdBd,function(){
+		if(this.arrow&&this.arrow=="up"){
+			this.className="link_up s4";
+			this.innerHTML="<span>收起选项</span>";
+		}else{
+			this.className="link_down s4";
+			this.innerHTML="<span>高级选项</span>";
+		}
+	})	
+})
+var selCount = $db_selcount;
+function deleteVoteOption(obj) {
+	delElement(obj.parentNode);
+}
+
+function addVoteOption() {
+	var totalLis = getObj('voteoptions').getElementsByTagName('li');
+	var totalNum = 0;
+	for (var i = 0, j = totalLis.length; i < j; i++) {
+		if (totalLis[i].style.display == 'none') continue;
+		totalNum++;
+	}
+	if (totalNum >= selCount) return false;
+	var source = getObj('basevoteoption');
+	var target = source.cloneNode(true);
+	var targetInput = target.getElementsByTagName('input');
+	targetInput.value = '';
+	target.style.display = '';
+	target.removeAttribute('id');
+	targetInput[0].setAttribute('tabindex',11+totalNum);
+	getObj('voteoptions').insertBefore(target, getObj('addVoteButton'));
+}
+</script>
+<!--
+EOT;
+} elseif ($special == 3) {print <<<EOT
+-->
+		<!-- 悬赏 -->
+		<div class="cc mb10 post_type">
+			<ul class="post_list">
+<!--
+EOT;
+if ($action == 'modify') {print <<<EOT
+-->
+				<li><span>追加悬赏 (延长时间)</span><input type="checkbox" name="addreward" value="1" /></li>
+<!--
+EOT;
+	$endRewardHtml = '<a href="job.php?action=endreward&tid='. $tid .'" class="s4">[结束悬赏]</a>';
+}print <<<EOT
+-->
+				<li><span>最佳答案奖励：</span><select id="p_credit" name="ctype[best]" onchange="showreward();" class="mr10">$set[b_select]</select><span class="mr10"><input id="r_credit" name="bonus[best]" value="$postSpecial->b_val" class="input mr5" onchange="showreward();" size="4" />个</span><span class="s3 mr20">[最低{$postSpecial->b_val}个]</span>{$endRewardHtml}</li>
+				<li><span>热心助人奖励：</span><select id="p_credit" name="ctype[active]" class="mr10">$set[a_select]</select><span class="mr10"><input name="bonus[active]" type="text" value="$postSpecial->a_val" class="input mr5" size="4" />个</span><span class="s3 mr20">[最低{$postSpecial->a_val}个]</span>奖励给你指定的热心回复者。</li>
+			</ul>
+		</div>
+<!--
+EOT;
+} elseif ($special == 4) {print <<<EOT
+-->
+<!-- 商品 -->
+	<div class="cc mb10 post_type">
+		<div class="post_left">
+			<ul class="post_list">
+				<li><em>商品名称：</em><select name="degree" class="mr5"><option value="0" $set[degree_0]>全新</option><option value="1" $set[degree_1]>二手</option></select><input class="input" style="width:171px;" name="goodsname" value="$set[name]" size="30" /></li>
+				<li><em>商品数量：</em><input name="goodsnum" value="$set[num]" type="text" class="input" style="width:231px;" /></li>
+				<li><em>商品现价：</em><input name="costprice" value="$set[costprice]" type="text" class="input mr5" style="width:231px;" />元</li>
+				<li><em>商品原价：</em><input name="price" value="$set[price]" type="text" class="input mr5" style="width:231px;" />元</li>
+				<li><em>所在地：</em><input name="locus" value="$set[locus]" type="text" class="input" style="width:231px;" /></li>
+				<li><em>收款方式：</em><label class="mr20"><input type="checkbox" name="paymethod[]" value="1" $set[paym_1] />线下交易</label><label><input type="checkbox" name="paymethod[]" value="2" $set[paym_2] />支付宝</label></li>
+				<li>
+					<em>运费方式：</em>
+					<label class="mr10"><input type="radio" name="transport" value="0" onclick="showmethod(0);" $set[tspt_0] />卖家承担</label>
+					<label class="mr10"><input type="radio" name="transport" value="1" onclick="showmethod(1);" $set[tspt_1] />买家承担</label>
+				</li>
+				<li>
+					<em>&nbsp;</em>
+					<span style="display:none;" id="logistics">
+						<span class="mr10">平邮 <input type="text" class="input" name="mailfee" value="$set[mailfee]" style="width:20px;" /> 元</span>
+						<span class="mr10">快递 <input type="text" class="input" name="expressfee" value="$set[expressfee]" style="width:20px;" /> 元</span>
+						<span class="mr10">EMS <input type="text" class="input" name="emsfee" value="$set[emsfee]" style="width:20px;" /> 元</span>
+					</span>
+				</li>
+			</ul>
+		</div>
+		<div class="post_right">
+			<ul class="post_list">
+				<li>商品图片：</li>
+			</ul>
+			<input type="hidden" name="attachment_1" id="attachment_1" value="" />
+			<input type="hidden" name="" id="tradeattach" value="" />
+			<div id="post_thumb" class="post_thumb" style="background:#fff center center no-repeat;">
+				<a href="javascript:void(0)" id="proLink">上传图片</a>
+			</div>
+		</div>
+	</div>
+<script>
+//attachnum--;
+function showmethod(v) {
+	getObj('logistics').style.display = v == 1 ? '' : 'none';
+}
+showmethod('$set[transport]');
+
+//商品图片上传
+var productPicUpload=function(){
+	this.iframe=getObj("proUploadIframe");
+	this.file=getObj("proFileInput");
+	this.link=getObj("proLink");
+	this.thumb=getObj("post_thumb");
+	this.accept=["jpg","gif","png","jpeg"];
+}
+productPicUpload.prototype={
+	"resetPicPos":function(){
+		var self=this;
+		//先检查上传文件类型，如符合，触发表单提交
+		addEvent(this.file,"change",function(){
+			var path=this.value;
+			var rule=/.(jpg|gif|png|jpeg)$/.exec(path.toLowerCase());
+			if(rule){
+				this.parentNode.submit();
+				self.parse();
+				self.link.style.visibility="hidden";
+				self.thumb.style.backgroundImage="url(images/loading.gif)";
+			}else{
+				var acc=self.accept.join("、");
+				alert("只能上传"+acc+"格式图片");
+			}
+		});
+		this.reset();
+		setInterval(function(){
+			self.reset();
+		},500);
+	},
+	"reset":function(){
+		var dd=document.documentElement;
+		var db=document.body;
+		var stop=dd.scrollTop+db.scrollTop
+		var sleft=dd.scrollLeft+db.scrollLeft;
+		var bound=this.link.getBoundingClientRect()
+		var top=bound.top;
+		var left=bound.left;
+		this.file.style.left=left+sleft+"px";
+		this.file.style.top=top+stop+"px";
+	},
+	"proPicReview":function(path){
+		this.thumb.style.backgroundImage="url("+path+")";
+		this.link.style.visibility="visible";
+		this.link.innerHTML="重新上传";
+	},
+	"setform" : function(aid,path){
+		getObj("attachment_1").value = path;
+		getObj("tradeattach").name = "flashatt["+ aid +"][desc]";
+	},
+	"parse":function(){
+		var self=this;
+		var data=self.iframe.contentWindow.document.documentElement.textContent||self.iframe.contentWindow.document.documentElement.innerText;
+		if(data&&data.replace(/\s*/g,"")!=""){
+			if(!-[1,]){
+				self.iframe.contentWindow.document.body.innerText=""
+			}else{
+				self.iframe.contentWindow.document.documentElement.textContent="";
+			}
+			var rules = /<!\[CDATA\[([\s\S]+)\]\]>/.exec(data);
+			if (rules && rules[1]) data = rules[1];
+			var json=eval("("+data+")");
+			this.proPicReview(json.path);
+			this.setform(json.aid,json.attachurl);
+		}else{
+			setTimeout(function(){
+				self.parse();
+			},1000)
+		}
+	}
+}
+onReady(function(){
+	var goodsPicUploader = new productPicUpload();
+	goodsPicUploader.resetPicPos();
+})
+</script>
+<!--
+EOT;
+} elseif ($special == 5) {print <<<EOT
+-->
+	<!-- 辩论 -->
+	<div class="cc mb10 post_type">
+		<div class="post_left">
+			<ul class="post_list">
+				<li class="li_textarea"><em>正方观点：</em><textarea name="obtitle" $set[debateable]>$set[obtitle]</textarea></li>
+				<li class="li_textarea"><em>反方观点：</em><textarea name="retitle" $set[debateable]>$set[retitle]</textarea></li>
+			</ul>
+		</div>
+		<div class="post_right">
+			<ul class="post_list">
+				<li><em>裁判员：</em><input name="umpire" value="$set[umpire]" type="text" class="input" $set[debateable] /></li>
+				<li><em>辩论结束时间：</em><input name="endtime" value="$set[endtime]" id="endtime" onClick="javascript:ShowCalendar(this.id,1)" $set[debateable] type="text" class="input" /></li>
+			</ul>
+		</div>
+	</div>
+<!--
+EOT;
+}
+} else {
+print <<<EOT
+-->
+<style>
+.pp td{padding:5px 10px;}
+.p_lr_10{padding:0 6px;}
+</style>
+<table cellspacing="0" width="100%" style="table-layout:fixed;">
+<!--
+EOT;
+if ($special == '1') {print <<<EOT
+-->
+	<tbody>
+		<tr class="f_two pp"><td width="110"><b>投票限制条件:</b></td><td>&nbsp;</td></tr>
+		<tr class="pp">
+			<td>有效天数</td>
+			<td><input class="input" type="text" name="timelimit" value="$set[timelimit]" size="1" $set[voteable] tabindex="3"/><span style="padding-right:3em;">
+<!--
+EOT;
+if ($action == 'modify' && !$set['close']) {print <<<EOT
+-->
+		<input type="checkbox" name="vote_close" value="1" tabindex="4"/>结束投票
+<!--
+EOT;
+}print <<<EOT
+-->
+			</span>在&nbsp; <input type="text" class="input" maxlength="10" size="8" id="regdatelimit" name="regdatelimit" value="$set[regdatelimit]" $set[voteable] onClick="javascript:ShowCalendar(this.id)" tabindex="5"/> &nbsp;<span class="s2">之前注册用户</span> 方可投票
+			</td>
+		</tr>
+		<tr class="f_two pp">
+			<td>结果相关:</td>
+			<td>
+				<label class="mr10"><input type="checkbox" value="1" name="modifiable" $set[ifmodify] $set[voteable] tabindex="6"/>是否允许修改投票结果</label>
+				<label class="mr10"><input type="checkbox" value="1" name="previewable" $set[ifpreview] $set[voteable] tabindex="7"/>强制投票才能查看结果</label>
+			</td>
+		</tr>
+		<tr class="pp">
+			<td>积分限制:</td>
+			<td>
+<!--
+EOT;
+foreach ($credit->cType as $key => $value) {print <<<EOT
+-->
+				<input type="text" class="input mr5" size="1" name="creditlimit[$key]" value="{$set['ifcreditlimit'.$key]}" $set[voteable] tabindex="11"/><span class="mr10">$value</span>
+<!--
+EOT;
+}print <<<EOT
+-->
+			</td>
+		</tr>
+		<tr class="pp f_two">
+			<td>是否多选:</td>
+			<td><span style="padding-right:2em;"><input type="checkbox" value="1" name="multiplevote" $set[multi] $set[voteable] tabindex="8"/></span>&nbsp;最少&nbsp;<input class="input" maxlength="10" size="1" name="leastvotes" value="$set[leastvotes]" $set[voteable] tabindex="9"/>&nbsp;个，最多&nbsp;<input class="input" maxlength="10" size="1" name="mostvotes" value="$set[mostvotes]" $set[voteable] tabindex="10"/>&nbsp;个</td>
+		</tr>
+		<tr class="pp">
+			<td>发帖数限制:</td>
+			<td><input type="text" class="input" maxlength="10" size="1"  name="postnumlimit" value="$set[postnumlimit]" $set[voteable] tabindex="12"/> &nbsp;发帖数大于此设置方可投票</td>
+		</tr>
+	</tbody>
+	<tbody><tr class="pp f_two"><td>投票选项:</td>
+		<td id="voteoptions">
+<!--
+EOT;
+if ($action == 'modify') {
+foreach ($set['votearray'] as $key => $votes) {print <<<EOT
+-->
+			<input class="input" type="text" maxLength="60" name="vt_selarray[$key]" size="60" value="$votes[0]" $set[voteable] tabindex="13"/><br />
+<!--
+EOT;
+}print <<<EOT
+-->
+			<input class="input" type="text" maxLength="60" name="vt_selarray[]" size="60" value="" $set[voteable] tabindex="14"/> 新的投票项（留空忽略）<br />
+<!--
+EOT;
+} else {
+$db_selcount = (int) $db_selcount;
+print <<<EOT
+-->
+			选项：最多可填写{$db_selcount}个选项<br />
+			<span id="basevoteoption"><input class="input" type="text" style="margin-top:5px;" maxLength="60" name="vt_select[]" size="60" tabindex="15"/><a href="javascript:;" style="display:none;" onclick="deleteVoteOption(this);return false;"> 删除 </a><br /></span>
+<!--
+EOT;
+for ($i=0;$i<$db_selcount && $i <3;$i++) {
+print <<<EOT
+-->
+			<span><input class="input" type="text" style="margin-top:5px;" maxLength="60" name="vt_select[]" size="60" tabindex="15"/><a href="javascript:;" onclick="deleteVoteOption(this);return false;"> 删除 </a><br /></span>
+<!--
+EOT;
+}print <<<EOT
+--><p id="addVoteButton" class="s6"><a href="javascript:;" onclick="addVoteOption();return false;">增加一项</a></p>
+<!--
+EOT;
+}print <<<EOT
+-->
+		</td>
+	</tr></tbody>
+<script>
+var selCount = $db_selcount;
+	function deleteVoteOption(obj) {
+		delElement(obj.parentNode);
+	}
+
+	function addVoteOption() {
+		var totalSpanNum = getObj('voteoptions').getElementsByTagName('span');
+		if (totalSpanNum.length >= selCount) return false;
+		var source = getObj('basevoteoption');
+		var target = source.cloneNode(true);
+		var aTag = target.getElementsByTagName('a');
+		aTag[0].style.display = '';
+		target.firstChild.value = '';
+		target.removeAttribute('id');
+		getObj('voteoptions').insertBefore(target, getObj('addVoteButton'));
+	}
+</script>
+<!--
+EOT;
+} elseif ($special == '2') { print <<<EOT
+-->
+		<tr class="f_two pp">
+			<td width="110">活动标题:<span class="s1">*</span></td>
+			<td><input class="input input_wb" type="text" name="act_subject" value="$set[subject]" /></td>
+		</tr>
+		<tr class="pp">
+			<td>活动时间:<span class="s1">*</span></td>
+			<td><input class="input input_wa" type="text" name="act_starttime" id="starttime" value="$set[starttime]" onClick="javascript:ShowCalendar(this.id,1)" /><span class="p_lr_10">-</span><input class="input input_wa" type="text" name="act_endtime" id="endtime" value="$set[endtime]" onClick="javascript:ShowCalendar(this.id,1)" /></td>
+		</tr>
+		<tr class="f_two pp">
+			<td>报名截止日期:<span class="s1">*</span></td>
+			<td>
+				<input class="input input_wa" name="act_deadline" id="deadline" value="$set[deadline]" type="text" onClick="javascript:ShowCalendar(this.id,1)" />
+			</td>
+		</tr>
+		<tr class="pp">
+			<td>活动地点:</td>
+			<td><input class="input input_wb" type="text" name="act_location" value="$set[location]" /></td>
+		</tr>
+		<tr class="f_two pp">
+			<td>人数限制:</td>
+			<td><input class="input input_wa mr10" type="text" name="act_num" value="$set[num]" size="5" />&nbsp;人（不限制人数，请留空）</td>
+		</tr>
+		<tr class="pp">
+			<td>性别要求:</td>
+			<td>
+				<label class="mr10"><input name="act_sex" type="radio" value="0" $set[sel_0] />不限</label>
+				<label class="mr10"><input name="act_sex" type="radio" value="1" $set[sel_1] />男</label>
+				<label class="mr10"><input name="act_sex" type="radio" value="2" $set[sel_2] />女</label>
+			</td>
+		</tr>
+		<tr class="f_two pp">
+			<td>活动费用:</td>
+			<td><input class="input input_wa mr10" type="text" name="act_costs" size="8" value="$set[costs]" /> 元</td>
+		</tr>
+<!--
+EOT;
+} elseif ($special == '3' && $_G['allowreward']) {print <<<EOT
+-->
+	<tbody><tr class="f_two">
+		<td class="p10">
+		<p class="mb5"><span class="mr10 b">悬赏帖设置</span>
+<!--
+EOT;
+if ($action == 'modify') {print <<<EOT
+-->
+		<label><input type="checkbox" name="addreward" value="1" /> 追加悬赏 (延长时间)</label>
+<!--
+EOT;
+}print <<<EOT
+--></p>
+		<p class="mb5"><span class="mr10">最佳答案：</span><select id="p_credit" name="ctype[best]" onchange="showreward();" class="mr10 select_wa">$set[b_select]</select><input id="r_credit" name="bonus[best]" value="$postSpecial->b_val" class="input input_wc mr5" onchange="showreward();" /><span class="mr5">[最低{$postSpecial->b_val}个]</span></p>
+		<p><span class="mr10">热心助人：</span><select name="ctype[active]" class="mr10 select_wa">$set[a_select]</select><input name="bonus[active]" value="$postSpecial->a_val" class="input input_wc mr5" /><span class="s3 mr20">[最低{$postSpecial->a_val}个]</span>奖励给你指定的热心回复者。</p>
+		</td>
+	</tr></tbody>
+	<script>
+	var old_credit = getObj('r_credit').value;
+	function showreward(){
+		var credit  = getObj('r_credit').value;
+		var credit2 = credit*2;
+		var p_credit = getObj('p_credit');
+		var cname = p_credit.options[p_credit.selectedIndex].text;
+
+		if (credit > 0) {
+			old_credit = credit;
+			getObj('reward_info').innerHTML = '将扣除<span class="s3">' + credit2 + '</span>点' + cname + '，结束悬赏时，系统自动返回<span class="s3">' + credit + '</span>点' + cname;
+		} else {
+			getObj('r_credit').value = old_credit;
+		}
+	}
+	showreward();
+	</script>
+<!--
+EOT;
+} elseif ($special == '4') {print <<<EOT
+-->
+	<tr class="pp f_two">
+		<td width="110">商品名称:</td>
+		<td><input class="input input_wa mr10" name="goodsname" value="$set[name]" size="30" /> <select name="degree"><option value="0" $set[degree_0]>全新</option><option value="1" $set[degree_1]>二手</option></select></td>
+	</tr>
+	<tr class="pp f_two">
+		<td>商品图片:</td>
+		<td><input class="input input_wa" type="file" name="attachment_0" /></td>
+	</tr>
+	<tr class="pp">
+		<td>商品数量:</td>
+		<td><input type="text" class="input input_wa" name="goodsnum" value="$set[num]" size="8" /></td>
+	</tr>
+	<tr class="pp f_two">
+		<td>商品原价:</td>
+		<td><input type="text" class="input input_wa" name="price" value="$set[price]" size="8" /></td>
+	</tr>
+	<tr class="pp">
+		<td>商品现价:</td>
+		<td><input type="text" class="input input_wa" name="costprice" value="$set[costprice]" size="8" /></td>
+	</tr>
+	<tr class="pp f_two">
+		<td>所 在 地:</td>
+		<td><input type="text" class="input input_wa" name="locus" value="$set[locus]" size="30" /></td>
+	</tr>
+	<tr class="pp">
+		<td>运费方式:</td>
+		<td>
+			<label class="mr10"><input type="radio" name="transport" value="0" onclick="showmethod(0);" $set[tspt_0] />卖家承担</label>
+			<label class="mr10"><input type="radio" name="transport" value="1" onclick="showmethod(1);" $set[tspt_1] />买家承担</label>
+			<span style="display:none;" id="logistics">
+				<span class="mr10">平邮 <input type="text" class="input" name="mailfee" value="$set[mailfee]" size="4" /> 元</span>
+				<span class="mr10">快递 <input type="text" class="input" name="expressfee" value="$set[expressfee]" size="4" /> 元</span>
+				<span class="mr10">EMS <input type="text" class="input" name="emsfee" value="$set[emsfee]" size="4" /> 元</span>
+			</span>
+		</td>
+	</tr>
+	<tr class="pp f_two">
+		<td>收款方式：</td>
+		<td>
+			<input type="checkbox" name="paymethod[]" value="1" $set[paym_1] />线下交易
+			<input type="checkbox" name="paymethod[]" value="2" $set[paym_2] />支付宝
+		</td>
+	</tr>
+<script>
+//attachnum--;
+function showmethod(v) {
+	getObj('logistics').style.display = v == 1 ? '' : 'none';
+}
+showmethod('$set[transport]');
+</script>
+<!--
+EOT;
+} elseif ($special == '5') {print <<<EOT
+-->
+	<tbody>
+		<tr class="pp f_two"><td width="110">辩论结束时间:</td>
+			<td><input class="input input_wa" type="text" name="endtime" value="$set[endtime]" id="endtime" onClick="javascript:ShowCalendar(this.id,1)" size="20" $set[debateable] />
+			</td>
+		</tr>
+		<tr class="pp"><td>裁判:</td>
+		    <td><input class="input input_wa" type="text" name="umpire" value="$set[umpire]" $set[debateable] /></td>
+		</tr>
+		<tr class="pp f_two"><td>正方观点:</td>
+		    <td><input class="input input_wb" type="text" name="obtitle" value="$set[obtitle]" size="50" $set[debateable] /></td>
+		</tr>
+		<tr class="pp"><td>反方观点:</td>
+		    <td><input class="input input_wb" type="text" name="retitle" value="$set[retitle]" size="50" $set[debateable] /></td>
+		</tr>
+	</tbody>
+<!--
+EOT;
+}print <<<EOT
+-->
+</table>
+<!--
+EOT;
+}
+?>

@@ -1,0 +1,250 @@
+<!--<?php
+if ($action == 'buy') {print <<<EOT
+-->
+<style type="text/css">
+.read_buy .tr3 td,.read_buy .tr3 th{padding-left:10px;border-bottom:0;}
+</style>
+<div id="breadCrumb">
+<img src="$imgpath/$stylepath/thread/home.gif" class="breadHome" /><em class="breadEm"></em><a href="$db_bfn" title="$db_bbsname">$db_bbsname</a><em>&gt;</em>商品购买<em>&gt;</em><a href="read.php?tid=$tid">$trade[name]</a>
+</div>
+<form action="trade.php?action=buy" method="post">
+<input type="hidden" name="step" value="3" />
+<input type="hidden" name="tid" value="$tid" />
+<div class="t">
+<div class="h b" style="border-top:0;">确认商品交易</div>
+<table width="100%" class="read_buy vt">
+	<tr class="tr3">
+		<th style="width:100px">商品名称:</th>
+		<td class="s8"><span class="mr10">$trade[name]</span><a href="read.php?tid=$tid" class="s4"  target="_blank">[查看原帖]</a></td>
+	</tr>
+	<tr class="tr3 f_two">
+		<th>当前价格:</th>
+		<td>$trade[costprice]</td>
+	</tr>
+	<tr class="tr3">
+		<th>所 在 地:</th>
+		<td>$trade[locus]</td>
+	</tr>
+	<tr class="tr3 f_two">
+		<th>卖　　家:</th>
+		<td><a href="apps.php?q=article&a=goods&uid=$trade[uid]">$trade[username]</a></td>
+	</tr>
+	<tr class="tr3">
+		<th>收货地址:</th>
+		<td><input type="text" class="input input_wb" name="address" /></td>
+	</tr>
+	<tr class="tr3 f_two">
+		<th>邮政编码:</th>
+		<td><input type="text" class="input input_wa" name="zip" /></td>
+	</tr>
+	<tr class="tr3">
+		<th>收 货 人:</th>
+		<td><input type="text" class="input input_wa" name="consignee" /></td>
+	</tr>
+	<tr class="tr3 f_two">
+		<th>联系电话:</th>
+		<td><input type="text" class="input input_wa" name="tel" /></td>
+	</tr>
+	<tr class="tr3">
+		<th>购买数量:</th>
+		<td><input type="text" class="input input_wa" name="quantity" value="1" /></td>
+	</tr>
+<!--
+EOT;
+if ($trade['transport']) {print <<<EOT
+-->
+	<tr class="tr3 f_two">
+		<th>运送方式:</th>
+		<td>
+			<label class="mr20"><input type="radio" name="transport" value="1" checked/> 平邮:$trade[mailfee] 元</label>
+			<label class="mr20"><input type="radio" name="transport" value="2" /> 快递:$trade[expressfee] 元</label>
+			<label class="mr20"><input type="radio" name="transport" value="3" /> EMS：$trade[emsfee] 元</label>如果没有运费发生，您可以在拍下该商品后，要求卖家修改运费
+		</td>
+	</tr>
+<!--
+EOT;
+}print <<<EOT
+-->
+	<tr class="tr3">
+		<th>给卖家留言:</th>
+		<td><textarea name="descrip" class="textareaA"></textarea></td>
+	</tr>
+	<tr class="tr3">
+		<td>&nbsp;</td>
+		<td style="padding:10px 7px;"><span class="btn"><span><button type="submit">确认无误，购买</button></span></span></td>
+	</tr>
+</table>
+</div>
+</form>
+<!--
+EOT;
+} elseif ($action == 'order') {print <<<EOT
+-->
+<style type="text/css">
+.read_buy .tr3 td,.read_buy .tr3 th{padding-left:10px;border-bottom:0;}
+</style>
+<div id="breadCrumb">
+<img src="$imgpath/$stylepath/thread/home.gif" class="breadHome" /><em class="breadEm"></em><a href="$db_bfn" title="$db_bbsname">$db_bbsname</a><em>&gt;</em>订单详细信息
+</div>
+<div class="t">
+<div class="h b" style="border-top:0;">订单详细信息</div>
+<table width="100%" class="read_buy">
+	<tr class="tr3"><td width="100" class="f14 b">订单商品信息</td><td>&nbsp;</td></tr>
+	<tr class="tr3 f_two">
+		<th>商品名称:</th>
+		<td><a href="read.php?tid=$order[tid]">$order[subject]</a></td>
+	</tr>
+	<tr class="tr3">
+		<th>购买数量:</th>
+		<td>$order[quantity]</td>
+	</tr>
+	<tr class="tr3 f_two">
+		<th>商品单价:</th>
+		<td>$order[price]</td>
+	</tr>
+	<tr class="tr3">
+		<th>购买日期:</th>
+		<td>$order[buydate]</td>
+	</tr>
+	<tr class="tr3 f_two">
+		<th>卖　　家:</th>
+		<td><a href="apps.php?q=article&a=goods&uid=$order[uid]">$order[username]</a></td>
+	</tr>
+	<tr class="tr3">
+		<th>备　　注:</th>
+		<td>$order[descrip]</td>
+	</tr>
+	<tr class="tr3 f_two"><td class="f14 b">商品物流信息</td><td></td></tr>
+	<tr class="tr3">
+		<th>运费方式:</th>
+		<td>
+<!--
+EOT;
+if ($order['transport'] && $order['transportfee']) {
+$o_lang = array('1' => '平邮', '2' => '快递', '3' => 'EMS');
+print <<<EOT
+-->
+			{$o_lang[$order[transport]]} $order[transportfee]
+<!--
+EOT;
+} else {print <<<EOT
+-->
+			卖家承担
+<!--
+EOT;
+}print <<<EOT
+-->
+		</td>
+	</tr>
+	<tr class="tr3 f_two">
+		<th>收货地址:</th>
+		<td>$order[address]</td>
+	</tr>
+	<tr class="tr3">
+		<th>收 货 人:</th>
+		<td>$order[consignee]</td>
+	</tr>
+	<tr class="tr3 f_two">
+		<th>联系电话:</th>
+		<td>$order[tel]</td>
+	</tr>
+	<tr class="tr3"><td class="f14 b">总金额及支付</td><td></td></tr>
+	<tr class="tr3 f_two">
+		<th>总金额:</th>
+		<td>$order[price] * $order[quantity] + $order[transportfee] = $totalpay</td>
+	</tr>
+	<tr class="tr3 vt">
+		<th>交易状态:</th>
+		<td>
+<!--
+EOT;
+if ($order['ifpay'] == 4) {print <<<EOT
+-->
+			<div class="s1">交易失败</div>
+<!--
+EOT;
+} elseif ($order['ifpay'] == 3) {print <<<EOT
+-->
+			<div class="s3">交易完成</div>
+<!--
+EOT;
+} elseif ($order['ifpay'] == 2) {print <<<EOT
+-->
+			<div class="s2 mb5">卖家已发货，确认收货</div>
+<!--
+EOT;
+if ($order['buyer'] == $winduid) {
+if ($order['payment'] == 1) {print <<<EOT
+-->
+			<div style="padding-bottom:20px;"><!--卖家已发货，以下是发货信息:--><div style="border:1px solid #ccc;width:400px;padding:5px" class="mb15">$order[tradeinfo]<br />发货时间:$order[tradedate]</div>
+			<!--请于收到货后，确认收货<br /><br />-->
+				<form action="trade.php?action=get&oid=$oid" method="post">
+					<div><span class="btn"><span><button type="submit">确认收货</button></span></span></div>
+				</form>
+			</div>
+<!--
+EOT;
+} elseif ($order['payment'] == 2) {print <<<EOT
+-->
+			<div style="padding-bottom:20px;"><b>卖家已发货，请于收到货后，<a href="http://www.alipay.com">到支付宝确认收货</a></b><br /><br />
+				如果您的支付宝状态已经更改，但站点状态还没有修改，您也可以手动确认
+				<form action="trade.php?action=get&oid=$oid" method="post" onsubmit="if(confirm('确定收到货了吗?')){ return true;} else {return false;}">
+					<div><span class="btn"><span><button type="submit">确认收货</button></span></span></div>
+				</form>
+			</div>
+<!--
+EOT;
+}}} elseif ($order['ifpay'] == 1) {print <<<EOT
+-->
+			<div class="s4 mb5">买家已付款，等待卖家发货</div>
+<!--
+EOT;
+if ($order['seller'] == $winduid) {
+if ($order['payment'] == 1) {print <<<EOT
+-->
+			<div style="padding-bottom:20px;">
+			该买家使用线下交易方式付款，以下是付款信息:<div style="margin:5px 0;border:1px solid #ccc;width:400px;padding:5px">$order[tradeinfo]</div>
+				请核对信息后，尽快发货<br /><br />
+				<form action="trade.php?action=send&oid=$oid" method="post">
+					<p class="mb10">物流公司: <input type="text" name="logistics" class="input" /></p>
+					<p class="mb15">物流单号: <input type="text" name="orderid" class="input" /></p>
+					<div><span class="btn"><span><button type="submit">确认发货</button></span></span></div>
+				</form>
+			</div>
+<!--
+EOT;
+} elseif ($order['payment'] == 2) {print <<<EOT
+-->
+			<div>该买家使用支付宝线上付款，<a href="http://www.alipay.com">您可以马上发货，并到支付宝更新状态</a></div>
+<!--
+EOT;
+}}} elseif ($order['ifpay'] == 0) {print <<<EOT
+-->
+			<div class="s1 mb5">等待买家付款</div>
+<!--
+EOT;
+if ($winduid == $order['buyer']) {
+if ($order['paymethod'] & 1) {print <<<EOT
+-->
+			<div style="width:350px;float:left">线下交易 (请输入您的付款信息，以便卖家确认) <br />
+				<form action="trade.php?action=pay&oid=$oid&method=1" method="post">
+				<p class="mb15"><textarea name="tradeinfo" style="width:250px;height:50px"></textarea></p>
+				<div><span class="btn"><span><button type="submit">提 交</button></span></span></div>
+				</form>
+			</div>
+<!--
+EOT;
+}if ($order['paymethod'] & 2) {print <<<EOT
+-->
+			<div style="float:left">在线支付 <br /><a href="trade.php?action=pay&oid=$oid&method=2"><img src="$imgpath/post/alipay.gif" /></a></div>
+<!--
+EOT;
+}}}print <<<EOT
+-->
+		</td>
+	</tr>
+</table>
+</div>
+<!--
+EOT;
+}?>-->

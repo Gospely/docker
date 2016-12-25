@@ -1,0 +1,162 @@
+<!--<?php print <<<EOT
+--><!doctype html>
+<html>
+<head>
+<meta charset="$db_charset" />
+<title>{$db_bbsname} - powered by phpwind.net</title>
+<meta http-equiv="expires" content="0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache">
+<link rel="stylesheet" href="$imgpath/admin/admin_style.css?{$GLOBALS['wind_repair']}" />
+<script type="text/javascript" src="js/core/core.js"></script>
+<script type="text/javascript">
+var imgpath = '$imgpath';
+var db_bbsurl = '$db_bbsurl' ;
+//check used
+function showselect(type){
+	var selects = get_tags(document,'select');
+	for (i=0; i<selects.length; i++) {
+		selects[i].style.visibility = type;
+	}
+}
+function checkgroupset(chars){
+	if (!confirm("确定删除吗? 如果您删除了此用户组,请到站点缓存数据管理更新用户头衔缓冲!")) return false;
+	window.location.href = chars;return false;
+}
+function get_tags(parentobj,tag){
+	if (typeof parentobj.getElementsByTagName!='undefined') {
+		return parentobj.getElementsByTagName(tag);
+	} else if (parentobj.all && parentobj.all.tags) {
+		return parentobj.all.tags(tag);
+	} else {
+		return null;
+	}
+}
+//other function
+function atccheck(){
+	if(document.FORM.atc_title.value==''){
+		alert('标题为空');
+		document.FORM.atc_title.focus();
+		return false;
+	} else if(document.FORM.fid.value==''){
+		alert('没有选择文章所属分类');
+		document.FORM.fid.focus();
+		return false;
+	}
+	_submit();
+}
+function level_jump(admin_file){
+	var URL=document.mod.selectfid.options[document.mod.selectfid.selectedIndex].value;
+	location.href=admin_file+"?adminjob=level&action=editgroup&gid="+URL;
+}
+function ip_jump(name){
+	URL = eval('document.form1.' + name + '.options[document.form1.' + name + '.selectedIndex].value');
+	location.href=URL;
+}
+function pwJsCheck(_this,check,tagName){
+	try{
+		if (typeof tagName == 'undefined') tagName = "tr";
+		if (typeof check == 'undefined') {
+			if (typeof _this.checked == 'boolean') {
+				check = _this.checked;
+			} else {
+				check = false;
+			}
+		}
+		var o = _this.parentNode;
+		var i = 3;
+		while(i--){
+			if (o.nodeName.toLowerCase() == tagName) {
+				var className =  o.className.replace(/\s?td_bgC/ig, "");
+				if (check) {
+					className +=' td_bgC';
+				}
+				o.className = className;
+				break;
+			} else {
+				o = o.parentNode;
+			}
+		}
+	}catch(e){}
+}
+//Cookies Function
+function getCookie(name) {
+    var start = document.cookie.indexOf(name + '=');
+    var len = start + name.length + 1;
+    if ((!start) && (name != document.cookie.substring(0, name.length))) {
+        return null;
+    }
+    if (start==-1) {
+        return null;
+    }
+    var end = document.cookie.indexOf(';', len);
+    if (end == -1) {
+        end = document.cookie.length;
+    }
+    return unescape(document.cookie.substring(len,end));
+}
+function setCookie(name, value, expires, path, domain, secure) {
+	if (!expires) {
+		expires = new Date();
+		expires.setTime(expires.getTime()+31536000);
+	}
+	document.cookie = name + '=' + escape(value) +
+        ( (expires) ? ';expires=' + expires.toGMTString() : '') +
+        'path=' + ( (path) ? path : '/') +
+        ( (domain)  ? ';domain=' + domain : '') +
+        ( (secure)  ? ';secure' : '');
+}
+
+function elementBind(type,id,stylename,csstext){
+	var element = document.createElement(type);
+	if (id) {
+		element.id = id;
+	}
+	if (typeof(stylename) == 'string') {
+		element.className = stylename;
+	}
+	if (typeof(csstext) == 'string') {
+		element.style.cssText = csstext;
+	}
+	return element;
+}
+function addChild(parent,type,id,stylename,csstext){
+	parent = objCheck(parent);
+	var child = elementBind(type,id,stylename,csstext);
+	parent.appendChild(child);
+	return child;
+}
+
+function delElement(id){
+	id = objCheck(id);
+	id.parentNode.removeChild(id);
+}
+function objCheck(obj) {
+	if (typeof(obj)=='string') {
+		obj	= getObj(obj);
+	}
+	return obj;
+}
+document.onkeydown = function(e){
+	var e = is_ie ? window.event: e;
+	if ( e.keyCode==116) {
+		window.location.reload();
+		if (is_ie) {
+			e.keyCode = 0;
+       		e.cancelBubble = true;
+		}
+		return false;
+	}
+}
+
+function openNewUrl(id,name,url){
+	parent.PW.Dialog({
+		'id': id,
+		'name': name,
+		'url': url
+	}).loadIframe(url);
+}
+</script>
+<!--
+EOT;
+?>

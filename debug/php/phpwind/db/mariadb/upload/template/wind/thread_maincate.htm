@@ -1,0 +1,225 @@
+<!--<?php 
+if($threaddb){
+print <<<EOT
+-->
+<table width="100%" class="z">
+	<tbody id="threadlist">
+	<tr class="tr2">
+		<td class="icon" width="26" style="padding:0;">&nbsp;</td>
+		<td>文章</td>
+<!--
+EOT;
+foreach ($fielddb as $key => $value) {
+if(!$value['threadshow']) continue;
+print<<<EOT
+-->
+		<td class="tal">$value[name]</td>
+<!--
+EOT;
+}print<<<EOT
+-->
+	</tr>
+<!--
+EOT;
+$tpc_topped=0;
+$searchname && $target= '_blank';
+foreach($threaddb as $key => $thread){
+$thread['postdate'] = get_date($thread['postdate'],'Y-m-d');
+$thread['lstptime'] = get_date($thread['lastpost']);
+print <<<EOT
+-->
+	<tr class="tr3">
+		<td class="icon tar" width="30">
+<!--
+EOT;
+if($thread[topped]==4){print <<<EOT
+-->
+	<a href="read.php?tid={$thread[tid]}" target="_blank">
+		<img src="$imgpath/pwicon/headtopic_$thread[topped].gif" align="absmiddle" alt="置顶帖" title="置顶帖"/>
+	</a>		
+<!--
+EOT;
+}elseif($thread[topped]){print <<<EOT
+-->
+	<a href="read.php?tid={$thread[tid]}" target="_blank">
+		<img src="$imgpath/$stylepath/file/headtopic_$thread[topped].gif" align="absmiddle" alt="置顶帖" title="置顶帖"/>
+	</a>
+<!--
+EOT;
+}else{print <<<EOT
+-->
+	<a title="$tooltip" href="$thread[tpcurl]" target="_blank">$thread[status]</a>		
+<!--
+EOT;
+}print <<<EOT
+-->
+	</td>
+	<td class="subject f14" id="td_$thread[tid]">
+<!--
+EOT;
+if($thread[digest]){print <<<EOT
+-->
+			<img class="fr" src="$imgpath/$stylepath/file/digest_$thread[digest].gif" align="absmiddle" style="margin-top:4px;" title="精华帖" />
+<!--
+EOT;
+}if($managecheck){
+if ($thread['fid'] == $fid) {
+	$thread['adminbox'] = "<input type=\"checkbox\" class=\"adminbox\" autocomplete=\"off\" name=\"tidarray[]\" id=tid_{$thread[tid]} value=\"$thread[tid]\" onclick=\"postManage.show('postbatch','a_ajax_{$thread[tid]}')\" />";
+} else {
+	$thread['adminbox'] = "";
+}
+print <<<EOT
+-->
+	$thread[adminbox]
+<!--
+EOT;
+}if($thread[toolinfo]){print <<<EOT
+-->
+    	<span class="f14 s3">[$thread[toolinfo]]</span>
+<!--
+EOT;
+}print <<<EOT
+-->
+			$thread[useriocn]
+<!--
+EOT;
+if($forumset['addtpctype'] && $t_db[$thread['type']] && $thread['fid']==$fid){
+if ($upid = $t_db[$thread['type']]['upid']) {print <<<EOT
+-->
+			<a href="thread.php?fid=$fid&type=$upid" class="f14">[{$t_db[$upid][name]}]</a>
+<!--
+EOT;
+}print <<<EOT
+-->
+			<a href="thread.php?fid=$fid&type=$thread[type]" class="f14">[{$t_db[$thread[type]][name]}]</a>
+<!--
+EOT;
+}if($thread['state'] == 0 && $thread['rewcredit'] > 0){print <<<EOT
+-->
+			<span class="s1 subject"> &#8212; 悬赏金额$thread[rewcredit] &#8212; </span>
+<!--
+EOT;
+}print <<<EOT
+-->
+			<a href="$thread[tpcurl]" id="a_ajax_$thread[tid]" target="$target" class="f14">$thread[subject]</a>&nbsp; $thread[ifmark] $thread[titleadd]
+<!--
+EOT;
+if(isset($thread['colony'])){print <<<EOT
+-->
+			<span class="gray w">[来自群：<a href="apps.php?q=group&cyid={$thread[colony][cyid]}">{$thread[colony][cname]}</a>]</span>
+<!--
+EOT;
+}if($timestamp-$thread[lastpost]<=$db_newtime){print <<<EOT
+-->
+			<img src="$imgpath/$stylepath/file/new.gif" align="absmiddle" title="新帖" />
+<!--
+EOT;
+}if($forumset['inspect'] && $thread['inspect']){print <<<EOT
+-->
+			<span class="w"><font color="red">[{$thread[inspect][1]} 阅至 {$thread[inspect][0]}楼]</font></span>
+<!--
+EOT;
+}if($thread[ispage]){print <<<EOT
+-->
+			<span class="w">$thread[ispage]</span>
+<!--
+EOT;
+}print <<<EOT
+-->
+	</td>
+<!--
+EOT;
+foreach($threadshowfield as $key => $value){
+$value[fieldvalue] = $thread[topic][$value[fieldname]];
+$value['rules'] && $value['rules'] = unserialize($value['rules']);
+if ($value['type'] == 'radio') {
+	$newradio = array();
+	foreach($value['rules'] as $rk => $rv){
+		list($rv_value,$rv_name) = explode("=",$rv);
+		$newradio[$rv_value] = $rv_name;
+	}
+	$topicvalue = "{$newradio[$value[fieldvalue]]}";
+
+} elseif ($value['type'] == 'checkbox') {
+	$newcheckbox = array();
+	foreach($value['rules'] as $ck => $cv){
+		list($cv_value,$cv_name) = explode("=",$cv);
+		$newcheckbox[$cv_value] = $cv_name;
+	}
+	$topicvalues = '';
+	foreach (explode(",",$value['fieldvalue']) as $value) {
+		if ($value) {
+			$topicvalues .= $topicvalues ? ",".$newcheckbox[$value] : $newcheckbox[$value];
+		}
+	}
+	$topicvalue = $topicvalues;
+
+} elseif ($value['type'] == 'select') {
+	$newselect = array();
+	foreach($value['rules'] as $sk => $sv){
+		list($sv_value,$sv_name) = explode("=",$sv);
+		$newselect[$sv_value] = $sv_name;
+	}
+	$topicvalue = "{$newselect[$value[fieldvalue]]}";
+} elseif ($value['type'] == 'url') {
+	$topicvalue = "<a href=\"$value[fieldvalue]\" target=\"_blank\">$value[fieldvalue]</a>";
+} elseif ($value['type'] == 'img') {
+	$topicvalue = "<img src=\"$value[fieldvalue]\">";
+} elseif ($value['type'] == 'calendar') {
+	$topicvalue = get_date($value['fieldvalue'],'Y-n-d');
+} else {
+	$topicvalue = "$value[fieldvalue]";
+}
+if ($value['fieldname'] == 'limitnum' && !$value[fieldvalue]) {
+	$topicvalue = '不限制';
+}
+print<<<EOT
+-->
+	<td class="tal">$topicvalue</td>
+<!--
+EOT;
+}print<<<EOT
+-->
+	</tr>  
+<!--
+EOT;
+}
+print <<<EOT
+-->
+	</tbody>
+</table>
+<!-- 
+EOT;
+}else{
+print <<<EOT
+-->
+<div class="tac f14 p10">暂时没有内容</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+<script>
+function delload(){
+var objTrs = getElementsByClassName('tr3 t_one',getObj('threadlist'));
+var mover =	 function (){
+	var delObj = getElementsByClassName('gray w',this);
+	if(delObj.length>0){
+		delObj[0].style.display='';
+	}
+};
+var mout = function (){
+	var delObj = getElementsByClassName('gray w',this);
+	if(delObj.length>0){
+		delObj[0].style.display='none';
+	}
+};
+for (var i=0,l=objTrs.length;i<l;i++ ){
+	objTrs[i].onmouseover = mover;
+	objTrs[i].onmouseout = mout;
+}
+}
+window.onReady(delload);
+</script>
+<!--
+EOT;
+?>

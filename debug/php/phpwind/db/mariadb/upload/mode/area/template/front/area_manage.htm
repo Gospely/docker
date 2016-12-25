@@ -1,0 +1,230 @@
+<!--<?php
+print <<<EOT
+--><!doctype html>
+<html>
+<head>
+<meta charset="$db_charset" />
+<base id="headbase" href="$db_bbsurl/" />
+<link rel="stylesheet" href="images/pw_core.css?{$GLOBALS['wind_repair']}" />
+<link rel="stylesheet" href="images/pwmanage.css?{$GLOBALS['wind_repair']}" />
+<style>
+htm,body{overflow:hidden;height:500px;width:100%;}
+html {font-size:12px;}
+body {line-height: 1.5;}
+.lh_22{line-height:22px;height:22px;overflow:hidden;}
+a{color:#336699;text-decoration:none}
+a:hover{color:#ff5500;text-decoration:none}
+</style>
+<script type="text/javascript" src="js/core/core.js"></script>
+</head>
+<body>
+<!--
+EOT;
+if (!in_array($action,array('pushto','recommend','success'))) {
+list($defaultCurrent, $verifyCurrent, $editconfigCurrent, $edittplCurrent) = array(
+	($action == '' ? 'class="current"' : ''),
+	($action == 'verify' ? 'class="current"' : ''),
+);
+
+print <<<EOT
+-->
+    <div class="pwC_nav_a">
+			<span class="fr">
+<!--
+EOT;
+if($hasattr){
+print <<<EOT
+-->
+            <a href="$baseUrl&action=editconfig" class="mr10">设置模块属性</a>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+<!--
+EOT;
+if($hasedit){
+print <<<EOT
+-->
+            <a href="$baseUrl&action=edittpl" class="mr10">编辑模块代码</a>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+			</span>
+        <ul class="cc">
+            <li $defaultCurrent><a href="$baseUrl">推送内容管理</a></li>
+<!--
+EOT;
+if($invokeInfo[ifverify]){
+print <<<EOT
+-->
+            <li $verifyCurrent><a href="$baseUrl&action=verify">待审核内容</a></li>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+<!--
+EOT;
+if($action=='add' || $action=='edit'){
+print <<<EOT
+-->
+            <li class="current"><a href="javascript:;">{$title}推送内容</a></li>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+<!-- 
+EOT;
+if($action!='add' && $invokeInfo[pieces]){
+print <<<EOT
+-->         
+            <li class="none"><a href="$baseUrl&action=add" class="s2">添加推送内容</a></li>
+<!-- 
+EOT;
+}
+print <<<EOT
+-->
+        </ul>
+    </div>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+<!--
+EOT;
+if(!$invokeInfo[pieces] && !in_array($action,array('editconfig','edittpl','pushto','recommend','success'))){
+print <<<EOT
+-->
+<div class="pwC_content_a">
+    <div class="admin_table">
+       	<table width="100%" cellpadding="0" cellspacing="0">
+           	<tr class="tr1 vt">
+         		<td class="td2"><font color="red">该模块为html代码模块，请直接在“编辑模块代码”中编辑内容。</font></td>
+            </tr>
+        </table>
+	</div>
+</div>
+<!--
+EOT;
+} else {
+print <<<EOT
+-->
+EOT;
+	require_once manageActionView($action);
+print <<<EOT
+<!--
+EOT;
+}
+print <<<EOT
+-->
+</body></html>
+<!--
+EOT;
+if(in_array($action,array("pushto","edit","add","recommend"))){
+print <<<EOT
+-->
+<script type="text/javascript" src="js/portal.js"></script>
+<script type="text/javascript">
+	var initsubinvoke = '{$subinvoke}';
+	var selid = '$selid';
+	var ifpush = '$ifpush';
+	var imgpath = '$imgpath';
+	var pushdataid = '$pushdataid';
+	var ctop='0px';
+	var c=null;
+	onReady(function(){
+		initPortal();
+	})
+	function addPingFen() {
+		if (getObj('pingfen').getElementsByTagName('tr').length>4) {
+			alert('积分奖励类型不能超过5种');
+			return false;
+		}
+		var nodes = getObj('clonetr').getElementsByTagName('tr');
+		clonenode	= nodes[0].cloneNode(true);
+		getObj('pingfen').appendChild(clonenode);
+	}
+	function delThisTr(id) {
+		var temp = objCheck(id);
+		while (temp) {
+			if (temp.tagName=='tr' || temp.tagName=='TR') {
+				delElement(temp);
+				return true;
+			}
+			temp = temp.parentNode;
+		}
+	}
+	function submitSucces() {
+		var text = ajax.request.responseText;
+		if (text=='success') {
+			showDialog('success','操作成功!',2);
+			setTimeout(function () {
+				parent.closep();
+			},2000);
+		} else {
+			showDialog('success',text);
+		}
+	}
+	function getCurrentDatePos() {
+		c = getObj('Calendar');
+		ctop=parseInt(c.style.top)+getObj('scrollCtn').scrollTop+20+'px';
+	}
+	function moveCal(target){
+		if(c != null) {
+			c.style.top=(parseInt(ctop)-target.scrollTop-20)+'px';
+		}
+	}
+	function countlen(element,num) {
+		var temp = strlen(element.value);
+		if (temp>num){
+			alert('超过字数限制');
+			element.value = substr(element.value,num);
+		}
+		return true;
+	}
+	function checktitlelength(num,titleid,wordid){
+ 		var titleLength = num;
+		setTimeout(function(){
+		var l = strlen(getObj(titleid).value);
+		if(l<titleLength)
+		{
+			getObj(wordid).innerHTML='剩余'+(titleLength-l)+'个字节';
+			getObj(wordid).style.backgroundColor='#fffeed';
+			getObj(wordid).style.display='inline';
+		}
+		else if(l==titleLength)
+		{
+			getObj(wordid).innerHTML='已经达到最大字数限制';
+			getObj(wordid).style.backgroundColor='#ffd9d9';
+			getObj(wordid).style.display='inline';
+		}
+		else if(l>=titleLength)
+		{
+			getObj(wordid).innerHTML='已超出最大长度限制！';
+			getObj(wordid).style.backgroundColor='#ff9999';
+			getObj(wordid).style.display='inline';
+			getObj(titleid).value = substr(getObj(titleid).value,titleLength);
+		}
+		else
+			getObj(wordid).style.display='none';
+		},100);
+	}
+</script>
+<script type="text/javascript" src="js/global.js"></script>
+<script type="text/javascript" src="js/pw_ajax.js"></script>
+<script type="text/javascript" src="js/date.js"></script>
+<script type="text/javascript" src="js/color_picker.js"></script>
+<script type="text/javascript" src="mode/area/js/imagetype.js"></script>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+<!--
+EOT;
+?>-->

@@ -1,0 +1,54 @@
+<!--<?php
+$imageConfigTabs = array();
+$winddb['uploadtime'] < $tdtime && $winddb['uploadnum'] = 0;
+($db_allowupload && $_G['allowupload'] && (!$_G['allownum'] || $winddb['uploadnum'] < $_G['allownum'])) && $imageConfigTabs[] = 'local';
+($db_phopen && $winduid) && $imageConfigTabs[] = 'album';
+$imageConfigTabs[] = 'network';
+$imageConfigTabs = "'" . implode("','", $imageConfigTabs) . "'";
+//max attachnum
+$photoBtn = ($db_allowupload && $_G['allowupload']) ? ' photoBtn' : '';
+$musicBtn = $_G['allowmusic'] ? ' musicBtn' : '';
+$videoBtn = $_G['allowvideo'] ? ' videoBtn' : '';
+$uploadedNum = $winddb['uploadtime'] < $tdtime ? 0 : $winddb['uploadnum'];
+if ($_G['allownum'] > 0 && $_G['allownum'] - $uploadedNum<$db_attachnum){
+	$maxAttachnum = $_G['allownum'] - $uploadedNum;
+} else {
+	$maxAttachnum = $db_attachnum;
+}
+print <<<EOT
+-->
+<link rel="stylesheet" href="js/breeze/editor/style/style.css?{$GLOBALS['wind_repair']}" />
+<textarea id="textarea" name="atc_content" class="B_textarea" tabindex="200">{$atc_content}</textarea>
+<script src="$db_htmdir/js/face.js"></script>
+<script>var BREEZE_BASE_PATH = getBaseUrl() + 'js/breeze/';</script>
+<script src="js/breeze/core/base.js"></script>
+<script type="text/javascript">
+var attachConfig = {
+		'attachnum' : parseInt('$maxAttachnum'),
+		'type' : 'diary',
+		'list' : {{$attach}}
+	},
+	imageConfig = {
+		tabs : [$imageConfigTabs],
+		url : 'pweditor.php?action=image',
+		filetype : $imageAllow
+	},
+	charset = '$db_charset',
+	editor,
+	toolbar = [
+		'fontSelector sizeSelector br boldIcon italicIcon underlineIcon strikethroughIcon foreColor backColor removeformat',
+		'leftIcon centerIcon rightIcon pgformatIcon br olIcon ulIcon indentIcon outdentIcon',
+		'hrIcon quoteIcon codeIcon linkIcon br unlinkIcon tableIcon undoIcon redoIcon',
+		'faceBtn{$photoBtn}{$musicBtn}{$videoBtn}',
+		'musicIcon'
+	],
+	mini = 'fontSelector sizeSelector boldIcon italicIcon underlineIcon foreColor backColor linkIcon leftIcon centerIcon rightIcon faceBtn photoBtn fileBtn musicBtn videoBtn';
+onReady(function(){
+	B.require('editor.editor', 'editor.ubb', function(B){
+		editor = B.editor(B.$('textarea'), toolbar, mini, {'currentMode' : FetchCookie('editmode') == 1 ? 'UBB' : 'default', 'isSaveMode' : true});
+	});
+})	
+</script>
+<!--
+EOT;
+?>

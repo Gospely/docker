@@ -1,0 +1,1466 @@
+<!--<?php
+print <<<EOT
+-->
+<!--
+EOT;
+if((!$db_toolbar || $_COOKIE['toolbarhide']) && $pwForumList){print <<<EOT
+-->
+<div id="menu_forumlist" style="display:none;">
+	<div class="sbar-box-a" style="width:700px;">
+		<div class="sbar-title" style="cursor:pointer" onclick="try{pw_bottom.hiddenTab();read.close();}catch(e){read.close();}">
+				<span class="adel">隐藏</span>
+				<span id="title_forumlist" class="b">快速跳转</span>
+		</div>
+		<div class="sbar-box-b">
+			<div class="forum-list-popout">
+<!--
+EOT;
+foreach($pwForumList as $key=>$value){print <<<EOT
+-->
+			<dl class="cc">
+				<dt><a href="index.php?cateid=$key">$value[name]</a></dt>
+				<dd class="cc">
+<!--
+EOT;
+foreach($value['child'] as $k=>$v){print <<<EOT
+-->
+					<a href="thread.php?fid=$k" onclick="return pwForumList(true,gIsPost,$k);"><span>$v</span></a>
+<!--
+EOT;
+}print <<<EOT
+-->
+				</dd>
+			</dl>
+<!--
+EOT;
+}print <<<EOT
+-->
+			</div>
+		</div>
+	</div>
+</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+<div id="breadCrumb">$msg_guide<!--
+EOT;
+if($action == 'modify'){print <<<EOT
+-->
+<em>&gt;</em>编辑帖子
+<!--
+EOT;
+}elseif($action == 'reply'){print <<<EOT
+-->
+<em>&gt;</em>发表回复
+<!--
+EOT;
+}else{print <<<EOT
+-->
+<em>&gt;</em>发表帖子
+<!--
+EOT;
+}
+if ($special) {
+	${"specialClass_$special"} = ' class="current"'; 
+}else{
+	$commonClass = ' class="current"'; 
+}
+print <<<EOT
+-->
+</div>
+			
+					
+<div class="mb10">
+<form method="post" id="mainForm" name="FORM" action="post.php?fid=$fid" enctype = "multipart/form-data" onsubmit="return checkpost(document.FORM);">
+<input type="hidden" value="$magicname" name="magicname"/>
+<input type="hidden" value="$magicid" name="magicid"/>
+<input type="hidden" name="verify" value="$verifyhash" />
+<input type="hidden" name="cyid" value="$cyid" />
+<input type="hidden" name="ajax" value="1" />
+<input type="hidden" name="iscontinue" value="0" />
+<script type="text/javascript">
+var stylepath = '$stylepath';
+function post_set() {
+	var ishide = getObj('post_set_button').className == 'post_more' ? 1 : 0;
+	getObj('post_set_button').className = ishide ? 'post_more post_upmore' : 'post_more';
+	getObj('post_set_box').style.display = ishide ? '' : 'none';
+	SetCookie('post_set',ishide);
+	event && (event.returnValue = false);
+}
+</script>
+<div class="post_tab">
+	<a href="profile.php?action=permission&fid=$fid" title="查看您在本版块的权限" target="_blank" class="fr" style="margin-top:8px;">版块权限查看</a>
+	<ul id="tabTypeHead">
+<!--
+EOT;
+if($action == 'modify'){print <<<EOT
+-->
+<li$commonClass><a href="javascript:" >编辑帖子</a></li><!--
+EOT;
+}elseif($action == 'reply'){print <<<EOT
+-->
+<li$commonClass><a href="javascript:" >发表回复</a></li><!--
+EOT;
+}elseif($foruminfo['allowtype'] & 1 && $_G['allowpost']){
+$postUrl = "post.php?fid=$fid";
+$modelid && $postUrl = $postUrl."&modelid=$modelid";
+print <<<EOT
+-->
+<li$commonClass><a href="{$postUrl}#breadCrumb" hidefocus="true">发表主题</a></li>
+<!--
+EOT;
+} else {
+print <<<EOT
+--><li$commonClass><a href="javascript:">发表主题</a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--
+EOT;
+if (!$modelid && !in_array($action,array('modify','reply'))){
+if($foruminfo['allowtype'] & 2 && $_G[allownewvote]){print <<<EOT
+-->
+		<li$specialClass_1><a href="post.php?fid=$fid&special=1#breadCrumb" hidefocus="true">发起投票</a></li>
+<!--
+EOT;
+}if($foruminfo['allowtype'] & 8 && $_G['allowreward']){print<<<EOT
+-->
+		<li$specialClass_3><a href="post.php?fid=$fid&special=3#breadCrumb" hidefocus="true">发起悬赏</a></li>
+<!--
+EOT;
+}if($foruminfo['allowtype'] & 16 && $_G['allowgoods']){print <<<EOT
+-->
+		<li$specialClass_4><a href="post.php?fid=$fid&special=4#breadCrumb" hidefocus="true">发布商品</a></li>
+<!--
+EOT;
+}if($foruminfo['allowtype'] & 32 && $_G['allowdebate']){print <<<EOT
+-->
+		<li$specialClass_5><a href="post.php?fid=$fid&special=5#breadCrumb" hidefocus="true">发起辩论</a></li>
+<!--
+EOT;
+}
+}
+print <<<EOT
+-->
+	</ul>
+</div>
+		<div id="tabTypeBodys">
+          <div class="cc mb10">
+<!--
+EOT;
+if ($article == '0' && (($t_per>0 || $pwpost->admincheck) && $t_db && !$theSpecialFlag)) {print <<<EOT
+-->
+                <div class="menu_select" id="td_p_type">
+                    <div id="p_type_v" onclick="showPtypeSelect();">选择分类</div>
+                    <ul id="menu_p_type" style="max-height:300px;overflow:hidden;overflow-y:auto;min-width:82px;">
+<!--
+EOT;
+if (!$db_forcetype) {
+print <<<EOT
+-->
+                        <li onclick="selectPtype(0)">无</li>
+<!--
+EOT;
+}
+$t_subtypedb = array();
+foreach ($t_db as $key => $value) {
+	
+if ($value['upid'] == 0) {
+	$ttypeHtml .= $ttypeHtml ? '' : '<select id="pop_type" class="mr5" onchange="getSubType(this.value)">';
+	$ttypeHtml .= "<option value=\"$value[id]\">$value[name]</option>";
+print <<<EOT
+-->
+                        <li onclick="selectPtype('$key')">$value[name]</li>
+<!--
+EOT;
+} else {
+	$t_subtypedb[$value['upid']][$value['id']] = strip_tags($value['name']);
+	$hasSubType = true;
+	$tsubtypeHtml = '<select id="pop_sub_type" class="mr5"><option value="">不分类</option></select>';
+}
+	
+}
+$t_subtypedb = pwJsonEncode($t_subtypedb);
+$ttypeHtml && $ttypeHtml .= '</select>';
+print <<<EOT
+-->
+                    </ul>
+                </div>
+                <div class="menu_select" id="td_p_sub_type" style="display:none">
+                    <div id="p_sub_type_v" onclick="showPsubtypeSelect();">选择分类</div>
+                    <ul id="menu_p_sub_type" style="max-height:300px;overflow:hidden;overflow-y:auto;width:auto;"></ul>
+                </div>
+<input type="hidden" name="p_type" value="" /><input type="hidden" name="p_sub_type" value="" />
+<script>
+(function($) {
+var t_db = JSONParse('$tdbJson');
+var t1,t2 = null;
+var isforce = '$db_forcetype';
+getObj('menu_p_type').onmouseout = function() {t1 = setTimeout(closePtypeSelect,100);}
+getObj('menu_p_type').onmouseover = function() {clearTimeout(t1);}
+getObj('menu_p_sub_type').onmouseout = function() {t2 = setTimeout(closePsubtypeSelect,100);}
+getObj('menu_p_sub_type').onmouseover = function() {clearTimeout(t2);}
+var vH=getObj('p_type_v').offsetWidth;
+var mH=getObj('menu_p_type').offsetWidth;
+//alert(vH+":"+mH)
+if(vH<=mH){
+	getObj('p_type_v').style.width = getObj('menu_p_type').offsetWidth - 27 + 'px';
+}
+
+
+showPtypeSelect = function() {
+	var ulDefaultWidth=getObj('menu_p_type').offsetWidth-2;
+	delPtypeSelectLi();
+    if (getObj('menu_p_type').className != 'hover') {
+			getObj('menu_p_type').style.width=ulDefaultWidth+'px';
+        	getObj('menu_p_type').className = 'hover';
+    } else {
+        closePtypeSelect();
+    }
+}
+showPsubtypeSelect = function() {
+	var vH_sub=getObj('p_sub_type_v').offsetWidth;
+	var mH_sub=getObj('menu_p_sub_type').offsetWidth;
+	if(vH_sub<=mH_sub){
+		getObj('p_sub_type_v').style.width = getObj('menu_p_sub_type').offsetWidth - 27 + 'px';
+	}
+	var ulsubDefaultWidth=getObj('menu_p_sub_type').offsetWidth-2;
+	delPsubtypeSelectLi();
+    if (getObj('menu_p_sub_type').className != 'hover') {
+		getObj('menu_p_sub_type').style.width =ulsubDefaultWidth+'px';
+        getObj('menu_p_sub_type').className = 'hover';
+    } else {
+        closePsubtypeSelect();
+    }
+}
+var delPtypeSelectLi = function(){
+	var list = getObj('menu_p_type').children;
+	var selectText = getObj('p_type_v').innerHTML;
+	if(list.length<=1){
+		return false;
+	}
+	for(var i =0;i<list.length;i++){
+		if(list[i].innerHTML == selectText){
+			list[i].style.display = 'none';
+		}else{
+			list[i].style.display = '';
+		}
+	}
+}
+var delPsubtypeSelectLi = function(){
+	var list = getObj('menu_p_sub_type').children;
+	var selectText = getObj('p_sub_type_v').innerHTML;
+	if(list.length<=1){
+		return false;
+	}
+	for(var i =0;i<list.length;i++){
+		if(list[i].innerHTML == selectText){
+			list[i].style.display = 'none';
+		}else{
+			list[i].style.display = '';
+		}
+	}
+}
+closePtypeSelect = function() {
+    getObj('menu_p_type').className = '';
+    var v = document.FORM.p_type.value;
+    getObj('p_type_v').innerHTML = typeof t_db[v] == 'undefined' ? '选择分类' : t_db[v]['name'];
+}
+closePsubtypeSelect = function() {
+   getObj('menu_p_sub_type').className = '';
+    var v = document.FORM.p_sub_type.value;
+	getObj('p_sub_type_v').innerHTML = typeof t_db[v] == 'undefined' ? '选择分类' : t_db[v]['name'];
+}
+selectPtype = function(v) {
+    if (typeof t_db[v] == 'undefined') {
+        document.FORM.p_type.value = 0;
+		getObj('td_p_sub_type').style.display = 'none';
+        selectPsubtype(-1);
+    } else {
+        document.FORM.p_type.value = v;
+        if (typeof t_db[v]['sub'] != 'undefined') {
+            getObj('td_p_sub_type').style.display = '';
+            var sub = t_db[v]['sub'];
+            var html = '';
+            if (isforce == 0) {
+            	html = '<li onclick="selectPsubtype(0)">选择分类</li>';
+            }
+            for (var i = 0; i < sub.length; i++) {
+                html += "<li onclick=\"selectPsubtype('" + sub[i] + "')\">" + t_db[sub[i]]['name'] + '</li>';
+            }
+            getObj('menu_p_sub_type').innerHTML = html;
+            showPsubtypeSelect();
+			if (isforce == 0) {
+				selectPsubtype(0);
+			} else {
+             	selectPsubtype(sub[0]);
+			}
+        } else {
+            getObj('td_p_sub_type').style.display = 'none';
+            selectPsubtype(-1);
+        }
+    }
+    closePtypeSelect();
+    try{event.cancelBubble = true;}catch(e){}
+}
+selectPsubtype = function (v) {
+    document.FORM.p_sub_type.value = typeof t_db[v] == 'undefined' ? 0 : v;
+   	closePsubtypeSelect();
+    try{event.cancelBubble = true;}catch(e){}
+}
+showPtype = function(v) {
+    if (typeof t_db[v] != 'undefined') {
+        if (t_db[v]['upid'] == '0') {
+            selectPtype(v);
+        } else {
+            selectPtype(t_db[v]['upid']);
+            selectPsubtype(v);
+        }
+    }
+}
+})(getObj);
+function getSubType(id){
+	var selobj = getObj('pop_sub_type');
+	if (typeof(selobj) == 'undefined' || !selobj) return;
+	selobj.options.length=0;
+//	selobj.options.add(new Option("不分类","0"));
+	var t_subtypedb = JSONParse('$t_subtypedb');
+	for (var temp in t_subtypedb) {
+		if (temp == id) {
+			for (var temp2 in t_subtypedb[temp]) {
+				if (typeof sel_subid != "undefined" && sel_subid == temp2) {
+					selobj.options.add(new Option(t_subtypedb[temp][temp2],temp2));
+				} else {
+					selobj.options.add(new Option(t_subtypedb[temp][temp2],temp2));
+				}
+			}
+		}
+	}
+}
+function setTypeValue(obj){
+	document.FORM.p_type.value = getObj('pop_type').value;
+	var popSubType = getObj('pop_sub_type');
+	if (typeof(popSubType) != 'undefined' && popSubType)
+		document.FORM.p_sub_type.value = popSubType.value;
+	ajaxSubmit(obj);
+}
+</script>
+<!--
+EOT;
+if ($action == 'modify' && $atcdb['type']) {print <<<EOT
+-->
+<script>window.onReady(function(){	showPtype('$atcdb[type]');});</script>
+<!--
+EOT;
+}}if(($action == "reply" || $action == "quote") && $tpcarray['special'] == 5){print <<<EOT
+-->
+							<select name="standpoint" style="height:26px;" class="fl mr5">
+<!--
+EOT;
+if($debatestand != 2){print <<<EOT
+-->
+                    <option value="1" $debate_1>正方观点</option>
+
+<!--
+EOT;
+}if($debatestand != 1){print <<<EOT
+-->
+                    <option value="2" $debate_2>反方观点</option>
+<!--
+EOT;
+}print <<<EOT
+-->
+                    <option value="0" $debate_0>闲聊一下</option>
+                </select>
+
+<!--
+EOT;
+}if ($selectmodelhtml) {print<<<EOT
+-->
+							<div style="padding-right:5px;" class="fl">$selectmodelhtml</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+          		<div class="w_title_ip fl">
+                    <input name="atc_title" id="atc_title" value="$atc_title" tabindex="1" title="请输入标题" onkeydown="checktitlelength()" />
+<!--
+EOT;
+if ($db_threademotion) {print <<<EOT
+-->
+                    <i id="icon_button" onclick="show_icontab()" class="cp"><img align="absmiddle" src="$imgpath/post/emotion/$icon.gif" /></i>
+					<div class="fl">
+						<div id="icontab" onmouseover="if(icontab==1)icontab=2;" onmouseout="if(icontab==2)icontab=1;" style="display:none;">
+							<div class="cc cp">
+								<input type="hidden" id="atc_iconid" name="atc_iconid" value="$icon" />
+								<img onmouseover="this.className='iconhover'" onmouseout="this.className=''" onclick="seticonid(0,'0.gif')" align="absmiddle" src="$imgpath/post/emotion/0.gif" />
+<!--
+EOT;
+foreach ($icondb as $key => $value) {
+if($key == 0) continue;
+print <<<EOT
+-->
+								<img onmouseover="this.className='iconhover'" onmouseout="this.className=''" onclick="seticonid('$key','$value')" align="absmiddle" src="$imgpath/post/emotion/$value" />
+<!--
+EOT;
+}print <<<EOT
+-->
+							</div>
+						</div>
+					</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+					<span id="wordtip"></span>
+					<span class="w_input_text" style="display:none;" id="atc_title_warn"></span>
+				</div>
+            </div>
+<!--
+EOT;
+if($db_sitemsg['post']['0'] && $action == 'new'){print<<<EOT
+-->
+           <span class="post_tips mb5">{$db_sitemsg['post'][array_rand($db_sitemsg['post'])]}</span>
+<!--
+EOT;
+}if($db_sitemsg['reply']['0'] && $action == 'reply'){print<<<EOT
+-->
+           <span class="post_tips mb5">{$db_sitemsg['reply'][array_rand($db_sitemsg['reply'])]}</span>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--
+EOT;
+if ($special) {print <<<EOT
+-->
+            <div class="mb10">
+<!--
+EOT;
+require_once PrintEot('post_special');
+print <<<EOT
+-->
+            </div>
+<!--
+EOT;
+}if ($topichtml) {print <<<EOT
+-->
+            <div class="mb10" style="border:1px dashed #ccc;background:$forumcolortwo;padding:10px;">$topichtml
+<script type="text/javascript">
+function ifalipay(value) {
+if (value == 1) {
+    ajax.send('pw_ajax.php?action=pcifalipay','',function(){
+        var rText = ajax.request.responseText.split('\t');
+        if(rText[0] == 'fail') {
+            showDialog('warning','您还没有支付宝帐号，请到管理中心的<a href="profile.php?action=modify&info_type=trade" target="_blank"><span style="color:red;">账号设置</span></a>添加');
+        } else {
+            return false;
+        }
+    });
+} else {
+    return false;
+}
+}
+function pcdelimg(id,fieldid,pctype) {
+ajax.send('pw_ajax.php?action=pcdelimg','id='+id+'&fieldid='+fieldid+'&pctype='+pctype+'&tid='+'$tid',function(){
+    var rText = ajax.request.responseText;
+    if (rText == 'success') {
+        showDialog('success','删除成功!',2);
+        getObj('img_'+fieldid).style.display = 'none';
+    } else {
+        showDialog('error','非法操作',2);
+        return false;
+    }
+});
+}
+</script>
+            </div>
+<!--
+EOT;
+}print<<<EOT
+-->
+            <div class="cc mb10">
+<!--
+EOT;
+$allowUseMagic = $db_windmagic && ($action=='new' || ($action=='modify' && $pid == 'tpc'));
+require_once PrintEot('wysiwyg_editor');
+if ($allowUseMagic) {print <<<EOT
+-->
+<style>
+.lhcl_slideImage{width:50px;height:50px;cursor:pointer;border:1px solid #fff;}
+.lhcl_selectBox{width:50px;height:50px;cursor:pointer;border:1px solid #36c;}
+</style>
+				<div id="menu_magicsmile" style="display:none"></div>
+				<div class="fr">
+					<div style="display: none;left:auto;margin-top:-492px;margin-left:-162px;" id="magicsmiliebox" class="B_menu">
+						<div class="B_p10 w">
+						<div class="b f14 tac">动漫表情</div>
+						<div id="menu_magicshow" class="tac"></div>
+						<div class="B_tac"><a onclick="previewMagic();return false;" href="javascript:;" class="B_mr10">预览</a><a onclick="setMagic(this.id);getObj('magicsmiliebox').style.display='none';return false;" href="javascript:;" id="btnc">取消</a></div>
+						</div>
+					</div>
+				</div>
+<script>var mDef = { $mDef };</script>
+<script type="text/javascript" src="js/magic.js"></script>
+<!--
+EOT;
+}print <<<EOT
+-->
+            </div>
+						<div class="cc mb10" id="tabEditorBodys">
+							<div class="post_tab_edit">
+								<ul class="cc" id="tabEditorHead">
+									<li class="current"><a href="#" hidefocus="true"><span></span>常用设置</a></li>
+<!--
+EOT;
+if($db_iftag && ($action=='new' || $action=='modify' && $pid=='tpc')){print <<<EOT
+-->
+									<li><a href="#" hidefocus="true"><span></span>主题标签</a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+									<li><a href="#" hidefocus="true"><span></span>售密设置</a></li>
+<!--
+EOT;
+if ($_G['allowreplyreward'] && ($action == 'new' || ($action == 'modify' && !is_numeric($pid)))) {
+print <<<EOT
+-->
+									<li><a href="#" hidefocus="true"><span></span>回帖奖励</a></li>
+<!--
+EOT;
+}if ($foruminfo['allowrob'] && $_G['robbuild'] && ($action == 'new' || ($action == 'modify' && !is_numeric($pid)))) {print <<<EOT
+-->
+									<li><a href="#" hidefocus="true"><span></span>抢楼帖</a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+									<li><a href="#" hidefocus="true"><span></span>高级</a></li>
+								</ul>
+							</div>
+<!-- 第一组 -->
+							<div class="post_tab_edit_cont">
+								<p class="cc">
+<!--
+EOT;
+if($db_replysitemail){
+$checkAtcNewrp = $atc_newrp ? $atc_newrp : (($db_replysitemail && getstatus($winddb['userstatus'], PW_USERSTATUS_REPLYSITEEMAIL)) ? 'checked' : '');
+print <<<EOT
+-->
+									<label class="mr20" for="atc_newrp"><input type="checkbox" id="atc_newrp" name="atc_newrp" value="1" $checkAtcNewrp />回复站内短信提醒</label>
+<!--
+EOT;
+}print <<<EOT
+-->
+									<label class="mr20" for="atc_anonymous"><input type="checkbox" id="atc_anonymous" name="atc_anonymous" value="1" $ifanonymous />匿名帖</label>
+<!--
+EOT;
+if ($pwpost->isGM || $_G['htmlcode']) {print <<<EOT
+-->
+									<label class="mr20" for="atc_html"><input type="checkbox" name="atc_html" id="atc_html" value="1" $htmcheck onclick="editor.setHtmlMode(this)" />使用HTML代码</label>
+<!--
+EOT;
+}print <<<EOT
+-->
+									<label class="mr20" for="atc_hide"><input type="checkbox" id="atc_hide" name="atc_hide" value="1" $htmlpost />隐藏此帖&nbsp;<span class="gray">(回复可见)</span></label>
+								</p>
+								<div id="showmessage" class="wrongTip mb10" style="display: none; "></div>
+<!--
+EOT;
+if($_G['allowat']){
+if ($action =='modify'){
+	$atNum = '重新编辑帖子时，新添加的用户将不能收到@通知';
+} else {
+	$atNum = $_G['atnum'] ? "，最多可@{$_G['atnum']}人" : '';
+	$atNum = "可@您关注的人{$atNum}，提升等级可@更多人";
+}
+print <<<EOT
+-->
+								<div class="cc post_mention pr"><span class="fl at_icon">提到某人：</span>
+									<div class="input_img fl mr10">
+										<em class="input_down" onclick="pwSearch.selectInit(event,'popout','message.php?type=ajax','action=friend',0)">选择好友</em>
+										<div id="get_friend"><input type="text" max="{$_G['atnum']}" name="usernames" value="" id="usernames" onblur="pwSearch.blur()" onfocus="pwSearch.init('message.php?type=ajax','action=friend','resultd')" onkeydown="pwSearch.move(event)" onkeyup="pwSearch.searchResult(event,200);" autocomplete="off" disableautocomplete></div>
+                  </div>
+									<span class="gray fl">$atNum</span>
+								</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+							</div>
+<!--
+EOT;
+if($db_iftag && ($action=='new' || $action=='modify' && $pid=='tpc')){print <<<EOT
+-->
+							<div class="post_tab_edit_cont">
+            <script type="text/javascript" src="js/pw_tags.js"></script>
+            <div class="cc" style="padding:5px 0;">
+                <div><input id="atc_tags" class="input fl input_wb mr5 gray" name="atc_tags" value="$tags" onfocus="tag.init();" /><span class="bt2 fl"><span><button type="button" onclick="tag.get()">提取标签</button></span></span><span style="margin:3px 0 0 10px;" class="fl"><span class="fl">标签之间空格隔开，限5个。&nbsp;</span><a class="wy_tips" href="javascript:;" onclick="return false;" style="padding-right:14px;">什么是标签<i style="width:200px;">标签是您给您的文章指定的关键字，设置适当的标签能便于他人快速的找到您的文章，最多可填写5个，每个3-15字节</i></a></span></div>
+                <div class="c"></div>
+                <fieldset id="tagmenu" style="border:1px solid $tdcolor;width:500px;padding:3px;margin:2px 0;display:none;"><legend>热门标签</legend><div style="height:80px;overflow-Y:auto;"></div></fieldset>
+            </div>
+							</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+							<div class="post_tab_edit_cont">
+								<p>
+									<span class="mr20"><label for="atc_requiresell"><input type="checkbox" name="atc_requiresell" id="atc_requiresell" value="1" $htmlsell />出售：</label><input name="atc_money" type="text" value="{$sellMoney}" maxlength="6" size="3" class="input" />&nbsp;<select name="atc_credittype" id="attmode_2" $htmlsell>$selltype</select>&nbsp;<span class="gray">（不能大于：<span class="s2">{$db_sellset[price]}</span>）</span></span>
+									<span class="mr20"><label for="atc_requireenhide"><input type="checkbox" name="atc_requireenhide" id="atc_requireenhide" value="1" $htmlhide />加密：</label><input name="atc_rvrc" type="text" value="{$hideMoney}" class="input" maxlength="6" size="3" />&nbsp;<select name="atc_enhidetype" id="attmode_1" class="mr5" $htmlhide>$enhidetype</select>&nbsp;以上才能浏览</span>
+								</p>
+							</div>
+<!--
+EOT;
+if ($_G['allowreplyreward'] && ($action == 'new' || ($action == 'modify' && !is_numeric($pid)))) {
+for ($rptimes = 1; $rptimes <= 10; $rptimes++) {
+	$defaultRewardReptimes = ($action == 'modify' && $rptimes == $replyReward['repeattimes']) ? 'selected' : '';
+	$replyrewardreptimes .= "<option value=\"{$rptimes}\" $defaultRewardReptimes >{$rptimes}</option>";
+	$tmpRewardChance = $rptimes * 10;
+	$defaultRewardChance = ($action == 'modify' && $tmpRewardChance == $replyReward[chance]) ? 'selected' : '';
+	$replyrewardchance .= "<option value=\"{$tmpRewardChance}\" $defaultRewardChance >{$tmpRewardChance}%</option>";
+}
+$replyReward && $replyRewardChecked = 'checked';
+print <<<EOT
+-->
+							<div class="post_tab_edit_cont">
+								<p><label for="atc_replyReward"><input id="atc_replyReward" name="replyreward[replyreward]" type="checkbox" value="1" $replyRewardChecked />回帖奖励：每次奖励</label>&nbsp;
+									<select name="replyrewardcredit" id="replyrewardcredit">
+										$replyrewardcredit
+									</select>&nbsp;
+									<input name="replyreward[replyrewardnum]" id="replyrewardnum" value="$replyReward[creditnum]" type="text" size="2" class="input" />&nbsp;个，共奖励&nbsp;
+									<input name="replyreward[replyrewardtimes]" id="replyrewardtimes"  value="$replyReward[lefttimes]" type="text" size="2" class="input" />&nbsp;次，每人最多可获奖&nbsp;
+									<select name="replyreward[replyrewardreptimes]">
+										$replyrewardreptimes
+									</select>&nbsp;次，中奖几率&nbsp;
+									<select name="replyreward[replyrewardchance]">
+										$replyrewardchance
+									</select>
+								</p>
+								<p id="replyrewardtips"></p>
+							</div>
+<script>
+var replyReward = {
+	'userAllCredits' : $userAllCredits,
+	'action' : '$action',
+	'lefttimes' : '$replyReward[lefttimes]',
+	'originalcreditnum' : '$replyReward[creditnum]',
+	'originalcredit' : '$replyReward[credittype]',
+	'init' : function() {
+		var _this = this;
+		_this.initEvent();
+		_this.changeTips();
+	},
+
+	'initEvent' : function() {
+		var _this = this;
+		getObj('replyrewardcredit').onchange = getObj('replyrewardnum').onblur = getObj('replyrewardtimes').onblur = function(){
+			_this.changeTips();
+			_this.ifcheck();
+		};
+	},
+	
+	'ifcheck' : function() {
+		var rewardnum = parseInt(getObj('replyrewardnum').value),
+			rewardtimes = parseInt(getObj('replyrewardtimes').value),
+			totalcredits = rewardnum * rewardtimes || 0,
+			replyReward = getObj('atc_replyReward');
+		if (totalcredits > 0) {
+			replyReward.checked = true;
+		} else {
+			replyReward.checked = false;
+		}
+	},
+	
+	'changeTips' : function() {
+		var credit = getObj('replyrewardcredit').value,
+			rewardnum = parseInt(getObj('replyrewardnum').value),
+			rewardtimes = parseInt(getObj('replyrewardtimes').value),
+			totalcredits = rewardnum * rewardtimes || 0,
+			_this = this,
+			leftcredit = eval('replyReward.userAllCredits.c' + credit);
+		if (typeof leftcredit == 'undefined') return false;
+		if (replyReward.action == 'modify' && replyReward.originalcredit) {
+			var originalCreditTip = _this.getOriginalCredit() || '';
+			var giveBackTip = _this.giveBackCredit(credit, totalcredits) || '';
+			var minusTip = _this.minusCredit(credit, totalcredits) || '';
+			getObj('replyrewardtips').innerHTML = '回帖奖励总额为<span class="s2">' + totalcredits + '</span>' + leftcredit[2] + leftcredit[1] + originalCreditTip + '，' + giveBackTip + minusTip + '您共有<span class="s2">' + leftcredit[0] + '</span>' + leftcredit[2] + leftcredit[1] + '。';
+		} else {
+			getObj('replyrewardtips').innerHTML = '回帖奖励总额为<span class="s2">' + totalcredits + '</span>' + leftcredit[2] + leftcredit[1] + '，您共有<span class="s2">' + leftcredit[0] + '</span>' + leftcredit[2] + leftcredit[1] + '。';
+		}
+	},
+	
+	'getOriginalCredit' : function() {
+		var originalCreditTip = '(奖池剩余' + parseInt(replyReward.lefttimes) * parseInt(replyReward.originalcreditnum);
+		var originalCreditInfo = eval('replyReward.userAllCredits.c' + replyReward.originalcredit);
+		originalCreditTip += originalCreditInfo[2] + originalCreditInfo[1] + ')';
+		return originalCreditTip;
+	},
+		
+	'giveBackCredit' : function(credit, totalcredits) {
+		var returnTips = '',
+			originalCreditInfo = eval('replyReward.userAllCredits.c' + replyReward.originalcredit);
+		if (credit != replyReward.originalcredit) {
+			returnTips = '<span class="s2">将返还' + parseInt(replyReward.lefttimes) * parseInt(replyReward.originalcreditnum) + originalCreditInfo[2] + originalCreditInfo[1] + '，</span>';
+		} else {
+			var originalTotalCredit = parseInt(replyReward.lefttimes) * parseInt(replyReward.originalcreditnum),
+				returnBack = originalTotalCredit - totalcredits;
+			returnTips = returnBack > 0 ? '<span class="s2">将返还' + returnBack + originalCreditInfo[2] + originalCreditInfo[1] + '，</span>' : '';
+		}
+		return returnTips;
+	},
+	
+	'minusCredit' : function(credit, totalcredits) {
+		var originalTotalCredit = parseInt(replyReward.lefttimes) * parseInt(replyReward.originalcreditnum),
+			originalCreditInfo = eval('replyReward.userAllCredits.c' + replyReward.originalcredit),
+			returnTips = '';
+		if (credit == replyReward.originalcredit) {
+			var minusNum = originalCreditInfo[0] + originalTotalCredit - totalcredits;
+			returnTips = minusNum < 0 ? '<span class="s2">奖励总额设置过大(' + totalcredits + originalCreditInfo[2] + originalCreditInfo[1] + ')，</span>' : '';
+		} else {
+			var currentInfo = eval('replyReward.userAllCredits.c' + credit);
+				minusNum = currentInfo[0] - totalcredits;
+			returnTips = minusNum < 0 ? '<span class="s2">奖励总额设置过大(' + totalcredits + currentInfo[2] + currentInfo[1] + ')，</span>' : '';
+		}
+		return returnTips;
+	}
+};
+setTimeout(function(){replyReward.init();}, 100);
+</script>
+<!--
+EOT;
+}if ($foruminfo['allowrob'] && $_G['robbuild'] && ($action == 'new' || ($action == 'modify' && !is_numeric($pid)))) {
+print <<<EOT
+-->
+<script type="text/javascript" src="js/date.js"></script>
+							<div class="post_tab_edit_cont">
+								<p class="post_tab_edit_robbed"><label><input id="atc_buildIfcheck" type="checkbox" name="buildIfcheck" value="1" $setRobbuild $robSet[disable] />设置此帖为抢楼帖</label></p>
+<!--
+EOT;
+if (!$robSet['isdisable']) {
+print <<<EOT
+-->
+								<p>抢楼时间：<span class="s1 mr5">*</span><input name="robstarttime" id="starttime" value="$robSet[starttime]" onClick="javascript:ShowCalendar(this.id,1);getObj('atc_buildIfcheck').checked=true;" type="text" class="input input_wa" $robSet[isdisable] />&nbsp;&nbsp;-&nbsp;&nbsp;<input name="robendtime" id="robendtime" value="$robSet[endtime]" onClick="javascript:ShowCalendar(this.id,1)" type="text" class="input input_wa mr20" $robSet[isdisable] />截止楼层：<span class="s1 mr5">*</span><input name="robendbuild" value="$robSet[endbuild]" type="text" class="input" $robSet[isdisable] /></p>
+								<p>抢中楼层：<span class="s1 mr5">*</span><input name="robawardbuilds" value="$robSet[awardbuilds]" type="text" class="input input_wb mr10" $robSet[isdisable] /><span class="gray">（多楼层用逗号“,”隔开，星号“*”可以代替任意数字或空格，如9,99,*99）</span></p>
+<!--
+EOT;
+} else {
+print <<<EOT
+-->
+								<input name="robstarttime" id="starttime" value="$robSet[starttime]" type="hidden" class="input input_wa" />
+								<input name="robendtime" id="robendtime" value="$robSet[endtime]" type="hidden" class="input input_wa mr20" /><input name="robendbuild" value="$robSet[endbuild]" type="hidden" class="input" />
+								<input name="robawardbuilds" value="$robSet[awardbuilds]" type="hidden" class="input input_wb mr10" />
+
+								<p>抢楼时间：<span class="input gray" style="display:inline-block;height:15px;line-height:15px;width:155px; vertical-align:middle">$robSet[starttime]</span>&nbsp;&nbsp;-&nbsp;&nbsp;<span class="input gray" style="display:inline-block;height:15px;line-height:15px;width:155px; vertical-align:middle">$robSet[endtime]</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;截止楼层：<span class="input gray" style="display:inline-block;height:15px;line-height:15px;width:125px; vertical-align:middle">$robSet[endbuild]</span></p>
+								<p>抢中楼层：<span class="input gray" style="display:inline-block;height:15px;line-height:15px;width:335px; vertical-align:middle">$robSet[awardbuilds]</span><span class="gray">（多楼层用逗号“,”隔开，星号“*”可以代替任意数字或空格，如9,99,*99）</span></p>
+<!--
+EOT;
+}  print <<<EOT
+-->	
+							</div>
+<!--
+EOT;
+} print <<<EOT
+-->						
+							<div class="post_tab_edit_cont">
+								<table width="100%"><tr class="vt">
+									<td width="200">
+										<p><label class="label_120" for="atc_usesign"><input type="checkbox" id="atc_usesign" name="atc_usesign" value="1" checked />使用帖子签名</label></p>
+										<p><label for="atc_autourl" class="label_120"><input type="checkbox" id="atc_autourl" name="atc_autourl" value="1" $checkedAutourl />自动解析链接URL</label></p>
+										<p><label class="label_120" for="atc_convert"><input type="checkbox" id="atc_convert" name="atc_convert" value="1" checked />WindCode转换</label></p>
+<!--
+EOT;
+if ($db_replysendmail) {
+$checkAtcEmail = $atc_email ? $atc_email : (($db_replysendmail && getstatus($winddb['userstatus'], PW_USERSTATUS_REPLYEMAIL)) ? 'checked' : '');
+print <<<EOT
+-->
+								<p><label class="label_120" for="atc_email"><input type="checkbox" id="atc_email" name="atc_email" value="1" $checkAtcEmail />回复电子邮件通知</label></p>
+<!--
+EOT;
+}print <<<EOT
+-->
+									</td>
+									<td>		
+<!--
+EOT;
+if (($action == 'new' || $action == 'vote') && ($pwpost->isGM || pwRights($pwpost->isBM,'typeadmin'))) {print <<<EOT
+-->
+								<p>
+									精华：<label class="mr10"><input name="digest" type="radio" value="0" checked />无</label>
+									<label class="mr10"><input name="digest" type="radio" value="1" />1</label>
+									<label class="mr10"><input name="digest" type="radio" value="2" />2</label>
+								</p>
+<!--
+EOT;
+}if ($action == 'new' && ($pwpost->isGM || pwRights($pwpost->isBM,'topped') > 0)) {print <<<EOT
+-->
+								<p>
+									置顶：<label class="mr10"><input name="topped" type="radio" value="0" checked />无</label>
+									<label class="mr10"><input name="topped" type="radio" value="1" />版块</label>
+<!--
+EOT;
+if ($pwpost->isGM || pwRights($pwpost->isBM,'topped') > 1) {print <<<EOT
+-->
+									<label class="mr10"><input name="topped" type="radio" value="2" />分类</label>
+<!--
+EOT;
+}if ($pwpost->isGM || pwRights($pwpost->isBM,'topped') > 2) {print <<<EOT
+-->
+									<label class="mr10"><input name="topped" type="radio" value="3" />全站</label>
+<!--
+EOT;
+}print <<<EOT
+-->
+								</p>
+<!--
+EOT;
+}if(($pwpost->isGM || pwRights($pwpost->isBM,'replayorder')) && (!$pid || $pid == 'tpc')){print <<<EOT
+-->
+								<p>
+								回复显示顺序：<label class="mr10"><input type="radio" name="replayorder" value="0" $replayorder_default />默认</label>
+								<label class="mr10"><input type="radio" name="replayorder" value="1" $replayorder_asc />正序</label>
+								<label class="mr10"><input type="radio" name="replayorder" value="2" $replayorder_desc />倒序</label>
+								</p>
+<!--
+EOT;
+}print <<<EOT
+-->
+									</td>
+								</tr></table>
+							</div>
+						</div>
+
+
+<!--
+EOT;
+if (($db_gdcheck & 4 && (!$db_postgd || $winddb['postnum'] < $db_postgd)) || (($db_ckquestion & 4) && (!$postq || $winddb['postnum'] < $postq) && $db_question)) {print <<<EOT
+-->
+            <div class="cc mb10">
+<!--
+EOT;
+if(($db_gdcheck & 4) && (!$db_postgd || $winddb['postnum'] < $db_postgd)){
+$checkCode = L::loadClass('checkcode', 'site');
+$checkCodeString = $checkCode->getCheckCodeTemplate();
+print <<<EOT
+-->
+<span class="mr20">验证码：<input class="input" type="text" name="gdcode" tabindex="200" size="8" onfocus="showgd();" /><span id="ckcode" style="display:none"></span>
+$checkCodeString
+</span>
+<!--
+EOT;
+}
+empty($winddb['postnum']) && $winddb['postnum']=0;
+if(($db_ckquestion & 4) && (!$postq || $winddb['postnum'] < $postq) && $db_question){
+$qkey = array_rand($db_question);
+if($db_imagequestion){
+	$question = '<img id="ckquestion" src="ckquestion.php?q='.$qkey.'&t='.$timestamp.'" align="top">';
+}else{
+	$question = $qkey<0 ? getMachineQuestion_1() :  $db_question[$qkey];
+}
+$q_a = $question.($showq && $qkey>0?" （答案：".$db_answer[$qkey] . '）' : '');
+print <<<EOT
+-->
+验证问题: &nbsp;{$q_a}&nbsp;&nbsp;<input class="input" type="text" tabindex="201" name="qanswer" />
+<input type="hidden" name="qkey" value="$qkey" />
+<!--
+EOT;
+}print <<<EOT
+-->
+           </div>
+<!--
+EOT;
+}print <<<EOT
+-->
+						<div style="position:relative;zoom:1">
+            	<div id="divload" style="position:absolute;bottom:0px;background-color:#fff;"></div>
+            </div>
+            <div style="margin-bottom:30px;" id="submit_bar">
+							<span class="btn"><span><button type="submit" name="Submit"> 发 布 </button></span></span>
+							<span class="bt"><span><button type="button" onclick="gopreview();"> 预 览 </button></span></span>
+							<span class="bt"><span><button type="button" onclick="savedraft()"> 存为草稿 </button></span></span>
+            </div>
+      </div>
+<!--
+EOT;
+if($theSpecialFlag){print<<<EOT
+-->
+	<script>Form.validate("FORM");</script>
+<!--
+EOT;
+}print <<<EOT
+-->
+<div id="menu_face" class="menu" style="display:none;"></div>
+<div id="menu_generalface" class="menu" style="display:none;"></div>
+<input type="hidden" value="2" name="step" />
+<input type="hidden" value="$pid" name="pid" />
+<input type="hidden" value="$action" name="action" />
+<input type="hidden" value="$fid" name="fid" />
+<input type="hidden" value="$tid" name="tid" />
+<input type="hidden" value="$article" name="article" />
+<input type="hidden" value="$special" name="special" />
+<input type="hidden" value="cn0zz" name="_hexie" />
+<script type="text/javascript">
+<!--
+EOT;
+$tmpVerify = GetVerify($onlineip.$GLOBALS['winddb']['regdate'].$fid.$tid);print <<<EOT
+-->
+document.FORM._hexie.value='$tmpVerify';
+</script>
+<!--
+EOT;
+if($action == 'reply' || $action == 'modify' || $action == 'quote'){print <<<EOT
+-->
+
+<!--
+EOT;
+}else{print <<<EOT
+-->
+<script>
+onReady(function(){
+	setTimeout(function(){
+		if(getObj("atc_title")){
+			getObj("atc_title").focus();
+		}
+	},500);
+})
+
+</script>
+<!--
+EOT;
+}if($special=='1' || $special=='2' || $special=='5' || $special=='6'){ print <<<EOT
+-->
+<script type="text/javascript" src="js/date.js"></script>
+<!--
+EOT;
+}print <<<EOT
+-->
+</form>
+<!--
+EOT;
+if ($special == 4){print <<<EOT
+-->
+<iframe name="proUploadIframe" id="proUploadIframe" frameborder="0" style="display:none;"></iframe>
+<form action="job.php?action=mutiupload" enctype="multipart/form-data" target="proUploadIframe" method="post">
+	<input type="hidden" name="fid" value="$fid" />
+	<input type="hidden" name="step" value="2" />
+	<input type="hidden" name="uid" value="$winduid" />
+	<input type="hidden" value="cn0zz" name="_hexie" />
+	<input type="hidden" name="verify" value="$verifyhash" />
+	<input type="hidden" name="ua" value="browser" />
+	<input type="file" accept="image/gif,image/jpeg,image/png" class="cp" name="attachment_0" id="proFileInput" style="position:absolute;width:80px;height:20px;opacity:0;filter:alpha(opacity=0)"/>
+</form>
+<!--
+EOT;
+}
+if($previewForm){print <<<EOT
+-->
+	$previewForm
+<!--
+EOT;
+}else{print <<<EOT
+-->
+<form name="preview" action="job.php?action=preview" method="post" target="preview_page">
+	<input type="hidden" name="pcid" value="$pcid" />
+	<input type="hidden" name="modelid" value="$modelid" />
+<!--
+EOT;
+}print <<<EOT
+-->
+	<input type="hidden" name="atc_content" value="" />
+	<input type="hidden" name="atc_title" value="" />
+	<input type="hidden" name="pcinfo" value="" />
+</form>
+<script type="text/javascript">
+window.onReady(function(){
+	//发帖@功能
+	if(typeof pwSearch!="undefined"){
+		pwSearch.type="post";
+	}
+	//发帖类型切换+数据储存
+	var typeTab=getObj("tabTypeHead");
+	var typeli=typeTab.getElementsByTagName("a");
+	for(var i=0,len=typeli.length;i<len;i++){
+		(function(obj){
+			obj.onclick=function(){
+				var href=obj.href;
+				savePostDateAndGo(href);
+			}
+		})(typeli[i])
+	}
+	/*发帖切换结束*/
+	//Tab切换，使用js/desktop/plugin.js PW.Tab
+	var postTabCfg={"tabs":document.getElementById("tabEditorHead").getElementsByTagName("li"),"container":getElementsByClassName('post_tab_edit_cont',getObj('tabEditorBodys')),"callback":function(tab,bd,i){
+		if(getObj("atc_tags")){
+			var tagVal=getObj("atc_tags").value;
+			if(tagVal.replace(/\s*/,"")==""){
+				
+			}
+		}
+		for(var i=0,len=postTabCfg.tabs.length;i<len;i++){
+			(function(tab,body){
+				var checkNum=0;
+				var inps=getCheckboxElems(body);
+				for(var i=0,len=inps.length;i<len;i++){
+					var item=inps[i];
+					//回帖奖励和抢楼帖+密售
+					if(item.id=="atc_replyReward"||item.id=="atc_buildIfcheck"||item.id=="atc_requiresell"||item.id=="atc_requireenhide"){
+						if(item.checked!=item.defaultChecked){
+							tab.firstChild.className="have";
+							return;
+						}else{
+							tab.firstChild.className="";
+							return;
+						}
+					}
+					if((item.type=="checkbox"&&item.checked!=item.defaultChecked)||(item.type=="text"&&item.value!=item.defaultValue)){
+						checkNum++;
+					}
+				}
+				tab.firstChild.className=checkNum>0?"have":"";
+			})(postTabCfg.tabs[i],postTabCfg.container[i])
+		}
+	}};
+		showTabSimple(postTabCfg.tabs,postTabCfg.container,postTabCfg.callback);
+});
+function getCheckboxElems(obj){
+	var arr=[];
+	var inputs=(obj?obj:document).getElementsByTagName("input");
+	if(inputs.length<1){
+		return false;
+	}
+	for(var i=0,len=inputs.length;i<len;i++){
+		var item=inputs[i];
+		if((item.type=="checkbox"||item.type=="text")&&!item.disabled){
+			arr.push(item);
+		}
+	}
+	return arr;
+}
+/*切换结束*/
+
+var icontab=0;
+function show_icontab() {
+	if (icontab <= 0) {
+		getObj('icontab').style.display = '';
+		icontab = 1;
+	} else {
+		getObj('icontab').style.display = 'none';
+		icontab = 0;
+	}
+}
+function seticonid(iconid,iconurl) {
+	getObj('atc_iconid').value=iconid;
+	getObj('icontab').style.display='none';
+	icontab = -1;
+	getObj('icon_button').innerHTML = '<img align="absmiddle" src="$imgpath/post/emotion/'+iconurl+'" />';
+}
+function set_ptype(id,ptype) {
+	getObj('td_ptype').innerHTML = ptype + '<img align="absmiddle" src="$imgpath/menu-down.gif" />';
+	getObj('p_type').value = id;
+	closep();
+}
+var cate = '$db_forcetype'; //是否强制分类，开启设为1，关闭设为0；
+var cnt  = 0;
+var isKmd = '$isKmd';
+var kmd_deducttime = '$db_kmd_deducttime';
+
+document.FORM.Submit.disabled = false;
+function checktitlelength(){
+	setTimeout(function(){
+	var l = strlen(getObj('atc_title').value);
+	if(l<$db_titlemax&&l>$db_titlemax-20)
+	{
+		getObj('wordtip').innerHTML='剩余'+($db_titlemax-l)+'个字节';
+		getObj('wordtip').style.backgroundColor='#fffeed';
+		getObj('wordtip').style.display='inline';
+	}
+	else if(l==$db_titlemax)
+	{
+		getObj('wordtip').innerHTML='已经达到最大字数限制';
+		getObj('wordtip').style.backgroundColor='#ffd9d9';
+		getObj('wordtip').style.display='inline';
+	}
+	else if(l>=$db_titlemax)
+	{
+		getObj('wordtip').innerHTML='已经超过最大字数限制';
+		getObj('wordtip').style.backgroundColor='#ff9999';
+		getObj('wordtip').style.display='inline';
+	}
+	else
+		getObj('wordtip').style.display='none';
+	},100);
+}
+function checkpost(obj) {
+	if((typeof uploader!="undefined")&&uploader.onProgress==true){
+		return false;
+	}
+	var action = "{$action}";
+	var pid = "{$pid}";
+<!--
+EOT;
+$showGdCode = $showQAnswer = 0;
+$isGM = CkInArray($windid,$manager);
+if(!$isGM && ($db_gdcheck & 4) && (!$db_postgd || $winddb['postnum'] < $db_postgd)){
+	$showGdCode = 1;
+}
+
+if(!$isGM && $q_a){
+	$showQAnswer = 1;
+}
+print <<<EOT
+-->
+	var showGdCode = "{$showGdCode}";
+	var showQAnswer = "{$showQAnswer}";
+	if (action == 'modify' && pid != 'tpc'){
+		action = 'reply';
+	}
+	if (obj.atc_title.value == "") {
+		if (action != 'reply'){
+			obj.atc_title.setAttribute("hasError", 1);
+			showDialog({
+				type: "warning",
+				message: "标题不能为空",
+				onClose: function(){
+					obj.atc_title.focus();
+				}
+			});
+			return false;
+		}
+	} else if (strlen(obj.atc_title.value) > $db_titlemax) {
+		obj.atc_title.setAttribute("hasError", 1);
+		showDialog({
+			type: "warning",
+			message: "标题超过最大长度{$db_titlemax}个字节",
+			onClose: function(){
+				obj.atc_title.focus();
+			}
+		});
+		return false;
+	} else if (showGdCode == '1' && obj.gdcode.value == ''){
+		obj.gdcode.setAttribute("hasError", 1);
+        showDialog({
+            type: "warning",
+            message: "验证码不能为空",
+            onClose: function(){
+            	obj.gdcode.focus();
+            }
+        });
+		return false;
+	} else if (showQAnswer == '1' && obj.qanswer.value == ''){
+		obj.qanswer.setAttribute("hasError", 1);
+		showDialog({
+			type: "warning",
+			message: "请输入正确的验证问题答案",
+			onClose : function(){
+				obj.qanswer.focus();
+			}
+		});
+		return false;
+	}
+	if (strlen(obj.atc_content.value) < $postMinLength) {
+		obj.atc_content.setAttribute("hasError", 1);
+		showDialog({
+			type: "warning",
+			message: "内容少于{$postMinLength}个字节",
+			onClose : function(){
+				editor.focus();
+			}
+		});
+		return false;
+	} else if (strlen(obj.atc_content.value) > $db_postmax) {
+		obj.atc_content.setAttribute("hasError", 1);
+		showDialog({
+			type: "warning",
+			message: "内容大于{$db_postmax}个字节",
+			onClose: function(){
+				editor.focus();
+			}
+		});
+		return false;
+	}
+
+	if (obj.p_type != null && obj.p_type.value==0 && cate==1) {
+		showDialog('confirm','请选择主题分类后发布 <br /> $ttypeHtml $tsubtypeHtml',0,function(){
+			setTypeValue(obj);
+		});
+		if (getObj('pop_type'))
+		{
+			getSubType(getObj('pop_type').value);
+		}
+		return false;
+	}
+
+	if (getObj('atc_replyReward') && getObj('atc_replyReward').checked == true) {
+		var credittype = getObj('replyrewardcredit').value,
+			rewardnum = parseInt(getObj('replyrewardnum').value),
+			rewardtimes = parseInt(getObj('replyrewardtimes').value),
+			totalcredits = rewardnum * rewardtimes || 0,
+			leftcredits = eval('replyReward.userAllCredits.c' + credittype);
+		if (typeof leftcredits == 'undefined') {
+			showDialog({
+				type: "warning",
+				message: "回帖奖励积分类型不存在",
+				onClose: function(){}
+			});
+			return false;
+		}else if (totalcredits > leftcredits[0]) {
+			showDialog({
+				type: "warning",
+				message: "回帖奖励积分设置超限，请重新设置",
+				onClose: function(){}
+			});
+			return false;
+		} else if (totalcredits <= 0) {
+			showDialog({
+				type: "warning",
+				message: "回帖奖励积分设置需为大于0的整数",
+				onClose: function(){}
+			});
+			return false;
+		}
+	}
+	if(getObj("B_qlist")){
+		var B_file_desc=getElementsByClassName("B_file_desc",getObj("B_qlist"));
+		for(var i=0,len=B_file_desc.length;i<len;i++){
+			var qlist_li=B_file_desc[i];
+			var qlist_inp=qlist_li.getElementsByTagName("input")[0];
+			if(qlist_inp!=undefined&&qlist_inp.value=="请输入描述"){
+				qlist_inp.value="";
+			}
+		}
+	}
+	if(getObj("B_image_tile")){
+		var B_file_ip=getElementsByClassName("B_file_ip",getObj("B_image_tile"));
+		for(var i=0,len=B_file_ip.length;i<len;i++){
+			var B_image=B_file_ip[i];
+			var B_image_inp=B_image.getElementsByTagName("input")[0];
+			if(B_image_inp!=undefined&&B_image_inp.value=="请输入描述"){
+				B_image_inp.value="";
+			}
+		}
+			
+	}
+	if (isKmd && kmd_deducttime) {
+		showDialog('confirm','编辑推广中的孔明灯帖将扣除 ' + kmd_deducttime + ' 小时的推广时间，确认要编辑吗？',0,function(){
+			ajaxSubmit(obj);
+		});
+		return false;
+	}
+	ajaxSubmit(obj);
+	return false;
+}
+function ajaxSubmit(obj){
+	try{obj.atc_title.removeAttribute("hasError");
+	obj.atc_content.removeAttribute("hasError");}catch(e){}
+	document.FORM.Submit.disabled = true;
+	ajax.send("post.php?fid=$fid", obj, function(){
+		if (undefined == ajax.request.responseText) {
+			showDialog({
+				type: 'warning',
+				message: "<span class=\'s1\'>附件</span>太大或网络原因，请求超时，请稍后再试"
+			});
+			document.FORM.Submit.disabled = false;
+			getObj('divload').innerHTML = '';
+			return false;
+		}
+		var rText = ajax.request.responseText.split('\t');
+		clearPostData();
+		if (rText[0] == 'success') {
+			window.onbeforeunload = function(){};
+			top.window.location =  rText[1];
+		} else if (rText[0] == 'continue') {
+			showDialog({type:'confirm',message:rText[1],okText:'继续',onOk:function(){
+				obj.iscontinue.value = 1;
+				ajaxSubmit(obj);
+			}});
+		} else {
+			//刷新验证码及验证问题
+			try{getObj('ckquestion').src = getObj('ckquestion').src.replace(/t=\d+/,'t='+new Date().getTime()); }catch(e){}
+			try{getObj('changeGdCode').src = getObj('changeGdCode').src.replace(/nowtime=\d+/,'nowtime='+new Date().getTime());}catch(e){}
+			showDialog('error', rText[0],'',function(){
+				if(obj['qanswer']){
+					obj['qanswer'].value="";
+					obj['qanswer'].focus();
+				}
+				if(obj['gdcode']){
+					obj['gdcode'].value="";
+					obj['gdcode'].focus();
+				}
+			});
+		}
+		cnt = 0;
+		document.FORM.Submit.disabled = false;
+		getObj('divload').innerHTML = '';
+		return false;
+	});
+}
+function gopreview() {
+	editor.save();
+	//editor.setMode();
+	document.preview.atc_content.value=document.FORM.atc_content.value;
+	document.preview.atc_title.value=document.FORM.atc_title.value;
+	var elements = document.FORM.elements;
+	var pcinfo = '';
+	for (var i = 0,len = elements.length; i < len; i++) {
+		if (elements[i].type == 'radio' || elements[i].type == 'checkbox') {
+			if (elements[i].checked == true) {
+				pcinfo += elements[i].name + '(|)' + elements[i].value + '(|)' + elements[i].id + '{|}';
+			}
+		} else {
+			pcinfo += elements[i].name + '(|)' + elements[i].value + '(|)' + elements[i].id + '{|}';
+		}
+	}
+	document.preview.pcinfo.value=pcinfo;
+	document.preview.submit();
+}
+
+function changeShowTip(obj) {
+	if (getObj('show_tip_img').src.indexOf('showNormal') >= 0) {
+		setTimeout("changeShowTipImg('$imgpath/showAll.gif')", 200);
+		obj.previousSibling.nextSibling.innerHTML='显示全部设置';
+		showItems(0);
+	} else {
+		setTimeout("changeShowTipImg('$imgpath/showNormal.gif')", 200);
+		obj.previousSibling.nextSibling.innerHTML='只显示常用';
+		showItems(1);
+	}
+}
+function changeShowTipImg(path) {
+	getObj('show_tip_img').src = path;
+}
+</script>
+<script type="text/javascript" src="js/message.js"></script>
+<script type="text/javascript" src="js/pw_search.js"></script>
+<script type="text/javascript" src="js/post.js"></script>
+<script>
+var dataStorage = {
+	save : function() {
+		if (localStorage.setItem('msg', editor.getUBB())) {
+			localStorage.setItem('title', document.FORM.atc_title.value);
+			SetCookie('ds', 1);
+			return true;
+		}
+		return false;
+	},
+	load : function() {
+		document.FORM.atc_title.value = localStorage.getItem('title') || '';
+		setEditorContent(localStorage.getItem('msg'));
+
+		//初始化@用户
+		var storageLoad=localStorage.getItem('atUserList');
+		if(storageLoad&&storageLoad!=' '){
+			var list=localStorage.getItem('atUserList').split(",");
+			if(typeof pwSearch!="undefined"){
+				pwSearch.init('message.php?type=ajax','action=friend','resultd',"",function(obj){
+					for(var i=0,len=list.length;i<len;i++){
+						pwSearch.add(list[i])
+					}
+				});
+			}
+		}
+		localStorage.removeItem('atUserList');
+		localStorage.removeItem('msg');
+		SetCookie('ds', 0);
+	}
+}
+</script>
+<script type="text/javascript">
+function trim(str){
+	 if (typeof str === 'string') {
+		return str.trim ? str.trim() : str.replace(/\s+$/, '');
+	}
+	return '';
+}
+window.onbeforeunload = function(){
+    var atc_title = document.FORM['atc_title'].value;
+    var atc_content = document.FORM['atc_content'].value;
+    atc_title = trim(atc_title);
+    atc_content = trim(atc_content);
+    if (atc_title != "" || (atc_content != "" && atc_content != "<br>")) {
+		return "您正在编辑的帖子没有保存，离开会导致内容丢失，是否确定离开？";
+		}
+}
+</script>
+<div id="previewmagic" style="position:absolute;z-index:999999;display:none;"></div>
+<div class="c"></div>
+</div>
+<!--
+EOT;
+if($action=='modify' && ($winduid == $atcdb['authorid'] && $_G['allowdelatc'] || $isGM || pwRights($isBM,'modother'))){print <<<EOT
+-->
+<form method="post" name="delForm" action="post.php?fid=$fid">
+<div class="t"><table cellpadding="0" cellspacing="0" width="100%">
+	<tr class="tr3 f_one"><th style="padding:10px;">
+<div class="fr">
+<!--
+EOT;
+if(($db_gdcheck & 4) && (!$db_postgd || $winddb['postnum'] < $db_postgd)){
+$checkCode = L::loadClass('checkcode', 'site');
+$checkCodeString = $checkCode->getCheckCodeTemplate();
+print <<<EOT
+-->
+		<input class="input fl mr5" type="text" name="gdcode" size="5" onfocus="showgd('ckcode_modify');" /><div id="ckcode_modify" class="fl mr5" style="display:none"></div>$checkCodeString
+		<span class="fl mr20" onclick="this.previousSibling.focus();">点此显示验证码</span>
+<!--
+EOT;
+}
+if(($db_ckquestion & 4) && (!$postq || $winddb['postnum'] < $postq) && $db_question){
+print <<<EOT
+-->
+		<span class="fl mr5">验证问题:</span><span class="fl mr5">$q_a</span>
+		<input class="input" type="text" name="qanswer" size="5"/>
+		<input type="hidden" name="qkey" value="$qkey" />
+<!--
+EOT;
+}print <<<EOT
+-->
+		<span class="bt2" onclick="cancleUnload();"><span><button type="submit">直接删除</button></span></span>
+		</div>
+	<span class="s1 b mr10">删除帖子</span>(此操作不可恢复，请慎重使用！)</th></tr>
+	<tr class="tr3 f_two"><th style="padding:5px 10px;border-bottom:0;">如果这个帖子是主题内的第一个帖子且已有人回复此帖，需拥有管理权限才能删除。
+		</th>
+	</tr>
+</table></div>
+<input type="hidden" value="1" name="step" />
+<input type="hidden" value="$action" name="action" />
+<input type="hidden" value="$fid" name="fid" />
+<input type="hidden" value="$tid" name="tid" />
+<input type="hidden" value="$pid" name="pid" />
+<input type="hidden" value="$article" name="article" />
+<input type="hidden" name="verify" value="$verifyhash" />
+<input type="hidden" value="cn0zz" name="_hexie" />
+</form>
+<script>
+function cancleUnload() {
+	window.onbeforeunload = function(){}
+}
+</script>
+<script type="text/javascript">
+<!--
+EOT;
+$tmpVerify = GetVerify($onlineip.$GLOBALS['winddb']['regdate'].$fid.$tid);print <<<EOT
+-->
+if (document.delForm) document.delForm._hexie.value='$tmpVerify';
+</script>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--
+EOT;
+if($action=="reply" || $action=="quote"){print <<<EOT
+-->
+<div class="t">
+<div class="tr2 f_two" style="line-height:25px;height:25px;padding:0 10px;">主题回顾</div>
+$review_reply
+</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--
+EOT;
+?>-->

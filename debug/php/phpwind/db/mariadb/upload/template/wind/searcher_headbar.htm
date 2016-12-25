@@ -1,0 +1,146 @@
+<!--<?php
+print <<<EOT
+-->
+$msgsound
+	<div id="top">
+		<div class="top">				
+<!--
+EOT;
+if($groupid=='guest'){
+print <<<EOT
+-->
+			<div class="fr"><a href="login.php" title="登录" hidefocus="true" rel="nofollow">登录</a>|<a href="$regurl"  title="注册" hidefocus="true" rel="nofollow">注册</a></div>
+<!--
+EOT;
+} else {print <<<EOT
+-->
+			<div class="fr">
+			<a href="u.php"  hidefocus="true">$windid</a>
+			<a href="$loginouturl" hidefocus="true">退出</a>&nbsp;|
+<!--
+EOT;
+if($winddb['newpm']>0 && $_G['maxmsg']>0){
+$tmpMsgNum = 0;
+$tmpMsgNum += $winddb['newpm'];
+$winddb['newreferto']>0 && $tmpMsgNum += $winddb['newreferto'];
+$winddb['newcomment']>0 && $tmpMsgNum += $winddb['newcomment'];
+$winddb['newfans']>0 && $tmpMsgNum += $winddb['newfans'];
+print <<<EOT
+-->
+				<a href="message.php" class="link_down">消息<span class="s2">($tmpMsgNum)</span></a>
+<!--
+EOT;
+	}else{print <<<EOT
+-->
+				<a href="message.php">消息</a>
+<!--
+EOT;
+	}
+	$db_menuinit .= ",'td_profile' : 'menu_profile'";
+print <<<EOT
+-->
+				<a id="td_profile" href="profile.php" class="mr10 link_down"><span>设置</span></a>
+<!--
+EOT;
+	if (CkInArray($windid, $manager) || $SYSTEM['allowadmincp']) {print <<<EOT
+-->
+				| <a href="$db_adminfile" target="_blank">系统设置</a>
+<!--
+EOT;
+}print <<<EOT
+-->
+
+			</div>
+			<div id="menu_profile" style="display:none;">
+				<div style="margin-right:-6px;">
+				<div class="pw_menu" style=" position:relative;width:47px;_margin-top:-7px;">
+					<h6 style="left:-1px;padding-left:8px;"><a href="profile.php" class="link_down"><span>设置</span></a></h6>
+					<ul class="menuList" style="width:45px;">
+						<li><a href="profile.php?action=modify">帐号</a></li>
+<!--
+EOT;
+if ($db_authstate) {print <<<EOT
+-->
+		<li><a href="profile.php?action=auth" target="_blank">认证</a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+						<li><a href="profile.php?action=privacy">隐私</a></li>
+						<li><a href="userpay.php">积分</a></li>
+						<li><a href="profile.php?action=permission">权限</a></li>
+					</ul>
+				</div>
+				</div>
+			</div>
+
+<!--
+EOT;
+}print <<<EOT
+-->
+
+<!--
+EOT;
+if ($_Navbar['main']['few']) {
+	foreach($_Navbar['main']['few'] as $key => $value) {
+		if (!$value[data][nid]) continue;
+		$nav = buildNavLinkHtml($value['data']);
+	print <<<EOT
+-->
+				$nav
+<!--
+EOT;
+	}
+} 
+print <<<EOT
+-->
+
+
+<!--
+EOT;
+if (count($_Navbar['main']['more'])) {
+	$db_menuinit .= ",'td_omainNav' : 'menu_omainNav'";
+print <<<EOT
+-->
+	<a id="td_omainNav" class="link_down"><span id="td_omainNav" class="link_down">更多</span></a>
+	<div id="menu_omainNav" style="display:none;">
+		<div style="margin-left:-7px;">
+		<div class="pw_menu" style=" position:relative;width:102px;_margin-top:-7px;">
+			<h6 style="left:-1px;padding-left:6px;" class="link_down"><span>更多</span></h6>
+			<ul class="menuList">
+<!--
+EOT;
+	foreach($_Navbar['main']['more'] as $key => $value) {
+		if (!$value[data][nid]) continue;
+		$nav = buildNavLinkHtml($value['data']);
+print<<<EOT
+-->
+				$nav
+<!--
+EOT;
+	}
+print <<<EOT
+-->
+			</ul>
+		</div>
+		</div>
+	</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+		</div>
+	</div>
+<!--
+EOT;
+list($htmlAdvert,$arrayAdvert) = pwAdvert('Site.Header','');
+if($htmlAdvert){print <<<EOT
+-->
+<div class="tac mb5">$htmlAdvert</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--
+EOT;
+?>-->

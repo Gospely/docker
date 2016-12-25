@@ -1,0 +1,47 @@
+<!--<?php print <<<EOT
+-->
+<div class="user_main cc main_min">
+<!-- 
+EOT;
+foreach($users as $user){
+print <<<EOT
+-->  
+	<dl class="cc">
+		<dt><a href="{$db_userurl}$user[uid]" target="_blank"><img src="{$user[face]}"></a></dt>
+		<dd class="one">
+			<div class="name"><a href="{$db_userurl}$user[uid]" target="_blank">$user[username]</a></div>
+			<ul>
+				<li>性别：$user[gender]</li>
+				<li>星座：$user[constellation]</li>
+				<li>来自：$user[location]</li>
+				<li>签名：$user[introduce]</li>
+			</ul>
+		</dd>
+		<dd class="two">
+			<ul>
+				<li><a href="u.php?a=info&uid={$user[uid]}" target="_blank">查看个人资料</a></li>
+				<li><a href="javascript:;" onclick="return Attention.add(this,'{$user['uid']}',0)" class="s7 follow">加关注</a></li>
+				<li><a href="message.php?type=post&username={$user[username]}" target="_blank">发消息</a></li>
+				<li><a href="{$db_userurl}{$user[uid]}" target="_blank">去TA家</a></li>
+			</ul>
+		</dd>
+	</dl>
+<!-- 
+EOT;
+}
+print <<<EOT
+-->
+</div>
+<div style="padding:10px 0 0 10px;" class="cc">
+ $pager
+</div>
+<div class="p10 cc" style="width:555px;margin-left:auto;margin-right:auto;">
+<!--
+EOT;
+require printEOT('searcher_searchinput');
+print <<<EOT
+-->
+</div>
+<!--
+EOT;
+?>

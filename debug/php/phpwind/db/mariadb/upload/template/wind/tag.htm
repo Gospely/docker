@@ -1,0 +1,122 @@
+<!--<?php
+print <<<EOT
+-->
+<div id="breadCrumb">
+<img src="$imgpath/$stylepath/thread/home.gif" class="breadHome" /><em class="breadEm"></em><a href="$db_bfn" title="$db_bbsname">$db_bbsname</a>
+<!--
+EOT;
+if($action!='tag'){ print <<<EOT
+--><em>&gt;</em>标签
+<!--
+EOT;
+}else{
+print <<<EOT
+--><em>&gt;</em><a href="link.php?action=taglist">标签</a><em>&gt;</em>{$metakeyword}
+<!--
+EOT;
+}
+print <<<EOT
+-->
+</div>
+<!--
+EOT;
+if($action=='taglist'){print <<<EOT
+-->
+<div class="t">
+<div class="h b" style="border-top:0;">热门标签</div>
+<table width="100%">
+	<tr class="tr3 f_one"><td style="padding:5px 10px 10px;">
+<!--
+EOT;
+$num=0;
+foreach($tagdb as $key=>$value){
+$tag=rawurlencode($value[tagname]); $num++;
+print <<<EOT
+-->
+		<div style="width:15%;float:left;padding:3px"><a href="link.php?action=tag&tagname=$tag">$value[tagname]</a> ($value[num])</div>
+<!--
+EOT;
+if($num%6==0){print <<<EOT
+-->
+	<div class="c"></div>
+<!--
+EOT;
+}}print <<<EOT
+-->
+	</td></tr>
+</table>
+<form action="link.php?action=tag" method="post">
+<div class="tac" style="margin:20px"><input type="text" class="input" size="40" name="tagname" /> <span class="btn2"><span><button type="submit"> 搜 索 </button></span></span></div></form>
+</div>
+<!--
+EOT;
+}elseif($action=='tag'){print <<<EOT
+-->
+<div class="cc mb10">$pages</div>
+<div class="t">
+<div class="h b" style="border-top:0;">标签:$tagname</div>
+<table width="100%" style="table-layout:fixed;">
+<tr class="tr2"><td width="40" style="padding-left:10px;">状态</td>
+<td width="*">标题</td>
+<td width="15%">版块</td>
+<td width="130">作者</td>
+<td width="40" class="tac">回复</td>
+<td width="40" class="tac">人气</td>
+<td width="130">最后发表</td>
+</tr>
+<!--
+EOT;
+foreach($tiddb as $value){print <<<EOT
+-->
+<tr class="tr3 f_one"><td style="padding-left:10px;">$value[status]</td>
+<td width="*">
+<div style="overflow:hidden;height:18px;line-height:18px;">
+<!--
+EOT;
+if($value['topped']==4){print <<<EOT
+-->
+<img src="$imgpath/pwicon/headtopic_$value[topped].gif" alt="置顶帖" />							
+<!--
+EOT;
+}elseif($value['topped']){
+print <<<EOT
+-->
+<img src="$imgpath/$stylepath/file/headtopic_$value[topped].gif" alt="置顶帖" />
+<!--
+EOT;
+}print <<<EOT
+-->
+&nbsp;<a href="read.php?tid=$value[tid]" target="_blank">$value[subject]</a>
+<!--
+EOT;
+if($value[digest]){
+print <<<EOT
+-->
+<img src="$imgpath/$stylepath/file/digest_$value[digest].gif" alt="精华帖" />
+<!--
+EOT;
+}
+print <<<EOT
+-->
+</div>
+</td>
+<td><div style="overflow:hidden;height:18px;line-height:18px;"><a href="thread.php?fid=$value[fid]">$value[forumname]</a></div></td>
+<td class="smalltxt"><a href="{$db_userurl}$value[authorid]">$value[author]</a><p class="f10">$value[postdate]</p></td>
+<td class="tac">$value[replies]</td>
+<td class="tac">$value[hits]</td>
+<td><a href="read.php?tid=$value[tid]&page=e#a" target="_blank">by: $value[lastposter]</a><p class="f10">$value[lastpost]</p></td>
+</tr>
+<!--
+EOT;
+}print <<<EOT
+-->
+</table></div>
+<div class="cc mb10">$pages</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+
+<!--
+EOT;
+?>-->

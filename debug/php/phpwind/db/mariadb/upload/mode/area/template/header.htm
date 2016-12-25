@@ -1,0 +1,377 @@
+<!--<?php print <<<EOT
+--><!doctype html>
+<html>
+<head>
+<meta charset="$db_charset" />
+<title>$webPageTitle - Powered by phpwind</title>
+<meta name="generator" content="phpwind $wind_version" />
+<meta name="description" content="$metaDescription" />
+<meta name="keywords" content="$metaKeywords" />
+<base id="headbase" href="$db_bbsurl/" />
+<link rel="stylesheet" href="$imgpath/pw_core.css?{$GLOBALS['wind_repair']}" />
+<link rel="stylesheet" href="mode/area/images/head.css?{$GLOBALS['wind_repair']}" />
+<link rel="stylesheet" href="$channelImagePath/style.css?{$GLOBALS['wind_repair']}" />
+<!--#if($pwModeCss){#--><link rel="stylesheet" href="$pwModeCss" />
+<!--#}#--><script type="text/javascript" src="js/core/core.js"></script>
+<script type="text/javascript" src="js/pw_ajax.js"></script>
+<script>
+var pw_baseurl = "$db_bbsurl";
+var imgpath = '$imgpath';
+//var verifyhash = '$verifyhash';
+var modeimg = '$pwModeImg';
+var modeBase = '$baseUrl';
+var winduid = '$winduid';
+var windid	= '$windid';
+var groupid	= '$groupid';
+var channelid	= '$channelid';
+</script>
+<!--[if IE 9 ]>
+<meta name="msapplication-task" content="name=网站首页; action-uri=$db_bbsurl; icon-uri=favicon.ico" />
+<meta name="msapplication-task" content="name=个人中心; action-uri=u.php; icon-uri=images/ico/home.ico" />
+<meta name="msapplication-task" content="name=我的帖子; action-uri=apps.php?q=article; icon-uri=images/ico/post.ico" />
+<meta name="msapplication-task" content="name=消息中心; action-uri=message.php; icon-uri=images/ico/mail.ico" />
+<meta name="msapplication-task" content="name=我的设置; action-uri=profile.php; icon-uri=images/ico/edit.ico" />
+<![endif]-->
+</head>
+<body id="body">
+<!--
+EOT;
+if ($_Navbar['head_right'] || $_Navbar['head_left']) {
+print <<<EOT
+-->
+<div id="top">
+	<div class="top">
+    	<ul>
+<!--
+EOT;
+if($db_columns && $db_mode == 'bbs'){
+if(GetCookie('columns')==1 || strpos($pwServer['HTTP_REFERER'],$db_bbsurl)===false || strpos($pwServer['HTTP_REFERER'],$db_adminfile)!==false){
+print <<<EOT
+-->
+            <li><a href="columns.php?action=columns">左右分栏</a></li>
+<!--
+EOT;
+}else{print <<<EOT
+-->
+            <li><a href="columns.php">平板模式</a></li>
+<!--
+EOT;
+}}
+
+foreach($_Navbar['head_left'] as $key => $value){
+	$html = buildNavLinkHtml($value['data']);
+print <<<EOT
+-->
+            <li>$html</li>
+<!--
+EOT;
+	if (is_array($value['subs'])) {
+		$db_menuinit .= ",'nav_key_up_$key' : 'nav_key_sub_$key'"; //register
+print <<<EOT
+-->
+			<div style="display: none;" class="pw_menu" id="nav_key_sub_{$key}">
+			<ul class="menuList">
+<!--
+EOT;
+		foreach ($value['subs'] as $value) {
+			$html = buildNavLinkHtml($value);
+print <<<EOT
+-->
+				<li>$html</li>
+<!--
+EOT;
+		}
+print <<<EOT
+-->
+			</ul>
+			</div>
+<!--
+EOT;
+	}
+
+}
+
+print <<<EOT
+-->
+        </ul>
+    </div>
+</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--
+EOT;
+list($htmlAdvert,$arrayAdvert) = pwAdvert('Site.Header',$fid);
+if($htmlAdvert){print <<<EOT
+-->
+<div class="tac" style="line-height:1;">$htmlAdvert</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+<script>
+function updateCache(alias){
+	var url = 'mode.php?m=area&q=static&alias='+alias;
+	ajax.send(url,'',ajax.get);
+}
+</script>
+<div id="header">
+	<div id="head" class="cc">
+		<a href="$db_bbsurl" class="fl"><img src="images/wind/logo.png" class="fl" title="$area_sitename" /></a>
+		<script type="text/javascript" src="mode.php?m=area&q=header&ifactive=$ifactive&alias=$alias&t=$timestamp"></script>
+ </div>
+	<div class="nav_wrap">
+		<div id="navA">
+			<div class="navAL fl">&nbsp;</div>
+        	<div class="navAR fr">&nbsp;</div>
+			<div class="navA">
+<!--
+EOT;
+$db_menuinit .= ",'td_mymenu' : 'menu_mymenu'";
+print <<<EOT
+-->
+				<div id="td_mymenu">快捷通道</div>
+				<div id="menu_mymenu" style="display:none;">
+				<div id="fast_menu" class="pw_menu">
+					<ul class="menuList cc">
+						<li><a href="apps.php?q=article"><img src="u/images/icon/posts.png" alt="帖子" />帖子</a></li>
+						<li><a href="apps.php?q=medal"><img src="u/images/icon/medal.png" alt="勋章" />勋章</a></li>
+						<li><a href="u.php?a=friend"><img src="u/images/icon/friend.png" alt="关注" />关注</a></li>
+						<li><a href="jobcenter.php"><img src="u/images/icon/jobcenter.png" alt="任务" />任务</a></li>
+<!--
+EOT;
+if ($db_kmd_ifkmd) {print <<<EOT
+-->
+						<li><a href="apps.php?q=kmd&a=help"><img src="u/images/icon/kmd.png" alt="孔明灯" />孔明灯</a></li>
+<!--
+EOT;
+}print <<<EOT
+-->
+					</ul>
+				</div>
+				</div>
+				<ul class="cc">
+<!--
+EOT;
+foreach ($_Navbar['main'] as $key => $value) {
+	if ($key == 'html') continue;
+	$currentClass = $value['data']['iscurrent'] ? ' class="current" ' : '';
+	$html = buildNavLinkHtml($value['data']);
+
+	$crossEvent = $verticalEvent = $currentEvent = '';
+
+	if (!$value['data']['iscurrent'] && 'cross' == $value['data']['floattype'] && $value['subs']) {
+		$crossEvent = " onmouseover=\"ctrlSubMenu('nav_key_up_$key', 'nav_key_sub_$key');\"";
+	}
+	if (!$value['data']['iscurrent'] && 'vertical' == $value['data']['floattype'] && $value['subs']) {
+		$verticalEvent = " onmouseover=\"tmpHideAllCross('nav_key_sub_$key');\"";
+		$db_menuinit .= ",'nav_key_up_$key' : 'nav_key_sub_$key'";
+	}
+	if ($value['data']['iscurrent']) {
+		$currentEvent = " onmouseover=\"tmpHideAllCross('nav_key_sub_$key');\"";
+	}
+print <<<EOT
+-->
+					<li{$currentClass}{$crossEvent}{$verticalEvent}{$currentEvent}>$html</li>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+				</ul>
+			</div>
+        </div>
+        <div id="navB" class="pr">
+<!--
+EOT;
+$showEmptyNav = true;
+foreach ($_Navbar['main'] as $key => $value) {
+	if ($key == 'html') continue;
+	$subs = $value['subs'];
+	$nav = $value['data'];
+
+	if ($subs) {
+
+		if ($nav['iscurrent']) {
+			$showEmptyNav = false;
+			$menuListClass = 'align' == $nav['selflisttype'] ? 'menuListB' : 'menuListC';
+print <<<EOT
+-->
+			<div class="navB">
+				<div class="navBbg">
+                <ul class="$menuListClass cc"><!--
+EOT;
+			foreach ($subs as $value) {
+				$html = buildNavLinkHtml($value);
+print <<<EOT
+--><li>$html</li><!--
+EOT;
+			}
+print <<<EOT
+--></ul>
+				</div>
+            </div>
+<!--
+EOT;
+		} elseif ('cross' == $nav['floattype']) {
+			//$db_menuinit .= ",'nav_key_up_$key' : 'nav_key_sub_$key'"; //register
+			$menuListClass = 'space' == $nav['listtype'] ? 'menuListC' : 'menuListB';
+print <<<EOT
+-->
+        	<div id="nav_key_sub_$key" class="navB" style="position:absolute; width:100%; top:0px; z-index:11; display:none;" >
+				<div class="navBbg">
+                <ul class="$menuListClass cc"><!--
+EOT;
+			foreach ($subs as $value) {
+				$html = buildNavLinkHtml($value);
+print <<<EOT
+--><li>$html</li><!--
+EOT;
+			}
+print <<<EOT
+--></ul>
+				</div>
+            </div>
+<!--
+EOT;
+		} elseif ('vertical' == $nav['floattype']) {
+			//$db_menuinit .= ",'nav_key_up_$key' : 'nav_key_sub_$key'"; //register
+			$appendClass = 'twocol' == $nav['listtype'] ? 'menuHalf cc' : '';
+			$width = 'twocol' == $nav['listtype'] ? '18' : '9';
+print <<<EOT
+-->
+        	<div id="nav_key_sub_$key" style="display:none;">
+				<div class="pw_menu" style="overflow:hidden;">
+                <ul class="menuList $appendClass" style="width:{$width}em;"><!--
+EOT;
+			foreach ($subs as $value) {
+				$html = buildNavLinkHtml($value);
+print <<<EOT
+--><li>$html</li><!--
+EOT;
+			}
+print <<<EOT
+--></ul>
+				</div>
+            </div>
+<!--
+EOT;
+		}
+
+	}
+}
+if ($showEmptyNav) {
+print <<<EOT
+-->
+<!--
+EOT;
+}
+print <<<EOT
+-->
+		</div>
+<script>
+var timeoutSpecifyId = {};
+
+function tmpClose(elementId) {
+	timeoutSpecifyId[elementId] = setTimeout(function() {
+		getObj(elementId).style.display = 'none';
+	}, 100);
+}
+function tmpHideAllCross(currentSubMenuId) {
+	var elements = getElementsByClassName('navB', getObj('navB'));
+	for (i=0; i<elements.length; i++) {
+		if (elements[i].id != '' && elements[i].id != currentSubMenuId) elements[i].style.display = 'none';
+	}
+}
+
+function ctrlSubMenu(parentId, subMenuId) {
+	clearTimeout(timeoutSpecifyId[subMenuId]);
+
+	tmpHideAllCross(subMenuId);
+	getObj(subMenuId).style.display = '';
+
+	getObj(parentId).onmouseout = function() {
+		tmpClose(subMenuId);
+		getObj(parentId).onmouseout = '';
+	};
+	getObj(subMenuId).onmouseout = function() {
+		tmpClose(subMenuId);
+	};
+	getObj(subMenuId).onmouseover = function() {
+		clearTimeout(timeoutSpecifyId[subMenuId]);
+		getObj(subMenuId).style.display = '';
+	};
+}
+</script>
+     </div>
+	<div id="searchA">
+    	<div class="searchA_right fr">&nbsp;</div>
+        <div class="searchA cc">
+        	<form action="searcher.php" method="post" onSubmit="return searchCheck(this);">
+	        	<input type="hidden" value="$verifyhash" name="verify">
+	            <input value="2" type="hidden" name="step">
+	            <input value="thread" type="hidden" id="search_type" name="type">
+	            <div class="ip"><input id="search_input" type="text" value="搜索其实很简单！" class="gray" name="keyword" onFocus="searchFocus(this)" onBlur="searchBlur(this)" /></div>
+	            <div class="s_select" onMouseOut="this.firstChild.style.display='none';" onMouseOver="this.firstChild.style.display='block';"><ul onClick="getSearchType(event)"><!--
+EOT;
+if ($db_search_type) {
+	foreach ($db_search_type as $key=>$value) {
+		$currentType = $key == 'thread' ? 'style="display:none"' : '';
+print <<<EOT
+--><li type="$key" $currentType>{$value}</li><!--
+EOT;
+	}
+} else {
+print <<<EOT
+--><li type="thread" style="display:none">帖子</li><li type="diary">日志</li><li type="user">用户</li><li type="forum">版块</li><li type="group">群组</li><!--
+EOT;
+}print <<<EOT
+--></ul><h6>帖子</h6></div>
+	            <button type="submit" class="cp fl">搜索</button>
+            </form>
+            <div class="s_tags">
+<!--
+EOT;
+$hotwords = ($db_hotwords) ? explode(",",$db_hotwords) : array();
+if($hotwords){print <<<EOT
+-->
+            <span>热搜：</span>
+<!--
+EOT;
+foreach($hotwords as $hotword){
+print <<<EOT
+-->
+                	<a href="searcher.php?keyword={$hotword}&type=thread">$hotword</a>
+<!--
+EOT;
+}}
+print <<<EOT
+-->
+            </div>
+        </div>
+    </div>
+<script>
+function searchCheck(o) {
+	getVerify(o);
+	return searchInput();
+}
+
+function getVerify(o) {
+	o.verify.value = verifyhash;
+	return true;
+}
+</script>
+</div>
+<!--#list($htmlAdvert,$arrayAdvert) = pwAdvert('Site.NavBanner1',$fid);#-->
+<!--#if($htmlAdvert){#-->
+	<div class="tac mb5" style="line-height:1;">$htmlAdvert</div>
+<!--#}#-->
+<!--#list($htmlAdvert,$arrayAdvert) = pwAdvert('Site.NavBanner2',$fid);#-->
+<!--#if($htmlAdvert){#-->
+	<div class="tac mb5" style="line-height:1;">$htmlAdvert</div>
+<!--#}#-->
+<div id="main">
+<!--
+EOT;
+?>-->

@@ -1,7 +1,8 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx-php
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx-php:5
 MAINTAINER sharkseven 'shark@dodora.cn'
 
 ADD upload /root/temp
+
 EXPOSE 22
 EXPOSE 80
 

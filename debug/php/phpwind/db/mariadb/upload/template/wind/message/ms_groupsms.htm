@@ -1,0 +1,210 @@
+<!--<?php
+print <<<EOT
+-->
+<div id='hiddenMessage' style="display:none"></div>
+<div class="contUser" id="content">
+<table width="100%"><tr><td height="600" valign="top">
+<div class="p15">
+	<h4 class="site mb5"><span>群消息</span>(共{$groupsmsAllCount}条，<a href="$normalUrl&action=unread"><b>{$notReadCount}</b>条未读消息</a>)</h4>
+<!--
+EOT;
+if($action == 'info' || $action == 'up' || $action == 'down'){print <<<EOT
+-->
+<div class="mb10">
+<a href="$normalUrl&page=$page" class="mr20">&lt;&lt;返回</a>
+<a href="javascript:;" onclick="getpage('up')">上一条</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="javascript:;" onclick="getpage('down')">下一条</a>
+</div>
+<div id="showmessageTip"></div>
+<script>
+function getpage(act){
+	ajax.send("$normalUrl&action=checkover&rid={$message[rid]}&dir="+act,'',function(){
+		 var rText = ajax.request.responseText.split('\t');
+		 if (rText[0] == 'success'){
+			 location.href = "$normalUrl&action="+act+"&rid={$message[rid]}";
+		 }else{
+			 showDialog('warning',(act == "down") ? "已经是最后一条！" : "已经是第一条！",3);return false;
+		 }
+		 return false;
+	});
+	return false;
+}
+var db_bbsurl = '$db_bbsurl';
+var db_urlcheck = '$db_urlcheck';
+</script>
+<script type="text/javascript" src="js/pw_lwd.js"></script>
+<!--
+EOT;
+if($message['typeid'] != $messageServer->getConst('groupsms_colony')){
+	$linkUrl = "{$db_userurl}";
+	require messageEot('groupsms_cinfo');
+}else{
+	$linkUrl = "apps.php?q=group&cyid=";
+	require messageEot('groupsms_ginfo');
+}
+
+//列表页
+}else{
+$_unReadCol = getUnReadHtml();
+print <<<EOT
+-->
+<form name="FORM" action="" method="post">
+<input type="hidden" name="verify" value="$verifyhash" />
+<div class="mb10">
+<script type="text/javascript">
+function getSmsList(rType){
+	location.href='$normalUrl&action='+rType;
+}
+</script>
+<span class="mr5"><label><input name="" type="checkbox" value="" onclick="MC.CheckAll(this.form,this)">&nbsp;全选</label></span>
+<span class="bt2"><span><button onclick="MC.mSubmit(this.form,'markgroup','groupsms','$action','$page','showmessageTip')" type="button">标记已读</button></span></span>
+<span class="bt2"><span><button onclick="MC.mSubmit(document.FORM,'del','groupsms','$action','$page','showmessageTip')"  type="button">删除</button></span></span>
+<span style="margin:0 6px;">筛选：<span class="dropdown"><select onchange="getSmsList(this.value)" id="alltype">
+	<option value="all" $selected_all>全部</option>
+	<option value="self" $selected_self>我发起的群消息</option>
+	<option value="other" $selected_other>我收到的群消息</option>
+</select></span></span>
+</div>
+<div id="showmessageTip"></div>
+<table width="100%" class="mb10 z2">
+<!--
+EOT;
+if($emptyListTip){
+print <<<EOT
+-->
+			<tr><td><p class="tac p15 f14">{$emptyListTip}</p></td></tr>
+<!--
+EOT;
+}else{
+$_unReadCol = getUnReadHtml();
+print <<<EOT
+-->
+			{$_unReadCol}
+<!--
+EOT;
+}foreach($groupsmsList as $key => $value){
+$value[modified_time] = get_date($value[modified_time]);
+sort($value['extra']);
+$isColony = ($value[typeid] == $messageServer->getConst('groupsms_colony')) ? true : false;
+$_name =  $isColony ? $value['cname'] : ($value['create_uid'] != $winduid ? $value['create_username'] : $value['extra'][0]);
+$_url = $isColony ? "apps.php?q=group&cyid={$value['colonyid']}" : ($value['create_uid'] != $winduid ? "u.php?uid={$value['create_uid']}" : "u.php?username={$value['extra'][0]}");
+$_tips = $isColony ? '' : ($value['create_uid'] != $winduid ? '' : ' 等');
+$_icon = $value[typeid] == $messageServer->getConst('groupsms_colony') ? $value['cnimg'] : $value['face'];
+list($_img,$_b,$_tip) = getMessageIconByStatus($value);
+if(in_array($value['colonyid'],$groups) || ($value['typeid'] == $messageServer->getConst('groupsms_shield'))){
+	$_img = "shield.png";
+}
+$_col = getSubListHtml($value);
+$value['content'] = strip_tags($value['content']);
+$_title = getMessageIconTips($value);
+$_sendtype = $winduid == $value['create_uid'] ? '群发给' : '来自于';
+print <<<EOT
+-->
+	{$_col}
+	<tr class="tr3">
+		<td class="pick"><input name="rids" type="checkbox" value="{$value[rid]}"></td>
+		<td class="icon"><img src="u/images/message/{$_img}" title="{$_title}"/></td>
+<!--
+EOT;
+if (!$isColony || ($isColony && $value['cname'])) {
+print <<<EOT
+-->
+		<td class="face">
+			<a href="{$_url}" class="img_30"><img src="{$_icon}" width="30" height="30" /></a>
+		</td>
+		<td class="name">
+		<p>{$_sendtype}:<a href="$_url">$_name</a> {$_tips}</p>
+<!--
+EOT;
+} elseif ($isColony && !$value['cname']) {
+print <<<EOT
+-->
+		<td class="face">
+			<img src="images/g/groupnopic.gif" width="30" height="30" />
+		</td>
+		<td class="name">
+		<p>{$_sendtype}:该群组已删除</p>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+		<em><span title="$value[modified_time]">{$value[modified_time_format]}</span></em>
+		</td>
+		<td class="value">
+		<h4 $_b><a class="mr5" href="$normalUrl&action=info&smstype={$value[typeid]}&page=$page&mid={$value[mid]}&rid={$value[rid]}">{$value[title]}</a><em class="s2 fn">{$_tip}</em></h4>
+		<p class="lh_18">{$value[content]}</p>
+		</td>
+		<td class="del">
+<!--
+EOT;
+if($value[typeid] == $messageServer->getConst('groupsms_colony')){
+if(in_array($value['colonyid'],$groups)){
+print <<<EOT
+-->
+		<a id="del_{$value[rid]}" href="javascript:;" onclick="MC.group('','action=open&gid=$value[colonyid]&mid=$value[mid]','$type','$page','showmessageTip')" title="接收此群的消息" class="s3">启用</a>
+<!--
+EOT;
+}else{print <<<EOT
+-->
+		<a id="del_{$value[rid]}" href="javascript:;" onclick="MC.group('确定要拒收该群组的消息吗？','action=close&mid=$value[mid]&gid=$value[colonyid]','$type','$page','showmessageTip')" title="拒收此群的消息" class="s2">拒收</a>
+<!--
+EOT;
+}}else{
+if($value['typeid'] == $messageServer->getConst('groupsms_shield')){
+print <<<EOT
+-->
+		<a id="del_{$value[rid]}" href="javascript:;" onclick="MC.group('','action=unshield&rid=$value[rid]&mid=$value[mid]','$type','$page','showmessageTip')" title="接收并提醒" class="gray">恢复</a>
+<!--
+EOT;
+}else{print <<<EOT
+-->
+		<a id="del_{$value[rid]}" href="javascript:;" onclick="MC.group('确定要屏蔽该条多人消息吗?','action=shield&mid=$value[mid]&rid=$value[rid]','$type','$page','showmessageTip')" title="接收但不提醒" alt="接收但不提醒">屏蔽</a>
+<!--
+EOT;
+}}print <<<EOT
+-->
+
+		</td>
+	</tr>
+<!--
+EOT;
+}print <<<EOT
+-->
+</table>
+<div id="showmessage"></div>
+<div class="mb10"> 
+	<div class="fr" style="_width:500px;">{$pages}</div>
+<!--
+EOT;
+if(count($groupsmsList) >= $perpage){
+print <<<EOT
+-->
+    <span class="mr5"><label><input name="" type="checkbox" value="" onclick="MC.CheckAll(this.form,this)">&nbsp;全选</label></span>
+    <span class="bt2"><span><button onclick="MC.mSubmit(this.form,'markgroup','groupsms','$action','$page','showmessage')" type="button">标记已读</button></span></span>
+    <span class="bt2"><span><button onclick="MC.mSubmit(document.FORM,'del','groupsms','$action','$page','showmessage')"  type="button">删除</button></span></span>
+<!--
+EOT;
+}print <<<EOT
+-->
+</div>
+</form>
+<!--
+EOT;
+}print <<<EOT
+-->
+</div>
+</td></tr></table>
+</div>
+<script type="text/javascript" src="js/select.js"></script>
+<script type="text/javascript">
+var ld=window.onload;
+window.onReady(function(){
+	new sSelect(getObj('alltype'));
+});
+</script>
+<!--
+EOT;
+if(!defined('AJAX')){
+	require_once(uTemplate::printEot('footer'));
+}
+?>-->

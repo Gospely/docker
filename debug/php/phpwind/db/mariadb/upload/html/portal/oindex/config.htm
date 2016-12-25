@@ -1,0 +1,61 @@
+<pw id="社区达人@广场" />
+<list num="10" action="weibosort" cachetime="1800" ifpushonly="0" title="社区达人推荐" />
+<div class="daren_wrap">
+<ul id="darenPhotos">
+<loop>
+	<li><a href="{url}" class="daren_img"><img src="{image,48,48}" width="48" height="48" /></a><span class="fl"><a href="{url}">{title,12}</a>&nbsp;&nbsp;{tags,50}</span></li>	
+</loop>	
+</ul></div>
+
+
+<pw id="热门帖子标题@广场" />
+	<em>热门帖子</em>
+
+<pw id="热门帖子@广场" />
+<list num="10" action="subject" cachetime="1800" ifpushonly="0" title="帖子列表" />
+<ul class="list1">
+<loop>
+	<li><span class="fr cp"><a href="{authorurl}" target="_blank" class="gray">{author}</a></span><a href="{url}" target="_blank">{title,26}</a></li>
+</loop>
+</ul>
+			
+					
+<pw id="精彩照片@广场" />
+	
+<list num="5" action="photo" cachetime="1" ifpushonly="0" title="精彩照片" />
+<loop>
+	<li><a href="{url}" target="_blank"><img src="{image,120,100}" width="119" height="129" /></a></li>
+</loop>
+	
+<pw id="热门新鲜事标题@广场" />
+	<h2><em>热门新鲜事</em></h2>
+
+
+<pw id="今日热门话题标题@广场" />
+			<h2>今日热门<em>话题</em></h2>
+
+<pw id="今日热门话题@广场" />
+<list num="10" action="group" cachetime="1800" ifpushonly="0" title="今日热门话题" />
+<!--# $count = 0;#-->
+<loop>
+<!--#
+$tempClass = $count<3 ? 'class="top"' : '';
+$count++;
+#-->
+	<li $tempClass><em>$count</em><span> <a href="{url}" target="_blank">{title,12}</a></span></li>
+</loop>	
+
+
+<pw id="今日人气用户标题@广场" />
+			<h2>今日人气<em>用户</em></h2>
+
+<pw id="今日人气用户@广场" />
+<list num="10" action="user" cachetime="1800" ifpushonly="0" title="今日人气用户" />
+<!--# $count = 0;#-->
+<loop>
+<!--#
+$tempClass = $count<3 ? 'class="top"' : '';
+$count++;
+#-->
+	<li $tempClass ><em>$count</em><span> <a href="{url}" target="_blank">{title,12}</a></span></li>
+</loop>

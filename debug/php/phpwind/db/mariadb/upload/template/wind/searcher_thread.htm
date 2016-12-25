@@ -1,0 +1,296 @@
+<!--<?php 
+print <<<EOT
+-->
+<!--
+EOT;
+$mainTmpStyle = $_COOKIE['searchtoggle']!=='0' ? 'main cc' : 'main cc sideClose';
+print <<<EOT
+-->
+<div class="$mainTmpStyle" id="sidebar">
+	<div class="grid_3 cc mb20">
+		<div class="md">		
+<!--
+EOT;
+require printEOT('searcher_threadleftside');
+print <<<EOT
+-->
+		</div>
+		<div class="cm">
+			<div class="cw cc">
+			<div class="dlA">
+			
+<!--
+EOT;
+if ($adverts) {print <<<EOT
+-->
+	
+<!--
+EOT;
+	foreach ($adverts as $advert) {
+	print <<<EOT
+-->
+				<div class="promotion">
+					$advert
+				</div>
+<!--
+EOT;
+	}print <<<EOT
+-->
+<!--
+EOT;
+}print <<<EOT
+-->
+	
+	
+<!-- 
+EOT;
+if($admincheck || $superedit || $superdelete ){
+print <<<EOT
+-->		
+				<form action="mawhole.php?" method="post" id="search" name="SEARCH">
+				 <input type="hidden" value="$verifyhash" name="verify">
+				<input type="hidden" name="action" value="" id="action" />
+				<input type="hidden" name="fid" value="$fid" />
+<!-- 
+EOT;
+}
+print <<<EOT
+-->   	
+<div class="main_min">
+<!-- 
+EOT;
+$isGM = S::inArray($windid, $manager);
+foreach($threads as $thread){
+print <<<EOT
+-->       	
+	            	<dl id="search_{$thread[tid]}">
+	                	<dt>
+<!-- 
+EOT;
+if($admincheck || $superedit ){
+print <<<EOT
+-->                   	
+	                	<input type="checkbox" value="$thread[tid]" name="tidarray[]"> 
+<!-- 
+EOT;
+}
+$threadUrl = ($threadrange == 3) ? "job.php?action=topost&tid=".$thread[tid]."&pid=".$thread[pid] : "read.php?tid=".$thread[tid];
+print <<<EOT
+-->                	
+	                	<a href="{$threadUrl}" target="_blank" class="tlink">$thread[subject]</a>
+<!-- 
+EOT;
+if($admincheck || $superedit ){
+print <<<EOT
+-->                     
+						- <a href="post.php?action=modify&fid={$thread[fid]}&tid={$thread[tid]}&pid=tpc&article=0" target="_blank" class="s2">编辑</a>
+<!-- 
+EOT;
+}
+print <<<EOT
+--> 
+						</dt>
+<!--
+EOT;
+if($thread[imgTotal]){
+$imgStype = $thread[imgTotal] > 1 ? '<div class="imgs"><img src="images/blank.gif" /></div>' : '';
+print <<<EOT
+-->
+            <dd class="fr"><div class="fl"><div class="img cp"><a href="javascript:;" onclick="showImg({$thread[tid]},{$thread[firstImgId]});"><img style="background:url({$thread[firstImgUrl]}) center center no-repeat;" src="images/blank.gif" /></a></div></div>{$imgStype}</dd>
+<!-- 
+EOT;
+}
+print <<<EOT
+-->
+						<dd>
+<!--
+EOT;
+if ($threadrange != 3) {
+print <<<EOT
+-->
+						<div class="num">{$thread[replies]}条回复,{$thread[hits]}次浏览</div>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+						<div class="text">$thread[content]</div>
+						<div class="author"><cite>$thread[postdate] - </cite><!--
+EOT;
+if(!$isGM && $thread['anonymous'] == 1){print <<<EOT
+-->
+匿名
+<!--
+EOT;
+}else{print <<<EOT
+-->
+						作者: <a href="{$db_userurl}$thread[authorid]">$thread[author]</a>
+<!-- 
+EOT;
+}
+print <<<EOT
+-->
+						 - <a href="thread.php?fid={$thread[fid]}">{$thread[name]}</a>                 
+						</div>
+	                    </dd>
+	                </dl>
+<!-- 
+EOT;
+}
+print <<<EOT
+-->
+</div>
+<!-- 
+EOT;
+if($admincheck || $superdelete || $superedit ){
+print <<<EOT
+-->
+	            	<div class="manage cc">
+	                <label><input name="" type="checkbox" value="" onclick="CheckAll(this.form)" >全选</label>
+<!-- 
+EOT;
+if($admincheck && $fid ){
+print <<<EOT
+-->   
+									<span class="bt2"><span><button type="button" onclick="searchSubmit('headtopic');">置顶</button></span></span>
+									<span class="bt2"><span><button type="button" onclick="searchSubmit('digest');">精华</button></span></span>
+									<span class="bt2"><span><button type="button" onclick="searchSubmit('lock');">锁定</button></span></span>
+									<span class="bt2"><span><button type="button" onclick="searchSubmit('pushtopic');">提前</button></span></span>
+									<span class="bt2"><span><button type="button" onclick="searchSubmit('downtopic');">压帖</button></span></span>
+									<span class="bt2"><span><button type="button" onclick="searchSubmit('edit');">加亮</button></span></span>
+									<span class="bt2"><span><button type="button" onclick="searchSubmit('type');">分类主题</button></span></span>
+									<span class="bt2"><span><button type="button" onclick="searchSubmit('move');">移动</button></span></span>
+									<span class="bt2"><span><button type="button" onclick="searchSubmit('copy');">复制</button></span></span>
+									<span class="bt2"><span><button type="button" onclick="searchSubmit('del');">删除</button></span></span>
+<!--
+EOT;
+}
+print <<<EOT
+-->
+<!--
+EOT;
+if( $superdelete && !$fid ){
+print <<<EOT
+-->               
+									<span class="bt2"><span><button type="button" onclick="searchSubmit('delall');">删除</button></span></span>
+<!-- 
+EOT;
+}
+print <<<EOT
+-->                 
+	                </div>
+<!-- 
+EOT;
+}
+print <<<EOT
+-->  
+	                <div class="cc mb20">
+	                   $pager
+	                </div>
+	            </form>
+	
+	
+			</div>
+<!--
+EOT;
+require printEOT('searcher_searchinput');
+print <<<EOT
+-->	
+			</div>
+		</div>
+		<div class="sd">
+			<div class="sidebar">
+<!--
+EOT;
+list($htmlAdvert,$arrayAdvert) = pwAdvert('Site.Search.Thread.Right','');
+if($htmlAdvert){print <<<EOT
+-->
+					<div style="width:200px;">
+						<div class="tac mb5">$htmlAdvert</div>
+					</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+					<div>{$rightSearchResult}</div>				
+<!--
+EOT;
+if($hotwords){
+print <<<EOT
+-->     
+					<div class="boxA">
+						<h2><a>热门搜索</a></h2>
+						<ul>
+<!-- 
+EOT;
+foreach($hotwords as $hotword){
+print <<<EOT
+-->
+							<li><a href="searcher.php?keyword={$hotword}&type=thread">$hotword</a></li>
+<!-- 
+EOT;
+}
+print <<<EOT
+--> 
+							
+						</ul>
+					</div>
+<!-- 
+EOT;
+}
+print <<<EOT
+-->
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	var searchSubmit = function(type){
+		if(!type) return false;
+		getObj("action").value = type;
+		var form = getObj("search");
+		var ischeck = false;
+		var del = [];
+		var threadIds = '';
+		var count = 0;
+		for (var i = 0; i < form.elements.length; i++) {
+			var e = form.elements[i];
+			if (e.type == 'checkbox' && e.checked == true ) {
+				var v = e.value;
+				ischeck = true;
+				threadIds += v+"|";
+				del.push(v);
+				count += 1;
+			}
+		}
+		if(!ischeck){
+			showDialog('error',"请选择操作的帖子");
+			return false;
+		}
+		if(type == "delall"){
+			showDialog("confirm","确定要删除帖子吗?",0,function(){
+				var data = "&fid=all&step=2&verify={$verifyhash}&tidarray="+threadIds;
+				ajax.send("mawhole.php?action=delall&ajax=1",data,function(){
+					for(i=0;i<del.length;i++){
+						var t = document.getElementById("search_"+del[i]);
+						if(t){
+							t.innerHTML="";
+						}
+					}
+					if(count >= 10){
+						location.href = 'searcher.php?keyword={$keyword}&type=thread';
+					}else{
+						showDialog('success',ajax.request.responseText,1);
+					}
+				});
+			});
+			return false;
+		}
+		setTimeout(function(){
+			form.submit();
+		},0);
+	}
+</script>
+<!--
+EOT;
+?>-->

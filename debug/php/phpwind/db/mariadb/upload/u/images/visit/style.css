@@ -1,0 +1,42 @@
+.icon_up,.icon_down{background:url(square_icon.png) 0 -30px no-repeat;display:block;width:9px;height:14px; vertical-align:bottom;margin-left:5px;float:right;margin-top:4px;}
+.icon_down{ background-position:0 0;}
+
+.square_wrap{background:#fff;padding:15px;}
+.square_cont{width:660px;}
+.square_side{width:255px;}
+
+.square_box_a{border:1px solid #eaeaea;background:#f5fafd;padding:5px 10px;}
+.square_box_a h2{border-bottom:1px solid #e7ebee;display:block;color:#106bab;padding:5px 10px; font-size:14px;}
+
+.square_list_num{padding:0 5px;margin-top:-1px;}
+.square_list_num li{background:url(square_list_li.png) 0 top repeat-x;padding:10px 0 10px 5px;}
+.square_list_num li em{display:inline-block;width:15px;height:14px;text-align:center;border:1px solid #cee9f7;background:#fff;color:#3271c0; font:12px/16px Simsun;margin-right:10px;}
+.square_list_num li .user_img{display:none;}
+.square_list_num li .fr{ font-family:Simsun;padding-top:2px;}
+.square_list_num li.top em{border:1px solid #81c7ee;background:#81c7ee;color:#fff;}
+.square_list_num li.top .user_img{display:inline-block; vertical-align:middle;margin-right:5px;}
+.square_list_num li.top .user_img img{vertical-align:middle;}
+
+.square_hd{background:url(square_hd.png) 0 center repeat-x;height:26px;padding:5px 0;}
+.square_hd h2{float:left;display:block;height:26px;width:110px; text-indent:-2000em;overflow:hidden; background:url(square_hd_h2.png) no-repeat;}
+.square_hd h2.sqhr{ background-position:0 -40px;}
+.square_hd h2.zzfs{ background-position:0 -80px;}
+.square_hd .fr{color:#666;margin:6px 10px 0 0;}
+
+.square_list_user{padding:5px 0 0 5px;}
+.square_list_user li{float:left;width:33.3%;padding:10px 0;}
+.square_list_user li .user_img{float:left;border:1px solid #cccccc;padding:2px;background:#fff;margin-right:10px;}
+.square_list_user li .user_img img{display:block;}
+.square_list_user li p{padding-top:5px;}
+.square_list_user li .user_name{ font-size:14px;}
+.square_list_user li .fans{ font-family:Simsun;display:inline-block;width:80px;}
+.square_list_user li a.add_follow{color:#106bab;}
+
+.square_list_news dl{padding:10px 5px;background:url(square_list_news_bg.png) 0 bottom repeat-x;}
+.square_list_news dt{float:left;width:65px;}
+.square_list_news dt .user_img{float:left;border:1px solid #cccccc;padding:2px;background:#fff;}
+.square_list_news dt .user_img img{display:block;}
+.square_list_news dd{float:left;width:580px;}
+.square_list_news dd .user_name{ font-size:14px;margin-right:10px;}
+.square_list_news dd .time{color:#999;}
+.square_list_news dd .text{ font-size:14px;color:#333;line-height:1.5;}

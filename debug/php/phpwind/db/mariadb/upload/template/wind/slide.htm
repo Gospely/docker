@@ -1,0 +1,378 @@
+<!--<?php
+$metaVersion = $wind_version;
+print <<<EOT
+--><!doctype html>
+<html>
+<head>
+<meta charset="$db_charset">
+<title>$subject</title>
+<meta name="generator" content="phpwind v{$metaVersion}" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<base id="headbase" href="$db_bbsurl/" /> 
+<link href="$imgpath/pw_core.css?{$GLOBALS['wind_repair']}" rel="stylesheet" />
+<link href="$imgpath/slide/slide.css?{$GLOBALS['wind_repair']}" rel="stylesheet"/>
+<style type="text/css">
+.preA{cursor:url(u/images/pre.cur),auto;}
+.nextA{cursor:url(u/images/next.cur),auto;right:0;}
+</style>
+<script type="text/javascript" src="js/core/core.js"></script>
+<script type="text/javascript" src="js/pw_ajax.js"></script>
+<script>
+var imgpath = '$imgpath';
+</script> 
+</head>
+<body>
+<div id="wrap" class="wrap">
+	<div class="content_wrap">
+		<div class="content">
+			<div class="head cc">
+				<h1>$subject</h1><span id="positionNum"></span>
+<!--
+EOT;
+	if ($editAttachRight) {
+print <<<EOT
+--><a href="post.php?action=modify&fid={$fid}&tid={$tid}&pid=tpc&article=0#breadCrumb" class="a_edit" hidefocus="true">[编辑]</a>
+<!--
+EOT;
+	}
+print <<<EOT
+-->
+			</div>
+			<div class="info" id="info">
+				<a href="javascript:;" class="play" id="pause" hidefocus="true">自动播放</a>|<a href="javascript:;" hidefocus="true" class="a_artwork" id="viewbigpic" target="_blank">查看原图</a>|<a href="thread.php?fid={$fid}&search=img#tabA" class="a_back" hidefocus="true">返回列表</a>|<a href="read.php?tid={$tid}&ds=1#pw_content" class="a_quit" hidefocus="true">返回原帖</a>
+			</div>
+<!--
+EOT;
+if($groupid != 'guest'){print <<<EOT
+-->
+<!--
+EOT;
+	} else {
+print <<<EOT
+-->
+					<div class="silde_login">
+						<span class="mr20 cp" onClick="location.href='login.php';">登录</span><span onClick="location.href='$regurl';" class="a_quit cp">注册</span>
+					</div>
+<!--
+EOT;
+}print <<<EOT
+-->
+			<table width="100%" height="100%" class="content_img"><tr><td>
+				<a href="javascript:;" class="content_img_hover" id="img_content_wrap" hidefocus="true">
+					<div class="page">
+						<span id="prePic" class="preA" title="上一张">上一张</span>
+						<span id="nextPic" class="nextA" title="下一张">下一张</span>
+					</div>
+					<input type="hidden" id="attachId" name="attachId">
+<!--
+EOT;
+if($groupid != 'guest'){print <<<EOT
+-->
+					<span class="operat">
+						<span onClick="collectionImg()" class="a_keep">收藏</span>
+						<span onClick="commentsPic(this.id);" class="a_reply">评论</span>
+						<span onClick="sendmsg('operate.php?action=toweibo&ajax=1&type=topic&id=$tid&tucool=1','',this.id);" class="a_fresh">新鲜事</span>
+						<input type="hidden" id="attachId" name="attachId">
+					</span>
+<!--
+EOT;
+}print <<<EOT
+-->
+					<img id="img_content" src="$imgpath/blank.gif">
+				</a></td></tr></table>
+			<div class="footer">
+				<div class="bottom">
+					<div id="B_slider_table">
+					<table style="table-layout:fixed;width:100%;">
+						<tr>
+							<td width="19"><a href="javascript:" title="上一组" class="preB" id="prePage" hidefocus="true"></a></td>
+							<td>
+							<div style="overflow:hidden;width:100%; position:relative;">
+								<div class="B_slider" id="B_slider"><!--
+EOT;
+$attachsService = L::loadClass('attachs','forum');
+foreach ($tucoolAttachs as $attach) {
+list($attachurl) = geturl($attach['attachurl'], 'show');
+$smallAttachUrl = $attachsService->getThreadAttachMini($attach['attachurl'],$attach['ifthumb']);
+print <<<EOT
+--><span><a href="{$attachurl}" id="pic{$attach[aid]}" name='$attach[json]' hidefocus="true"><img src="$imgpath/blank.gif" style="background:url({$smallAttachUrl}) center center no-repeat;" width="45" height="45"></a></span><!--
+EOT;
+}print <<<EOT
+--></div>
+							</div>
+							</td>
+							<td width="19"><a id="nextPage" href="javascript:;" hidefocus="true" title="下一组" class="nextB"></a></td>
+						</tr>
+					</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<a class="switch" href="javascript:;" hidefocus="true" id="menuswitch" onClick="switchClose();"></a>
+	<div class="sidebar">
+		<div class="slide_info cc">
+			<dl class="cc slide_replay_list">
+				<dt><a href="u.php?uid={$authorid}"  target="_blank"><img src="{$readdb[0]['face']}" width="30" height="30"></a></dt>
+				<dd>
+					<p>作者：<a href="u.php?uid={$authorid}" target="_blank">{$author}</a></p>
+					<p>发布日期：{$postdate}</p>
+					<p class="explain">描述：<span id="img_descrip"></span><span id="img_nonedescrip" style="display: none">暂无描述</span>
+<!--
+EOT;
+if ($editAttachRight) {
+print <<<EOT
+-->
+					<span><a href="javascript:" class="a_edit" id="showadd" onClick="picsubject.showadd()">[修改]</a></span>
+<!--
+EOT;
+}print <<<EOT
+-->
+					<br><span id="descrip" style="display: none"><input type="text" id="add_descrip" value="" name="add_descrip" /><a href="javascript:;" onClick="picsubject.save()" class="btn">保存</a><a href="javascript:;" onClick="picsubject.cancle()" class="btn">取消</a></span>
+					</p>		
+				</dd>
+			</dl>
+		</div>
+		<div class="slide_replay">
+<!--
+EOT;
+if($groupid != 'guest'){print <<<EOT
+-->
+			<h2><a href="javascript:;" onClick="commentsPic(this.id);" class="b"><u>写点评论吧！</u><em>[{$replies}]</em></a></h2>
+<!--
+EOT;
+}print <<<EOT
+-->
+<!--
+EOT;
+if ($readdb) {
+print <<<EOT
+-->
+<!--
+EOT;
+	foreach ($readdb as $v) {
+	if ($v['pid'] == 'tpc') continue;
+print <<<EOT
+-->
+			<dl class="cc slide_replay_list">
+				<dt><a href="u.php?uid={$v['authorid']}"  target="_blank"><img src="{$v['face']}" width="30" height="30"></a></dt>
+				<dd><a href="u.php?uid={$v['authorid']}"  target="_blank">{$v['author']}</a>：{$v['content']}</dd>
+			</dl>
+<!--
+EOT;
+	}
+	if ($replyCount >$db_readperpage) {print <<<EOT
+-->
+			
+			<div class="tar">
+				<a href="read.php?tid={$tid}&ds=1#pw_content">更多&gt;&gt;</a>
+			</div>
+<!--
+EOT;
+	}print <<<EOT
+-->
+<!--
+EOT;
+}print <<<EOT
+-->
+		</div>
+	</div>
+</div>
+</body>
+<script>var BREEZE_BASE_PATH = document.getElementsByTagName('base')[0].href+'js/breeze/';</script>
+<script src="js/breeze/core/base.js"></script>
+<script src="js/global.js"></script>
+<script>
+//侧栏开关
+function switchClose(){
+	var wrap=document.getElementById("wrap");
+	var menuswitch=document.getElementById("menuswitch");
+	if(wrap.className == "wrap"){
+		wrap.className = "wrap_none";
+		menuswitch.className = "switch switch_open";
+	}else{
+		wrap.className = "wrap";
+		menuswitch.className = "switch";
+	}
+}
+
+var back="thread.php?fid={$fid}&search=img#tabA"
+var post="read.php?tid={$tid}&ds=1"
+function keypage(e) {
+var ev=e||window.event;
+if (ev.keyCode==39) slider.nextPic();
+if (ev.keyCode==37) slider.prePic();
+}
+var slider;
+var imageData=[];//用来存储当前页面所有图片数据
+var imgIndex=0;//当前图片索引
+function init(){
+		var index,hash=location.hash;
+		hash="pic"+hash.substr(1);
+		B.$$("#B_slider a").forEach(function(n,i){
+			imageData.push(JSONParse(n.name))
+			if(n.id==hash){
+				index=i;
+				imgIndex=i;//初始化图片索引
+			}
+		})
+		//设计宽度
+		slider = B.app.slider('#B_slider_table',index);
+		//设定显示图
+		B.query('.B_slider a').addEvent('click', showPic);
+		B.addEvent(window, 'resize', resizeImg);
+		B.addEvent(window, 'keydown', keypage);
+}
+var preview, step = 0;
+function getSlideIndex(currEle){
+		var index;
+		B.$$("#B_slider a").forEach(function(n,i){
+				if(n==currEle){
+					index=i;
+				}
+			})
+		return index;
+}
+function showPic(e){
+	var target = e.target;
+	if(target.tagName!='A'){
+		target = target.parentNode;
+	}
+	imgIndex=getSlideIndex(target);//通过当前节点获取索引
+	var url = target.href;
+	preview = new Image();
+	preview.onload = loadImg;
+	preview.src = url;
+	//切换current
+	B.require('dom', function(B){
+		B.$('.B_slider .current') &&B.query('.B_slider .current').removeClass( 'current');
+		B.addClass(target.parentNode, 'current');
+	});
+	//var attachs = JSONParse(target.name);
+	var attachs = imageData[imgIndex];//获取当前显示图片的数据
+	changeImg(attachs.aid,attachs.position,url,attachs.descrip);
+	e.preventDefault();
+	//拉黑
+   B.require('util.animate', function(){
+      B.query('#img_content').fadeOut(200, loadImg);
+   });
+   location.hash=target.id.substr(3);
+}
+function resizePic(){
+	var maxHeight =  document.documentElement.clientHeight-160 || document.body.clientHeight-160,
+		maxWidth = document.documentElement.clientWidth-300 || document.body.clientWidth-300,
+		imgp = B.$('#img_content');
+		//imgp.style.top = ( (document.documentElement.clientHeight || document.body.clientHeight)-imgp.height)/2 +'px';
+}
+function loadImg(){
+	if( (++step)%2 == 1 ){
+		return ;
+	}
+	imgp = resizeImg();
+	imgp.src=preview.src;
+	B.require('util.animate', function(){
+	  B.query('#img_content').fadeIn();
+	});
+}
+function resizeImg(){
+	var maxHeight =  document.documentElement.clientHeight-160 || document.body.clientHeight-160,
+	maxWidth = document.documentElement.clientWidth-350 || document.body.clientWidth-350,
+	ratioMax = maxWidth/maxHeight,
+	ratio = preview.width/preview.height, pwidth = preview.width, pheight = preview.height;
+	//获取高宽
+	if(ratio>ratioMax&&preview.width>maxWidth){
+		pheight = maxWidth/ratio;
+		pwidth = maxWidth;
+	}
+	if(ratio>ratioMax&&preview.height>maxHeight){
+		pheight = maxWidth/ratio;
+		pwidth = maxWidth;
+	}
+	if(ratio<ratioMax&&preview.width>maxWidth){
+		pheight = maxHeight;
+		pwidth = preview.width*(maxHeight/preview.height);
+	}
+	if(ratio<ratioMax&&preview.height>maxHeight){
+		pheight = maxHeight;
+		pwidth = preview.width*(maxHeight/preview.height);
+	}
+	imgp = B.$('#img_content');
+	imgp.src=preview.src;
+	imgp.width = pwidth;
+	imgp.height = pheight;
+	//图片外部宽度
+	imgpWrap = B.$('#img_content_wrap');
+	imgpWrap.style.width = pwidth + 'px';
+	imgpWrap.style.height = pheight + 'px';
+	//imgp.style.top = ( (document.documentElement.clientHeight || document.body.clientHeight)-imgp.height)/2 +'px';
+	return imgp;
+}
+function changeImg(aid,position,url,descrip){
+	if (!aid || !position) showDialog('error','数据加载错误',2);
+	getObj('attachId').value = aid;
+	getObj('positionNum').innerHTML = position;
+	getObj('viewbigpic').href = url;
+	getObj('img_descrip').innerHTML = descrip ? descrip : getObj('img_nonedescrip').innerHTML;
+	getObj('add_descrip').value = descrip ? descrip : '';
+	getObj('descrip').style.display = 'none';
+	getObj('img_descrip').style.display = '';
+	if (getObj('showadd')) getObj('showadd').style.display = '';
+}
+function collectionImg(){
+	var aid = getObj('attachId').value;
+	if (!aid) showDialog('error','数据加载错误',0);
+	ajax.send('apps.php?q=collection&a=favor&type=tucool&ajax=1&id='+aid, '', ajax.get);
+}
+function commentsPic(id){
+	var aid = getObj('attachId').value;
+	var tid = '{$tid}';
+	if (!aid || !tid) showDialog('error','数据加载错误',0);
+	sendmsg('operate.php?action=commentsPic&ajax=1&tid='+tid+'&aid='+aid,'',id);
+}
+var picsubject = {
+	showadd : function(){
+		getObj('img_descrip').style.display = 'none';
+		if (getObj('showadd')) getObj('showadd').style.display = 'none';
+		getObj('descrip').style.display = '';
+	},
+
+	cancle : function(){
+		getObj('descrip').style.display = 'none';
+		if (getObj('showadd')) getObj('showadd').style.display = '';
+		getObj('img_descrip').style.display = '';
+	},
+
+	save : function(){
+		var add_descrip = getObj('add_descrip').value;
+		var aid = getObj('attachId').value;
+		var tid = '{$tid}';
+		var len = strlen(add_descrip);
+		if (len > 100) {
+			showDialog('error','图片描述过长',2);
+			return false;
+		}
+		if (!aid || !tid || !add_descrip) {
+			picsubject.cancle();
+			return false;
+		}
+		ajax.send('apps.php?q=ajax&a=adddescrip&ajax=1','&aid='+aid+'&descrip='+add_descrip+'&tid='+tid,function(){
+			var rText = ajax.request.responseText;
+			if (rText == 'success'){
+				getObj('img_descrip').innerHTML = add_descrip||"";
+				//这里改变描述
+				imageData[imgIndex].descrip=add_descrip||"";
+				picsubject.cancle();
+			} else {
+				ajax.guide();
+			}
+		});
+	}
+}
+onReady(function(){
+	B.require( 'event', 'dom','app.slider', init);
+})
+</script>
+</html>
+<!--
+EOT;
+?>-->
