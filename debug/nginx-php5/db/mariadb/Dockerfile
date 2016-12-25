@@ -20,7 +20,7 @@ RUN sed -i -e "s/^bind-address/#bind-address/" /etc/mysql/my.cnf && \
 	chown -R core:adm /var/log/mysql.log && \
 	chown -R core:adm /var/log/mysql && \
 	chown -R core:root /run/mysqld
-RUN cat "default-storage-engine=MyISAM" >> /etc/mysql/my.cnf
+RUN echo "default-storage-engine=MyISAM" >> /etc/mysql/my.cnf
 ADD config /config
 ADD supervisord.conf /etc/supervisor/conf.d/mariadb.conf
 EXPOSE 3306
