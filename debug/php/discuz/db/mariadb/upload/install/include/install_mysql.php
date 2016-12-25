@@ -30,7 +30,17 @@ class dbstuff {
 				$this->halt('Can not connect to MySQL server');
 			}
 		}
-		mysql_query("SET sql_mode=''", $this->link);
+
+		if($this->version() > '4.1') {
+			if($dbcharset) {
+				mysql_query("SET character_set_connection=".$dbcharset.", character_set_results=".$dbcharset.", character_set_client=binary", $this->link);
+			}
+
+			if($this->version() > '5.0.1') {
+				mysql_query("SET sql_mode=''", $this->link);
+			}
+		}
+
 		if($dbname) {
 			mysql_select_db($dbname, $this->link);
 		}
