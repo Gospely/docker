@@ -6,6 +6,6 @@ RUN rm -rf /root/temp
 RUN git clone https://github.com/Gospely/angular2-template.git /root/temp
 RUN bash -c "cd /root/temp && rm -rf .git && npm install"
 
-EXPOSE 8080 80
+EXPOSE 4200 80
 
 ENTRYPOINT service ssh start && /config/main && /bin/bash
