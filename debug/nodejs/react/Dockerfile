@@ -4,7 +4,7 @@ MAINTAINER sharkseven 'shark@dodora.cn'
 
 RUN rm -rf /root/temp
 RUN git clone https://github.com/Gospely/react-template.git /root/temp
-RUN bash -c "cd /root/temp && rm -rf .git"
+RUN bash -c "cd /root/temp && rm -rf .git && npm install"
 
 EXPOSE 8080 80
 
