@@ -1,4 +1,4 @@
-FROM FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nodejs
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nodejs
 
 MAINTAINER sharkseven 'shark@dodora.cn'
 
