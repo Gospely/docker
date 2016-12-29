@@ -1,5 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-ubuntu
-
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx
 MAINTAINER sharkseven 'shark@dodora.cn'
 
 # gpg keys listed at https://github.com/nodejs/node
@@ -28,9 +27,5 @@ RUN curl -SLO "http://ipv4.mirrors.ustc.edu.cn/node/v$NODE_VERSION/node-v$NODE_V
   && rm "node-v$NODE_VERSION-linux-x64.tar.gz" SHASUMS256.txt.asc SHASUMS256.txt \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
 
-RUN git clone https://github.com/Gospely/hello_node.git /root/temp
 
 EXPOSE 22
-
-
-ENTRYPOINT service ssh start && /config/main && /bin/bash
