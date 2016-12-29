@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/sharkseven/gospel-debug-ubuntu
+FROM registry.cn-hangzhou.aliyuncs.com/sharkseven/debug-ubuntu
 MAINTAINER Max Schaefer <max@excloo.com>
 RUN curl https://nginx.org/keys/nginx_signing.key | apt-key add - && \
 	echo "deb http://nginx.org/packages/debian/ jessie nginx" > /etc/apt/sources.list.d/nginx.list && \
