@@ -1,7 +1,7 @@
 FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nodejs
 
 MAINTAINER sharkseven 'shark@dodora.cn'
-
+ADD etc /etc
 RUN rm -rf /root/temp
 RUN npm install -g angular-cli
 RUN git clone https://github.com/Gospely/angular2-template.git /root/temp

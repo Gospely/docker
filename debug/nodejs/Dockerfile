@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-ubuntu
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx
 
 MAINTAINER sharkseven 'shark@dodora.cn'
 
