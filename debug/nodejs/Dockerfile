@@ -2,6 +2,8 @@ FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx
 
 MAINTAINER sharkseven 'shark@dodora.cn'
 
+ADD etc /etc
+ADD config /config
 # gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
   && for key in \
