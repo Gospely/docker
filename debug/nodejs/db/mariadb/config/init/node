@@ -1,0 +1,1 @@
+sed -i -e "s/localhost:8000/localhost:${PORT}/" /etc/nginx/host.d/default.conf

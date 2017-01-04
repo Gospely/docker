@@ -1,6 +1,7 @@
 FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nodejs-mariadb
 
 MAINTAINER sharkseven 'shark@dodora.cn'
+ADD etc /etc
 
 RUN rm -rf /root/temp
 RUN git clone https://github.com/Gospely/express-template.git /root/temp

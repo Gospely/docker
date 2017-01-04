@@ -1,6 +1,9 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-mongodb
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx-mongodb
 
 MAINTAINER ivy 'xieyang@dodora.cn'
+
+ADD config /config
+ADD etc /etc
 
 # gpg keys listed at https://github.com/nodejs/node
 RUN set -ex \
