@@ -1,1 +1,0 @@
-bash -c ". /root/.nvm/nvm.sh && nvm install v{$NODE_VERSION} && nvm use v${NODE_VERSION}"
