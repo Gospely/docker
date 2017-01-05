@@ -4,7 +4,10 @@ MAINTAINER sharkseven 'shark@dodora.cn'
 
 ADD etc /etc
 ADD config /config
-RUN chmod +x  /config/main
+RUN bash -c '. /root/.nvm/nvm.sh && nvm install v6.9.1'
+RUN bash -c '. /root/.nvm/nvm.sh && nvm install v6.2.0'
+RUN bash -c '. /root/.nvm/nvm.sh && nvm install v5.12.0'
+RUN bash -c '. /root/.nvm/nvm.sh && nvm install v4.4.4'
 
 RUN git clone https://github.com/Gospely/hello_node.git /root/temp
 

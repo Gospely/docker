@@ -1,1 +1,0 @@
-bash -c ". /root/.nvm/nvm.sh && NVM_NODEJS_ORG_MIRROR=https://npm.taobao.org/mirrors/node nvm install ${NODE_VERSION}"
