@@ -4,6 +4,7 @@ MAINTAINER sharkseven 'shark@dodora.cn'
 
 ADD etc /etc
 ADD config /config
+RUN chmod +x  /config/main
 
 RUN git clone https://github.com/Gospely/hello_node.git /root/temp
 
