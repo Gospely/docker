@@ -4,7 +4,7 @@ MAINTAINER sharkseven 'shark@dodora.cn'
 
 RUN rm -rf /root/temp
 RUN git clone https://github.com/Gospely/express-template.git /root/temp
-RUN bash -c "cd /root/temp && rm -rf .git && npm install"
+RUN bash -c "cd /root/temp && rm -rf .git && nvm use v6.9.1 && npm install"
 
 EXPOSE 8000 80
 
