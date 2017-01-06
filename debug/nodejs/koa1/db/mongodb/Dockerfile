@@ -9,4 +9,4 @@ RUN bash -c ". /root/.nvm/nvm.sh && cd /root/temp && rm -rf .git && nvm use v6.9
 
 EXPOSE 3000 80
 
-ENTRYPOINT service ssh start && /config/main && /bin/bash
+ENTRYPOINT service ssh start && /config/main && sh run.sh && /bin/bash
