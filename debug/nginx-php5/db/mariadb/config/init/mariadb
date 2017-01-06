@@ -7,8 +7,10 @@ if [ ! "$(ls -A /data/aria_log_control)" ]; then
 		inotifywait -e create -q /run/mysqld/
 	done
 	mysql -u root -e "FLUSH PRIVILEGES; CREATE USER '${DBUSER}'@'%' IDENTIFIED BY '${DBPASS}'; GRANT ALL PRIVILEGES ON *.* TO '${DBUSER}'@'%' WITH GRANT OPTION;"
+	mysql -u root -e "FLUSH PRIVILEGES; CREATE USER root@'%' IDENTIFIED BY '${DBPASS}'; GRANT ALL PRIVILEGES ON *.* TO '${DBUSER}'@'%' WITH GRANT OPTION;"
 	mysql -u root -e "CREATE DATABASE IF NOT EXISTS ${DBUSER};"
-	mysqladmin -u root shutdown
+	mysql -u root -e "FLUSH PRIVILEGES; SET PASSWORD FOR root@'localhost' = PASSWORD('${DBPASS}')"
+	mysqladmin -u root -p ${DBPASS} shutdown
 fi
 
 # Make socket writable for core
