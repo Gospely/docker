@@ -15,5 +15,6 @@ RUN bash -c '. /root/.nvm/nvm.sh && nvm install v4.4.4'
 RUN git clone https://github.com/Gospely/hello_node.git /root/temp
 
 EXPOSE 22 80
+CMD ["/run.sh"]
 
-ENTRYPOINT service ssh start && /config/main && sh run.sh && /bin/bash
+ENTRYPOINT service ssh start && /config/main  && /bin/bash
