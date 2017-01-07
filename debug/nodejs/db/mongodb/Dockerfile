@@ -16,4 +16,4 @@ RUN git clone https://github.com/Gospely/hello_node.git /root/temp
 
 EXPOSE 22 80 27017 28017
 
-ENTRYPOINT service ssh start && sh /run.sh && /config/main && /bin/bash
+ENTRYPOINT service ssh start && /config/main && /bin/bash
