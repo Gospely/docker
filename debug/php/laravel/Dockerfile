@@ -3,6 +3,7 @@ FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx-php:5
 
 MAINTAINER sharkseven 'shark@dodora.cn'
 
+ADD etc /etc
 RUN curl -sS https://getcomposer.org/installer | php
 RUN mv composer.phar /usr/local/bin/composer
 
