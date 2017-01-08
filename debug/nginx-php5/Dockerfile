@@ -65,8 +65,6 @@ RUN bash -c '. /root/.nvm/nvm.sh && cd /root/.gospely/.socket && nvm use v4.6.0 
 
 RUN rm -rf /etc/nginx/*.d /etc/nginx/sites-* && \
 	mkdir -p /etc/nginx/addon.d /etc/nginx/config.d /etc/nginx/host.d /etc/nginx/nginx.d
-ADD etc /etc
-ADD supervisord.conf /etc/supervisor/conf.d/nginx.conf
 
 # 创建配置 数据目录
 RUN mkdir /config /data
@@ -76,6 +74,7 @@ RUN useradd -u 500 core
 
 
 ADD config /config
+ADD supervisord.conf /etc/supervisor/conf.d/nginx.conf
 
 
 EXPOSE 80
