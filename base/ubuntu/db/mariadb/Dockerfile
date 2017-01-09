@@ -21,5 +21,6 @@ RUN sed -i -e "s/^bind-address/#bind-address/" /etc/mysql/my.cnf && \
 	chown -R core:root /run/mysqld
 ADD config /config
 ADD supervisord.conf /etc/supervisor/conf.d/mariadb.conf
+RUN chmod +x  /config/main
 EXPOSE 3306
 ENTRYPOINT /config/main
