@@ -1,0 +1,15 @@
+#!/bin/bash#written by linuxidc@2015-10-15
+bash /config/prep
+for init in /config/init/*; do
+	bash "$init"
+done
+bash /config/prep
+exec supervisord -n
+
+port=`netstat -nlt|grep 3306|wc -l`
+if [ $port -ne 1 ]
+then
+    /etc/init.d/mysqld start
+else
+    echo "MySQL is running"
+fi
