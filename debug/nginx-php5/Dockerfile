@@ -36,7 +36,7 @@ RUN apt-get update -y && \
 
 ADD etc /etc
 # ssh密码登录
-RUN sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 # 设置初始密码
 RUN echo 'root:123456' | chpasswd
 ENV USERID=user
