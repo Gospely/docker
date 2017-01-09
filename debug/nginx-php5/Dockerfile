@@ -34,7 +34,6 @@ RUN apt-get update -y && \
 	rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 
 
-ADD etc /etc
 # ssh密码登录
 RUN sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 # 设置初始密码
@@ -74,6 +73,7 @@ RUN useradd -u 500 core
 
 
 ADD config /config
+ADD etc /etc
 ADD supervisord.conf /etc/supervisor/conf.d/nginx.conf
 
 
