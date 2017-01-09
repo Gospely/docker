@@ -5,3 +5,4 @@ for init in /config/init/*; do
 done
 bash /config/prep
 exec supervisord -n
+bash /config/after

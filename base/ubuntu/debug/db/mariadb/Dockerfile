@@ -23,3 +23,4 @@ ADD config /config
 RUN chmod +x  /config/main
 ADD supervisord.conf /etc/supervisor/conf.d/mariadb.conf
 EXPOSE 3306
+ENTRYPOINT /config/main
