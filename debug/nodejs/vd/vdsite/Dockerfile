@@ -1,11 +1,10 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/vd:app
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/nginx
 
 MAINTAINER sharkseven 'shark@dodora.cn'
 
 RUN rm -rf /root/temp
-RUN git clone https://github.com/Gospely/vdpc-seed /root/temp
-RUN bash -c ". /root/.nvm/nvm.sh && nvm use v6.9.1  && cd /root/temp && npm install"
+RUN git clone https://github.com/Gospely/vdsite-seed /root/temp
 
-EXPOSE 8060 80
+EXPOSE 80
 
 ENTRYPOINT service ssh start && /config/main && /bin/bash
