@@ -1,1 +1,1 @@
-bash -c ". /root/.nvm/nvm.sh && $2"
+bash -c ". /root/.nvm/nvm.sh && $1"
