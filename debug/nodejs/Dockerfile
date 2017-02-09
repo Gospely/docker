@@ -4,6 +4,8 @@ MAINTAINER sharkseven 'shark@dodora.cn'
 
 ADD etc /etc
 ADD config /config
+ADD script /root/.gospely/
+
 RUN bash -c '. /root/.nvm/nvm.sh && nvm install v6.9.1'
 RUN bash -c '. /root/.nvm/nvm.sh && nvm install v6.2.0'
 RUN bash -c '. /root/.nvm/nvm.sh && nvm install v5.12.0'
