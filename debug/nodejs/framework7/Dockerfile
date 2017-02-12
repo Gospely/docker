@@ -1,0 +1,12 @@
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nodejs
+
+MAINTAINER sharkseven 'shark@dodora.cn'
+
+ADD etc /etc
+RUN rm -rf /root/temp
+RUN git clone https://github.com/nolimits4web/Framework7.git /root/temp
+RUN bash -c ". /root/.nvm/nvm.sh && nvm alias default v6.9.1 &&  npm install -g gulp && cd /root/temp && npm install"
+
+EXPOSE 8100 80
+
+ENTRYPOINT service ssh start && /config/main && /bin/bash
