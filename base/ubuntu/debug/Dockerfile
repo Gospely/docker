@@ -24,6 +24,9 @@ RUN mkdir /root/.gospely
 # 创建git脚本目录
 RUN mkdir /root/.gospely/.git_shell
 
+# 修改时区
+RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+
 # git clone git脚本
 RUN git clone https://github.com/Gospely/git.git /root/.gospely/.git_shell
 

@@ -25,7 +25,8 @@ RUN mkdir /config /data
 # 添加core用户
 RUN useradd -u 500 core
 
-
+# 修改时区
+RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 ADD config /config
 
 RUN wget -O /config/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64
