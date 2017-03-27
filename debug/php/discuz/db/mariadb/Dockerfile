@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx-php:5
+FROM registry.cn-hangzhou.aliyuncs.com/dodora/debug-nginx-php:5
 MAINTAINER sharkseven 'shark@dodora.cn'
 
 
@@ -9,7 +9,7 @@ RUN apt-get -q -y install mysql-server \
                           telnet && \
                           apt-get -q -y clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-    
+
 RUN sed -i -e "s/^bind-address/#bind-address/" /etc/mysql/my.cnf && \
 	sed -i -e "s/^datadir.*=.*/datadir = \/data/" /etc/mysql/my.cnf && \
 	sed -i -e "s/^user.*=.*/user = core/" /etc/mysql/my.cnf && \
