@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-ubuntu
+FROM registry.cn-hangzhou.aliyuncs.com/dodora/ubuntu:debug
 MAINTAINER sharkseven 'shark@dodora.cn'
 
 ENV DBUSER=docker
