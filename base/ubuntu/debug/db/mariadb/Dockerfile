@@ -1,6 +1,5 @@
 FROM registry.cn-hangzhou.aliyuncs.com/dodora/ubuntu:debug
 MAINTAINER sharkseven 'shark@dodora.cn'
-
 ENV DBUSER=docker
 ENV DBPASS=docker
 
