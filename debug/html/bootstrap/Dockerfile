@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx
+FROM registry.cn-hangzhou.aliyuncs.com/dodora/debug-nginx
 
 RUN git clone https://github.com/Gospely/bootstrap-starter.git /root/temp
 RUN bash -c "cd /root/temp && rm -rf .git"
