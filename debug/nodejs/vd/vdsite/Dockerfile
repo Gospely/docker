@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/dodora/nginx
+FROM registry.cn-hangzhou.aliyuncs.com/dodora/debug-nginx
 
 MAINTAINER sharkseven 'shark@dodora.cn'
 
