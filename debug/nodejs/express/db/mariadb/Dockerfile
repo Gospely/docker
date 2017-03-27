@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nodejs-mariadb
+FROM registry.cn-hangzhou.aliyuncs.com/dodora/debug-nodejs:mariadb
 
 MAINTAINER sharkseven 'shark@dodora.cn'
 ADD etc /etc

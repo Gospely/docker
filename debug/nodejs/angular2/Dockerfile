@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nodejs
+FROM registry.cn-hangzhou.aliyuncs.com/dodora/debug-nodejs
 
 MAINTAINER sharkseven 'shark@dodora.cn'
 ADD etc /etc
@@ -30,7 +30,7 @@ RUN curl -SLO "http://ipv4.mirrors.ustc.edu.cn/node/v$NODE_VERSION/node-v$NODE_V
   && tar -xvf "node-v$NODE_VERSION-linux-x64.tar.gz" -C /usr/local --strip-components=1 \
   && rm "node-v$NODE_VERSION-linux-x64.tar.gz" SHASUMS256.txt.asc SHASUMS256.txt \
   && ln -s /usr/local/bin/node /usr/local/bin/nodejs
-  
+
 RUN npm install -g angular-cli
 RUN bash -c "cd /root/temp && rm -rf .git && npm install"
 

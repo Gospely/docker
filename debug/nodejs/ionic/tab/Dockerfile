@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/ionic:blank
+FROM registry.cn-hangzhou.aliyuncs.com/dodora/ionic:blank
 
 MAINTAINER sharkseven 'shark@dodora.cn'
 

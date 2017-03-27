@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nodejs
+FROM registry.cn-hangzhou.aliyuncs.com/dodora/debug-nodejs
 
 MAINTAINER sharkseven 'shark@dodora.cn'
 ADD etc /etc
