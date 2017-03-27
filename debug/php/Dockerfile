@@ -1,5 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx-php
-
+registry.cn-hangzhou.aliyuncs.com/dodora/debug-nginx-php
 MAINTAINER sharkseven 'shark@dodora.cn'
 
 RUN git clone https://github.com/Gospely/hello_php.git /root/temp
