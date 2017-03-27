@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx-mongodb
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx:mongodb
 
 MAINTAINER ivy 'xieyang@dodora.cn'
 
