@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-mariadb
+FROM registry.cn-hangzhou.aliyuncs.com/dodora/debug-db:mariadb
 MAINTAINER Max Schaefer <max@excloo.com>
 RUN curl https://nginx.org/keys/nginx_signing.key | apt-key add - && \
 	echo "deb http://nginx.org/packages/debian/ jessie nginx" > /etc/apt/sources.list.d/nginx.list && \

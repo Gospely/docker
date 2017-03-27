@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-ubuntu
+FROM registry.cn-hangzhou.aliyuncs.com/dodora/ubuntu:debug
 MAINTAINER sharkseven <shark@dodora.cn>
 
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10 && \
