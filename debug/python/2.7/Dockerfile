@@ -18,6 +18,6 @@ LABEL org.label-schema.build-date=${BUILD_DATE} \
 ENV PY_VER_NUM="2.7" PY_DEBIAN_SUITE="stretch" PYTHONIOENCODING="UTF-8"
 
 COPY *.sh /usr/share/dockershelf/python/
-RUN bash /usr/share/dockershelf/python/build-image.sh
+RUN bash /usr/share/dockershelf/python/build-images.sh
 
 ENTRYPOINT service ssh start && /config/main && /bin/bash
