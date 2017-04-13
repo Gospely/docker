@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx:mariadb
+FROM registry.cn-hangzhou.aliyuncs.com/dodora/debug-nginx:mariadb
 MAINTAINER sharkseven 'shark@dodora.cn'
 
 ADD etc /etc

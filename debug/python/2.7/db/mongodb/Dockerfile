@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx:mongodb
+FROM registry.cn-hangzhou.aliyuncs.com/dodora/debug-nginx:mongodb
 MAINTAINER sharkseven 'shark@dodora.cn'
 
 ADD etc /etc
