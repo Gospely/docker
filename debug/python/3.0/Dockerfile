@@ -18,4 +18,4 @@ LABEL org.label-schema.build-date=${BUILD_DATE} \
 ENV PY_VER_NUM="3.5" PY_DEBIAN_SUITE="stretch" PYTHONIOENCODING="UTF-8"
 
 COPY *.sh /usr/share/dockershelf/python/
-RUN bash /usr/share/dockershelf/python/build-image.sh
+RUN bash /usr/share/dockershelf/python/build-images.sh
