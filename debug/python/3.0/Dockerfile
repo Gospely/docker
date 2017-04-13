@@ -1,16 +1,96 @@
 FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx
 MAINTAINER sharkseven 'shark@dodora.cn'
 
-RUN apt-get update
-RUN apt-get install -y zlib-devel bzip2-devel openssl-devel ncurses-devel
+# ensure local python is preferred over distribution python
+ENV PATH /usr/local/bin:$PATH
 
-RUN bash -c "cd /tmp && wget  https://www.python.org/ftp/python/3.5.0/Python-3.5.0.tar.xz && tar jxvf  Python-3.5.0.tar.xz && cd Python-3.5.0 && ./configure --prefix=/usr/local/python3 && make && make install"
+# http://bugs.python.org/issue19846
+# > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
+ENV LANG C.UTF-8
 
-RUN bash /usr/share/dockershelf/python/build-images.sh
-RUN ln -s /usr/local/python3/bin/python3.5 /usr/local/bin/python3
+# runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+		ca-certificates \
+		libgdbm3 \
+		libsqlite3-0 \
+		libssl1.0.0 \
+	&& rm -rf /var/lib/apt/lists/*
 
-RUN ln -s /usr/local/python3/bin/pip3.5 /usr/local/bin/pip
+ENV GPG_KEY 97FC712E4C024BBEA48A61ED3A5CA953F73C700D
+ENV PYTHON_VERSION 3.5.2
 
-RUN pip install --upgrade pip
+# if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
+ENV PYTHON_PIP_VERSION 9.0.1
+
+RUN set -ex \
+	&& buildDeps=' \
+		gcc \
+		libbz2-dev \
+		libc6-dev \
+		libgdbm-dev \
+		liblzma-dev \
+		libncurses-dev \
+		libreadline-dev \
+		libsqlite3-dev \
+		libssl-dev \
+		make \
+		tcl-dev \
+		tk-dev \
+		wget \
+		xz-utils \
+		zlib1g-dev \
+	' \
+	&& apt-get update && apt-get install -y $buildDeps --no-install-recommends && rm -rf /var/lib/apt/lists/* \
+	\
+	&& wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz" \
+	&& wget -O python.tar.xz.asc "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz.asc" \
+	&& export GNUPGHOME="$(mktemp -d)" \
+	&& gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$GPG_KEY" \
+	&& gpg --batch --verify python.tar.xz.asc python.tar.xz \
+	&& rm -r "$GNUPGHOME" python.tar.xz.asc \
+	&& mkdir -p /usr/src/python \
+	&& tar -xJC /usr/src/python --strip-components=1 -f python.tar.xz \
+	&& rm python.tar.xz \
+	\
+	&& cd /usr/src/python \
+	&& ./configure \
+		--enable-loadable-sqlite-extensions \
+		--enable-shared \
+	&& make -j$(nproc) \
+	&& make install \
+	&& ldconfig \
+	\
+# explicit path to "pip3" to ensure distribution-provided "pip3" cannot interfere
+	&& if [ ! -e /usr/local/bin/pip3 ]; then : \
+		&& wget -O /tmp/get-pip.py 'https://bootstrap.pypa.io/get-pip.py' \
+		&& python3 /tmp/get-pip.py "pip==$PYTHON_PIP_VERSION" \
+		&& rm /tmp/get-pip.py \
+	; fi \
+# we use "--force-reinstall" for the case where the version of pip we're trying to install is the same as the version bundled with Python
+# ("Requirement already up-to-date: pip==8.1.2 in /usr/local/lib/python3.6/site-packages")
+# https://github.com/docker-library/python/pull/143#issuecomment-241032683
+	&& pip3 install --no-cache-dir --upgrade --force-reinstall "pip==$PYTHON_PIP_VERSION" \
+# then we use "pip list" to ensure we don't have more than one pip version installed
+# https://github.com/docker-library/python/pull/100
+	&& [ "$(pip list |tac|tac| awk -F '[ ()]+' '$1 == "pip" { print $2; exit }')" = "$PYTHON_PIP_VERSION" ] \
+	\
+	&& find /usr/local -depth \
+		\( \
+			\( -type d -a -name test -o -name tests \) \
+			-o \
+			\( -type f -a -name '*.pyc' -o -name '*.pyo' \) \
+		\) -exec rm -rf '{}' + \
+	&& apt-get purge -y --auto-remove $buildDeps \
+	&& rm -rf /usr/src/python ~/.cache
+
+# make some useful symlinks that are expected to exist
+RUN cd /usr/local/bin \
+	&& { [ -e easy_install ] || ln -s easy_install-* easy_install; } \
+	&& ln -s idle3 idle \
+	&& ln -s pydoc3 pydoc \
+	&& ln -s python3 python \
+	&& ln -s python3-config python-config
+
+CMD ["python3"]
 
 ENTRYPOINT service ssh start && /config/main && /bin/bash
