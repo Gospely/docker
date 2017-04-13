@@ -1,21 +1,16 @@
 FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx
 MAINTAINER sharkseven 'shark@dodora.cn'
 
-ARG BUILD_DATE
-ARG VCS_REF
-ARG VERSION
+RUN apt-get update
+RUN apt-get install -y zlib-devel bzip2-devel openssl-devel ncurses-devel
 
-LABEL org.label-schema.build-date=${BUILD_DATE} \
-      org.label-schema.name="python3.5" \
-      org.label-schema.description="A Python 3.5 image based on Debian Sid." \
-      org.label-schema.url="https://github.com/LuisAlejandro/dockershelf" \
-      org.label-schema.vcs-ref=${VCS_REF} \
-      org.label-schema.vcs-url="https://github.com/LuisAlejandro/dockershelf" \
-      org.label-schema.vendor="Luis Alejandro Martínez Faneyth" \
-      org.label-schema.version=${VERSION} \
-      org.label-schema.schema-version="1.0.0-rc.1"
+RUN bash -c "cd /tmp && wget  https://www.python.org/ftp/python/3.5.0/Python-3.5.0.tar.xz && tar jxvf  Python-3.5.0.tar.xz && cd Python-3.5.0 && ./configure --prefix=/usr/local/python3 && make && make install"
 
-ENV PY_VER_NUM="3.5" PY_DEBIAN_SUITE="stretch" PYTHONIOENCODING="UTF-8"
-
-COPY *.sh /usr/share/dockershelf/python/
 RUN bash /usr/share/dockershelf/python/build-images.sh
+RUN ln -s /usr/local/python3/bin/python3.5 /usr/local/bin/python3
+
+RUN ln -s /usr/local/python3/bin/pip3.5 /usr/local/bin/pip
+
+RUN pip install --upgrade pip
+
+ENTRYPOINT service ssh start && /config/main && /bin/bash
