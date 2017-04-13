@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx:mongodb
 MAINTAINER sharkseven 'shark@dodora.cn'
 
 ADD etc /etc
@@ -93,6 +93,7 @@ RUN cd /usr/local/bin \
 	&& ln -s pydoc3 pydoc \
 	&& ln -s python3 python \
 	&& ln -s python3-config python-config
+
 EXPOSE 22 80 8080
 
 CMD ["python3"]

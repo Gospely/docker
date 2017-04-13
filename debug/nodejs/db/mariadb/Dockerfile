@@ -1,4 +1,4 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx-mariadb
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx:mariadb
 
 MAINTAINER ivy 'xieyang@dodora.cn'
 

@@ -1,5 +1,8 @@
-FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx
+FROM registry.cn-hangzhou.aliyuncs.com/gospel/debug-nginx-mariadb
 MAINTAINER sharkseven 'shark@dodora.cn'
+
+ADD etc /etc
+ADD config /config
 
 # ensure local python is preferred over distribution python
 ENV PATH /usr/local/bin:$PATH
@@ -79,6 +82,8 @@ RUN set -ex \
 		\) -exec rm -rf '{}' + \
 	&& apt-get purge -y --auto-remove $buildDeps \
 	&& rm -rf /usr/src/python ~/.cache
+
+EXPOSE 22 80 8080
 
 CMD ["python2"]
 
