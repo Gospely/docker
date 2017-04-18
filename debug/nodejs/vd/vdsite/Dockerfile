@@ -1,6 +1,9 @@
-FROM registry.cn-hangzhou.aliyuncs.com/dodora/vd:app
+FROM registry.cn-hangzhou.aliyuncs.com/dodora/debug-nginx
+
 
 MAINTAINER sharkseven 'shark@dodora.cn'
+
+ADD etc /etc
 
 RUN rm -rf /root/temp
 RUN git clone https://github.com/Gospely/vdsite-seed /root/temp
