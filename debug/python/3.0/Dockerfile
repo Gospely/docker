@@ -2,7 +2,7 @@ FROM registry.cn-hangzhou.aliyuncs.com/dodora/debug-nginx:latest
 MAINTAINER sharkseven 'shark@dodora.cn'
 
 ADD etc /etc
-ADD hello.py /root/temp
+ADD hello.py /root/temp/
 ADD config /config
 
 # ensure local python is preferred over distribution python

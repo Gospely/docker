@@ -3,6 +3,8 @@ MAINTAINER sharkseven 'shark@dodora.cn'
 
 ADD etc /etc
 ADD config /config
+ADD hello.py /root/temp/
+
 
 # ensure local python is preferred over distribution python
 ENV PATH /usr/local/bin:$PATH
